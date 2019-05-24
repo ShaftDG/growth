@@ -1,10 +1,23 @@
 import { Curve3, Path3D, Scalar } from 'babylonjs';
 
 export default class GrowthPath3D {
-    constructor(pointsInner, numSegment, numPointsperInterval, distanceSprouts, offSetSprouts, intervalTime, plantDyingOff, plantDeath, scale, scene) {
+    constructor(
+        pointsInner,
+        numSegment,
+        numPointsperInterval,
+        dotIterationStep,
+        distanceSprouts,
+        offSetSprouts,
+        intervalTime,
+        plantDyingOff,
+        plantDeath,
+        scale,
+        scene
+    ) {
        this.offSetSprouts = offSetSprouts || 20;
        this.numSegment = numSegment || 7;
        this.numPointsperInterval = numPointsperInterval || 7;
+       this.dotIterationStep = dotIterationStep || 1;
        // this.beginPoint = beginPoint || new BABYLON.Vector3(0, 0, 0);
        // this.endPoint = endPoint || new BABYLON.Vector3(0, 50, 0);
        this.pointsInner = pointsInner;
@@ -106,38 +119,30 @@ export default class GrowthPath3D {
         for (let j = 1; j < p.length; j++) {
             ww.push(this.pointsInner[0])
         }
-        // this.totalLength += (num + 2.5) * 0.1;
 
         var catmullRom = Curve3.CreateCatmullRomSpline(ww, this.numSegment);
 
         var catmullRomTemplate = Curve3.CreateCatmullRomSpline(p, this.numSegment);
 
         this.points = catmullRom.getPoints();
-        this.tempPoints = catmullRom.getPoints();
 
         this.pointsTemplate = catmullRomTemplate.getPoints();
 
         this.path3d = new Path3D(this.points);
         this.path3dTemplate = new Path3D(this.pointsTemplate);
 
-        // let x = this.path3dTemplate.getCurve();
-        for (let j = 1; j < this.pointsTemplate.length; j++) {
-            this.totalLength += this.pointsTemplate[j-1].subtract(this.pointsTemplate[j]).length();
-        }
-
         this.curve = this.path3d.getCurve();
         this.index = 1;
         this.start = false;
-
-
+        this.moveSprouts = false;
     }
 
     startGrowth() {
+        this.started = true;
+        this.ended = false;
         this.resetGrowth();
         this.start = true;
         this.moveSprouts = true;
-        this.started = true;
-        this.ended = false;
     }
 
     updatePath(deltaTime) {
@@ -157,25 +162,26 @@ export default class GrowthPath3D {
                         } else {
                             for (var i = this.index; i < this.points.length; i++) {
                                 this.points[i] = this.pointsTemplate[this.index].clone();
-                                this.tempPoints[i] = this.pointsTemplate[this.index].clone();
+                                this.totalLength += this.points[i - 1].subtract(this.points[i]).length();
                             }
                         }
                     } else {
                         if (this.index < this.pointsTemplate.length - 1) {
                             this.index++;
-                            this.enableSprouts = false;
                         }
                     }
                 } else {
                     for (var i = this.index; i < this.points.length; i++) {
                         this.points[i] = this.pointsTemplate[this.index].clone();
+                        this.totalLength += this.points[i - 1].subtract(this.points[i]).length();
                     }
-                    if (this.time < this.intervalTime) {
-                        this.time += deltaTime;
-                    } else {
+
+                    // if (this.time < this.intervalTime) {
+                    //     this.time += deltaTime;
+                    // } else {
                         this.index++;
-                        this.time = 0.001;
-                    }
+                        // this.time = 0.001;
+                    // }
                 }
             } else {
                 this.start = false;
@@ -204,12 +210,12 @@ export default class GrowthPath3D {
                     this.points[i] = this.pointsTemplate[this.index].clone();
                 }
 
-                    if (this.time < this.intervalTime) {
-                        this.time += deltaTime;
-                    } else {
-                        this.index++;
-                        this.time = 0.001;
-                    }
+                    // if (this.time < this.intervalTime) {
+                    //     this.time += deltaTime;
+                    // } else {
+                        this.index += this.dotIterationStep;
+                        // this.time = 0.001;
+                    // }
             } else {
                 this.reverse = false;
                 this.started = false;
@@ -220,60 +226,34 @@ export default class GrowthPath3D {
         }
     }
 
-    // updateDeath (deltaTime) {
-    //     if (this.reverse) {
-    //         // var tgtsTemplate = this.path3dTemplate.getTangents();
-    //         if (this.index < this.pointsTemplate.length - 1) {
-    //             for (var i = this.points.length - 1; i > this.points.length - this.index; i--) {
-    //                 this.points[i] = this.pointsTemplate[this.index].clone();
-    //             }
-    //
-    //             if (this.time < this.intervalTime) {
-    //                 this.time += deltaTime;
-    //             } else {
-    //                 this.index++;
-    //                 this.time = 0.001;
-    //             }
-    //         } else {
-    //             this.reverse = false;
-    //             this.started = false;
-    //             this.ended = true;
-    //         }
-    //
-    //         this.curve = this.points;
-    //     }
-    // }
-
     updateMoveSprouts (deltaTime) {
-        this.sprouts.map(g => {
-            if (g.directionIndex && g.directionIndex < this.points.length - 1) {
-                let p = [...this.points];
-                if (this.reverse) {
-                    p.reverse();
-                }
-                let dir = p[g.directionIndex + 1].subtract(p[g.directionIndex]).normalize();
+        if (this.moveSprouts) {
+            this.sprouts.map(g => {
+                if (g.directionIndex && g.directionIndex < this.points.length - 1) {
+                    let dir = this.points[g.directionIndex].subtract(this.points[g.directionIndex - 1]).normalize();
 
-                let lTemplate = p[g.directionIndex + 1].subtract(p[g.directionIndex]).length();
-                let l = g.position.subtract(p[g.directionIndex]).length();
-
-                // g.position.addInPlace(dir.scale(deltaTime * this.deltaMoveSprouts));
-                if (l < lTemplate) {
-                    if (this.start) {
-                        g.position.addInPlace(dir.scale(deltaTime * this.deltaMoveSprouts));
-                    } else /*if (!this.reverse)*/ {
-                        if (this.deltaMoveSprouts > 0) {
-                            this.deltaMoveSprouts -= deltaTime * 0.00005;
+                    let lTemplate = this.points[g.directionIndex].subtract(this.points[g.directionIndex - 1]).length();
+                    let l = g.position.subtract(this.points[g.directionIndex - 1]).length();
+                    // console.log(dir)
+                    // g.position.addInPlace(dir.scale(deltaTime * this.deltaMoveSprouts));
+                    if (l < lTemplate) {
+                        if (this.start) {
                             g.position.addInPlace(dir.scale(deltaTime * this.deltaMoveSprouts));
-                        } else {
-                            this.moveSprouts = false;
+                        } else /*if (!this.reverse)*/ {
+                            if (this.deltaMoveSprouts > 0) {
+                                this.deltaMoveSprouts -= deltaTime * 0.00005;
+                                g.position.addInPlace(dir.scale(deltaTime * this.deltaMoveSprouts));
+                            } else {
+                                this.moveSprouts = false;
+                            }
+                        }
+                    } else {
+                        if (g.directionIndex < this.points.length - 1) {
+                            g.directionIndex++
                         }
                     }
-                } else {
-                    if (g.directionIndex < this.points.length - 1) {
-                        g.directionIndex++
-                    }
                 }
-            }
-        });
+            });
+        }
     }
 }

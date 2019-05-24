@@ -6,16 +6,17 @@ import Growth from './js/Growth';
 import './js/showFPS';
 
 let objGrowth;
+let baseURL = '/src/';
+var canvas = CreateCanvas();
 window.addEventListener('DOMContentLoaded', function(){
 
     if (/*BABYLON.Engine.isSupported()*/true) {
         // get the canvas DOM element
-        var canvas = CreateCanvas();
+
 
         // load the 3D engine
         var engine = new BABYLON.Engine(canvas, true, {preserveDrawingBuffer: true, stencil: true});
 
-        let objsGrowth = [];
         // createScene function that creates and return the scene
         var createScene = function () {
             // create a basic BJS Scene object
@@ -35,6 +36,15 @@ window.addEventListener('DOMContentLoaded', function(){
             // attach the camera to the canvas
             camera.attachControl(canvas, false);
             scene.showFPS();
+
+            // var pipeline = new BABYLON.StandardRenderingPipeline(
+            //     "standard", // The name of the pipeline
+            //     scene, // The scene instance
+            //     1.0, // The rendering pipeline ratio
+            //     null, // The original post-process that the pipeline will be based on
+            //     [camera] // The list of cameras to be attached to
+            // );
+            // pipeline.exposure = 10;
             // create a basic light, aiming 0,1,0 - meaning, to the sky
             // var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, -10), scene);
             // light.intensity = 5.0;
@@ -46,19 +56,20 @@ window.addEventListener('DOMContentLoaded', function(){
             // var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData('/src/assets/textures/hdri_cube_radiance.dds', scene);
             // var hdrTexture = new BABYLON.HDRCubeTexture('/src/assets/textures/hdri.hdr', scene, 1024, false, false);
             // var hdrTexture = new BABYLON.CubeTexture("studio.env", scene);
-            // var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', '/src/assets/textures/environmentSpecular.env');
+            var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', baseURL + 'assets/textures/environmentSpecular.env');
             // var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', '/src/assets/textures/environmentSpecularHDR.dds');
-            // taskEnvTexture.onSuccess = function(task) {
-                // scene.environmentTexture = task.texture;
-                // scene.environmentTexture.coordinatesMode = BABYLON.Texture.CUBIC_MODE;
-                // scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
-            // };
-
-            var taskHdrTexture = assetsManager.addHDRCubeTextureTask('studioHDR', '/src/assets/textures/Stonewall_Ref.hdr', 1024, false, false);
-            taskHdrTexture.onSuccess = function(task) {
+            taskEnvTexture.onSuccess = function(task) {
                 scene.environmentTexture = task.texture;
+                scene.environmentTexture.coordinatesMode = BABYLON.Texture.CUBIC_MODE;
                 scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
             };
+
+            //HDR_110_Tunnel_Env.hdr
+            // var taskHdrTexture = assetsManager.addHDRCubeTextureTask('studioHDR', baseURL + 'assets/textures/HDR_110_Tunnel_Env.hdr', 512, false, false);
+            // taskHdrTexture.onSuccess = function(task) {
+            //     scene.environmentTexture = task.texture;
+            //     scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
+            // };
 
             // scene.environmentTexture = hdrTexture;
             // scene.createDefaultSkybox(hdrTexture, true, 1000, 0.005);
@@ -80,10 +91,10 @@ window.addEventListener('DOMContentLoaded', function(){
             sphereRight.material = sproutsMaterial;
 
             // create a built-in 'ground' shape;
-            var ground = BABYLON.Mesh.CreateGround('ground1', 60, 60, 2, scene);
-            ground.material = sproutsMaterial.clone();
-            ground.material.metallic = 0.5;
-            ground.material.roughness = 0.25;
+            // var ground = BABYLON.Mesh.CreateGround('ground1', 60, 60, 2, scene);
+            // ground.material = sproutsMaterial.clone();
+            // ground.material.metallic = 0.5;
+            // ground.material.roughness = 0.25;
 
             BABYLON.SceneLoader.OnPluginActivatedObservable.add(function (plugin) {
                 if (plugin.name === 'gltf' && plugin instanceof BABYLON.GLTFFileLoader) {
@@ -98,7 +109,7 @@ window.addEventListener('DOMContentLoaded', function(){
             tubeMaterial.roughness = 0.0;
             tubeMaterial.environmentTexture = scene.environmentTexture;
 
-            var textureAlbedo = assetsManager.addTextureTask('textureAlbedo', '/src/assets/textures/stem_baseColor.png');
+            var textureAlbedo = assetsManager.addTextureTask('textureAlbedo', baseURL + 'assets/textures/stem_baseColor.png');
             textureAlbedo.onSuccess = function(task) {
                 tubeMaterial.albedoTexture = task.texture;
                 tubeMaterial.albedoTexture.uScale = 2;
@@ -108,7 +119,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 tubeMaterial.albedoTexture.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
             };
 
-            var textureBump = assetsManager.addTextureTask('textureBump', '/src/assets/textures/stem_normal.png');
+            var textureBump = assetsManager.addTextureTask('textureBump', baseURL + 'assets/textures/stem_normal.png');
             textureBump.onSuccess = function(task) {
                 tubeMaterial.bumpTexture = task.texture;
                 tubeMaterial.bumpTexture.uScale = 2;
@@ -118,7 +129,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 tubeMaterial.bumpTexture.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
             };
 
-            var textureORM = assetsManager.addTextureTask('textureBump', '/src/assets/textures/stem_ORM.png');
+            var textureORM = assetsManager.addTextureTask('textureBump', baseURL + 'assets/textures/stem_ORM.png');
             textureORM.onSuccess = function(task) {
                 tubeMaterial.metallicRoughnessTexture  = task.texture;
                 tubeMaterial.metallicRoughnessTexture.uScale = 2;
@@ -131,18 +142,19 @@ window.addEventListener('DOMContentLoaded', function(){
                 tubeMaterial.useMetallnessFromMetallicTextureBlue = true;
             };
 
-            let numTubes = 2;
-            let sectionPoints = 4;
+            let numTubes = 1;
+            let sectionPoints = 3;
             let numSegmentPerPoint = 4;
             let numPointsperInterval = 4;
+            let dotIterationStep = 1;
             let intervalTime = 0.0;
-            let distanceSprouts = 0.09;
+            let distanceSprouts = 0.42;
             let offSetSprouts = 20;
-            let deltaMoveSprouts = 0.005;
+            let deltaMoveSprouts = 0.01;
             let plantDyingOff = true;
             let plantDeath = false;
             let scale = 0.225;
-            let diameter = 0.0125;
+            let diameter = 0.015;
 
             objGrowth = new Growth(
                 [
@@ -164,6 +176,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 scale,
                 intervalTime,
                 deltaMoveSprouts,
+                dotIterationStep,
                 plantDyingOff,
                 plantDeath,
                 tubeMaterial,
@@ -171,24 +184,24 @@ window.addEventListener('DOMContentLoaded', function(){
                 scene
             );
 
-            var meshTaskBell = assetsManager.addMeshTask('bell', '', '/src/assets/models/', 'bell_out.glb');
+            // var meshTaskBell = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/', 'bell_out.glb');
+            //
+            // meshTaskBell.onSuccess = function (task) {
+            //     // task.loadedMeshes[0].position = new BABYLON.Vector3(0,10,0);
+            //     task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.005,0.005,0.005);
+            //     task.loadedMeshes[0].setEnabled(false);
+            //     // task.loadedMeshes[0].material.environmentTexture = scene.environmentTexture.clone();
+            //     // task.loadedMeshes[0].material.environmentTexture.coordinatesMode = BABYLON.Texture.CUBIC_MODE;
+            //
+            //     for (let i = 0; i < 3; i++) {
+            //         for (let j = 0; j < 5; j++) {
+            //             let obj = task.loadedMeshes[0].clone();
+            //             obj.position = new BABYLON.Vector3(j * 5 - 10, i * 5 + 5,0);
+            //         }
+            //     }
+            // };
 
-            meshTaskBell.onSuccess = function (task) {
-                // task.loadedMeshes[0].position = new BABYLON.Vector3(0,10,0);
-                task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.005,0.005,0.005);
-                task.loadedMeshes[0].setEnabled(false);
-                // task.loadedMeshes[0].material.environmentTexture = scene.environmentTexture.clone();
-                // task.loadedMeshes[0].material.environmentTexture.coordinatesMode = BABYLON.Texture.CUBIC_MODE;
-
-                for (let i = 0; i < 3; i++) {
-                    for (let j = 0; j < 5; j++) {
-                        let obj = task.loadedMeshes[0].clone();
-                        obj.position = new BABYLON.Vector3(j * 5 - 10, i * 5 + 5,0);
-                    }
-                }
-            };
-
-            let meshTask = assetsManager.addMeshTask('leaf', '', '/src/assets/models/', 'leaf.glb');
+            let meshTask = assetsManager.addMeshTask('leaf', '', baseURL + 'assets/models/', 'leaf.glb');
 
             meshTask.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);

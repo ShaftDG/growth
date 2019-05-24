@@ -7,12 +7,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 let conf = {
     entry: {
         app: ['babel-polyfill', path.resolve(__dirname, 'src', 'index.js')],
-        // vendor: ['phaser']
     },
     devtool: 'none',
     output: {
@@ -65,6 +64,11 @@ let conf = {
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({}),
+        // new HtmlWebpackPlugin({
+        //     title: 'Custom template',
+        //     // Load a custom template (lodash by default see the FAQ for details)
+        //     template: 'indexTemplate.html'
+        // }),
         new MiniCssExtractPlugin({
             filename: "./css/[name].css",
             chunkFilename: "./css/[id].css"
@@ -77,7 +81,7 @@ let conf = {
         //     'WEBGL_RENDERER': JSON.stringify(true)
         // }),
         // new webpack.HashedModuleIdsPlugin(),
-        new BundleAnalyzerPlugin(),
+        // new BundleAnalyzerPlugin(),
     ]
 };
 
