@@ -44,6 +44,8 @@ export default class GrowthPath3D {
     setLeaf (leaf) {
         for (let j = this.offSetSprouts + 1; j < this.pointsTemplate.length - this.offSetSprouts; j++) {
             let sphere = leaf.clone();
+            // let sphere = leaf.createInstance("i" + j);
+            // console.log(sphere)
             var manager = new BABYLON.MorphTargetManager();
             sphere._children[0].morphTargetManager = manager;
 

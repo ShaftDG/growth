@@ -126,9 +126,9 @@ export default class Growth {
                             v.sprouts[v.index - (this.offSetSprouts + 1)].setEnabled(true);
                             v.sprouts[v.index - (this.offSetSprouts + 1)].scaling = new BABYLON.Vector3(scale, scale, scale);
                             v.sprouts[v.index - (this.offSetSprouts + 1)].position = v.points[v.index - 1].clone();
-                            v.sprouts[v.index - (this.offSetSprouts + 1)].lookAt(v.points[v.index].clone());
+                            v.sprouts[v.index - (this.offSetSprouts + 1)].lookAt(v.points[v.index-2].clone());
                             v.sprouts[v.index - (this.offSetSprouts + 1)].rotate(BABYLON.Axis.X, BABYLON.Scalar.RandomRange(0.25, 0.5), BABYLON.Mesh.LOCAL);
-                            v.sprouts[v.index - (this.offSetSprouts + 1)].rotate(BABYLON.Axis.Y, BABYLON.Scalar.RandomRange(0.1, 0.25), BABYLON.Mesh.LOCAL);
+                            v.sprouts[v.index - (this.offSetSprouts + 1)].rotate(BABYLON.Axis.Y, BABYLON.Scalar.RandomRange(3, 3.75), BABYLON.Mesh.LOCAL);
                             v.sprouts[v.index - (this.offSetSprouts + 1)].rotate(BABYLON.Axis.Z, Math.random() * 100, BABYLON.Mesh.LOCAL);
                             v.sprouts[v.index - (this.offSetSprouts + 1)].directionIndex = v.index - 1;
                             if (v.sprouts[v.index - (this.offSetSprouts + 1)].animationGroup.isPlaying) {
