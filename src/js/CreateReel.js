@@ -11,6 +11,7 @@ export default class CreateReel {
         this.indexSymbol = 0;
         this.indexSection = 1;
         this.numSymbolPerReel = numSymbolPerReel;
+        this.indexMiddleSymbol = 2;
         this.meshes = [];
         this.stoped = true;
         this.beginStop = false;
@@ -18,7 +19,7 @@ export default class CreateReel {
             for (var i = 0; i < 5; i++) {
                 let CoTSector = new BABYLON.TransformNode("CoTSector");
                 // console.log(Math.round(BABYLON.Scalar.RandomRange(0, 6)));
-                let obj = symbols[Math.round(BABYLON.Scalar.RandomRange(0, 6))].clone();
+                let obj = symbols[/*Math.round(BABYLON.Scalar.RandomRange(0, 6))*/i].clone();
                 // obj._children[0]._children[0]._children[0].material = task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clone();
                 // obj._children[0]._children[0]._children[0].material.albedoColor = new BABYLON.Color3(2, 2, 2);
                 let z = radius * Math.cos(this.angles[i]);
@@ -52,6 +53,7 @@ export default class CreateReel {
     stopRotate (rotateSlots) {
         this.rotateSlots = rotateSlots;
         if (!this.rotateSlots && !this.beginStop) {
+            this.indexMiddleSymbol = this.indexSymbol + 2 <= 4 ? this.indexSymbol + 2 : this.indexSymbol + 2 - 4 - 1;
             this.endRotate = true;
             this.CoT.rotation.x = this.section * (this.indexSection - 3);
             let firstIndex = this.indexSymbol - 1 < 0 ? 4 : this.indexSymbol - 1;

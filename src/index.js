@@ -54,10 +54,11 @@ window.addEventListener('DOMContentLoaded', function(){
             // );
             // pipeline.exposure = 10;
             // create a basic light, aiming 0,1,0 - meaning, to the sky
-            var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, -10), scene);
-            light.intensity = 0.25;
-            var lightdir = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0, 50, -500), scene);
-            lightdir.intensity = 5;
+            // var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, -10), scene);
+            // light.intensity = 0.5;
+            // var lightdir = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(50, 50, -500), scene);
+            // lightdir.intensity = 1;
+            // lightdir.autoUpdateExtends = false;
             // var lightPoint = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 0, 100), scene);
             // lightPoint.intensity = 1000;
              //
@@ -66,15 +67,15 @@ window.addEventListener('DOMContentLoaded', function(){
             // var lightspot1 = new BABYLON.SpotLight("spotLight", new BABYLON.Vector3(-10, 10, 40), new BABYLON.Vector3(-0.2, 0, -0.8), 20, 0.1, scene);
             // lightspot1.intensity = 1000;
 
-            // var shadowGenerator = new BABYLON.ShadowGenerator(1024, lightspot);
-            // shadowGenerator.useContactHardeningShadow = true;
-            // shadowGenerator.contactHardeningLightSizeUVRatio = 0.0075;
-            // shadowGenerator.setDarkness(0.75);
+            // var shadowGenerator = new BABYLON.ShadowGenerator(1024, lightdir);
             // shadowGenerator.usePoissonSampling = true;
-
-            // shadowGenerator.useBlurExponentialShadowMap = true;
-            // shadowGenerator.useKernelBlur = true;
-            // shadowGenerator.blurKernel = 64;
+            // shadowGenerator.bias = 0.00001;
+            // shadowGenerator.normalBias = 0.02;
+            // light.shadowMaxZ = 100;
+            // light.shadowMinZ = 1;
+            // shadowGenerator.useContactHardeningShadow = true;
+            // shadowGenerator.contactHardeningLightSizeUVRatio = 0.05;
+            // shadowGenerator.setDarkness(0.5);
 
             // var helper = scene.createDefaultEnvironment();
             // helper.setMainColor(BABYLON.Color3.White());
@@ -83,10 +84,11 @@ window.addEventListener('DOMContentLoaded', function(){
             // var taskEnvTexture = new BABYLON.HDRCubeTexture('/src/assets/textures/Orange1.hdr', scene, 1024, false, false);
             // var taskEnvTexture = new BABYLON.CubeTexture("studio.env", scene);
             // var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', baseURL + 'assets/textures/studio.env');
-            var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', '/src/assets/textures/hdrSpecularHDR.dds');
-            // var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', '/src/assets/textures/environment.dds');
+            var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', '/src/assets/textures/mainEnvironment.env');
+            // var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', '/src/assets/textures/environmentExp.env');
             taskEnvTexture.onSuccess = function(task) {
-                task.texture.rotationY = Math.PI / 1.8 ;
+                // task.texture.rotationY = Math.PI / 1.8;
+                // task.texture.rotationY = -1.2;
                 scene.environmentTexture = task.texture;
                 // scene.environmentTexture.coordinatesMode = BABYLON.Texture.CUBIC_MODE;
                 scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
@@ -270,7 +272,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 // task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].rotate(BABYLON.Axis.Z, -0.4, BABYLON.Mesh.WORLD);
                 task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.04,0.04,0.04);
-                task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.75;
+                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.75;
                 task.loadedMeshes[0].receiveShadows = true;
                 // task.loadedMeshes[0].position = new BABYLON.Vector3(0,10,30);
                 symbols.push(task.loadedMeshes[0]);
@@ -279,14 +281,14 @@ window.addEventListener('DOMContentLoaded', function(){
             meshTaskCherry.onSuccess = function (task) {
                 // task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.04,0.04,0.04);
-                task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
+                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
                 symbols.push(task.loadedMeshes[0]);
             };
             var meshTaskGrapes = assetsManager.addMeshTask('grapes', '', baseURL + 'assets/models/', 'grapes.glb');
             meshTaskGrapes.onSuccess = function (task) {
                 // task.loadedMeshes[0].setEnabled(false);
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.roughness = 1.5;
-                task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
+                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
                 task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.04,0.04,0.04);
                 symbols.push(task.loadedMeshes[0]);
             };
@@ -299,8 +301,9 @@ window.addEventListener('DOMContentLoaded', function(){
             var meshTaskOrange = assetsManager.addMeshTask('orange', '', baseURL + 'assets/models/', 'orange.glb');
             meshTaskOrange.onSuccess = function (task) {
                 // task.loadedMeshes[0].setEnabled(false);
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.roughness = 1.5;
-                task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
+                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.roughness = 1.75;
+                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.metallic = 0;
+                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
                 task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.04,0.04,0.04);
                 symbols.push(task.loadedMeshes[0]);
             };
@@ -308,7 +311,7 @@ window.addEventListener('DOMContentLoaded', function(){
             meshTaskPlum.onSuccess = function (task) {
                 // task.loadedMeshes[0].setEnabled(false);
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.roughness = 1.5;
-                task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
+                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
                 task.loadedMeshes[0].rotate(BABYLON.Axis.Z, -0.6, BABYLON.Mesh.WORLD);
                 task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.04,0.04,0.04);
                 symbols.push(task.loadedMeshes[0]);
@@ -317,7 +320,7 @@ window.addEventListener('DOMContentLoaded', function(){
             meshTaskSeven.onSuccess = function (task) {
                 // task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.025,0.025,0.025);
-                task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
+                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
                 symbols.push(task.loadedMeshes[0]);
             };
             var meshTaskWatermelon = assetsManager.addMeshTask('watermelon', '', baseURL + 'assets/models/', 'watermelon.glb');
@@ -326,7 +329,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 task.loadedMeshes[0].rotate(BABYLON.Axis.Z, 0.2, BABYLON.Mesh.WORLD);
                 task.loadedMeshes[0].rotate(BABYLON.Axis.Y, 0.6, BABYLON.Mesh.WORLD);
                 task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.0375,0.0375,0.0375);
-                task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
+                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
                 symbols.push(task.loadedMeshes[0]);
             };
 
@@ -337,8 +340,8 @@ window.addEventListener('DOMContentLoaded', function(){
             materialCilynder.albedoColor = new BABYLON.Color3(0.0,0.0,0.0);
             materialCilynder.metallic = 1;
             materialCilynder.roughness = 0.5;
-            // materialCilynder.cameraExposure = 1.2;
-            // materialCilynder.cameraContrast = 1.9;
+            // materialCilynder.cameraExposure = 1.1;
+            materialCilynder.cameraContrast = 1.2;
             cylinder.material = materialCilynder;
             // cylinder.material.unlit = true;
 
@@ -364,10 +367,19 @@ window.addEventListener('DOMContentLoaded', function(){
                 // task.loadedMeshes[0].rotate(BABYLON.Axis.Y, Math.PI, BABYLON.Mesh.WORLD);
                 // task.loadedMeshes[0].position.y = 10;
                 // task.loadedMeshes[0].position.z = 12;
+                // for (var i = 0; i <  task.loadedMeshes[0]._children[0]._children.length; i++) {
+                    // scene.materials[i].enableSpecularAntiAliasing = !scene.materials[i].enableSpecularAntiAliasing;
+                    // task.loadedMeshes[0]._children[0]._children[22]._children[22]._children[16]._children[0].material.unlit = true;
+                    // console.log(task.loadedMeshes[0]._children[0]._children[22]._children[22]._children[16]._children[0])
+                    // scene.materials[i].metallic = 1;
+                // }
                 task.loadedMeshes[0].position.y = 8.5;
                 task.loadedMeshes[0].position.z = 16.5;
                 // task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.105,0.105,0.105);
                 task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.0304,0.0304,-0.0304);
+                task.loadedMeshes[0]._children[0]._children[2]._children[0].material.unlit = true;
+                // task.loadedMeshes[0]._children[0]._children[1]._children[0].material.unlit = true;
+                // console.log(task.loadedMeshes[0]._children[0]._children[3]._children[0])
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.isEnabled = true;
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.intensity = 1; // 0-1 defaults to 1
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.roughness = 0; // 0-1 defaults to 0
@@ -400,10 +412,14 @@ window.addEventListener('DOMContentLoaded', function(){
                     reels.push(reel);
                 }
                 // for (var i = 0; i < scene.meshes.length; i++) {
-                    // shadowGenerator.addShadowCaster(scene.meshes[i]);
-                    // shadowGenerator.getShadowMap().renderList.push(scene.meshes[i]);
-                    // scene.meshes[i].receiveShadows = true;
+                //     shadowGenerator.addShadowCaster(scene.meshes[i]);
+                //     // shadowGenerator.getShadowMap().renderList.push(scene.meshes[i]);
+                //     scene.meshes[i].receiveShadows = true;
                 // }
+                for (var i = 0; i < scene.materials.length; i++) {
+                    scene.materials[i].enableSpecularAntiAliasing = true;
+                }
+                // shadowGenerator.getShadowMap().refreshRate = BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
             });
 
             scene.registerBeforeRender(function () {
@@ -423,6 +439,8 @@ window.addEventListener('DOMContentLoaded', function(){
                     }
                 }
 
+
+
 // console.timeEnd();
                 // objGrowth.update(deltaTime);
                 // if (objGrowth.ended) {
@@ -431,6 +449,20 @@ window.addEventListener('DOMContentLoaded', function(){
             });
 
             scene.actionManager = new BABYLON.ActionManager(scene);
+            scene.actionManager.registerAction(
+                new BABYLON.ExecuteCodeAction(
+                    {
+                        trigger: BABYLON.ActionManager.OnKeyDownTrigger,
+                        parameter: 'q'
+                    },
+                    function (evt) {
+                        for (var i = 0; i < scene.materials.length; i++) {
+                            scene.materials[i].enableSpecularAntiAliasing = !scene.materials[i].enableSpecularAntiAliasing;
+                        }
+                        console.log("enableSpecularAntiAliasing", scene.materials[0].enableSpecularAntiAliasing)
+                    }
+                )
+            );
             scene.actionManager.registerAction(
                 new BABYLON.ExecuteCodeAction(
                     {
