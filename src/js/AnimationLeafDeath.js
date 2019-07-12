@@ -1,10 +1,10 @@
-import {} from 'babylonjs';
+import {Animation} from '@babylonjs/core';
 
 export default function AnimationLeafDeath(target, duration, scene)
 {
     var object = this;
 
-    var animationLeafDeath = new BABYLON.Animation("animationLeafDeath", "albedoColor", 1.0, BABYLON.Animation.ANIMATIONTYPE_COLOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+    var animationLeafDeath = new Animation("animationLeafDeath", "albedoColor", 1.0, Animation.ANIMATIONTYPE_COLOR3, Animation.ANIMATIONLOOPMODE_CYCLE);
 
     // the object destination position
     var nextPos = target;

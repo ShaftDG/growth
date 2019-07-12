@@ -1,4 +1,15 @@
-import { Curve3, Path3D, Scalar } from 'babylonjs';
+import {
+    Curve3,
+    Path3D,
+    Scalar,
+    MorphTargetManager,
+    MorphTarget,
+    Color3,
+    AnimationGroup,
+    Matrix,
+    Vector3,
+
+} from '@babylonjs/core';
 
 export default class GrowthPath3D {
     constructor(
@@ -46,20 +57,20 @@ export default class GrowthPath3D {
             let sphere = leaf.clone();
             // let sphere = leaf.createInstance("i" + j);
             // console.log(sphere)
-            var manager = new BABYLON.MorphTargetManager();
+            var manager = new MorphTargetManager();
             sphere._children[0].morphTargetManager = manager;
 
-            let target = new BABYLON.MorphTarget('_' + (this.sprouts.length - 1), 1);
+            let target = new MorphTarget('_' + (this.sprouts.length - 1), 1);
             target.setPositions(...leaf._children[0].morphTargetManager._targets[0]._positions);
             target.setNormals(...leaf._children[0].morphTargetManager._targets[0]._normals);
             target.setTangents(...leaf._children[0].morphTargetManager._targets[0]._tangents);
             manager.addTarget(target);
 
             sphere._children[0].material = leaf._children[0].material.clone();
-            sphere._children[0].material.albedoColor = new BABYLON.Color3(BABYLON.Scalar.RandomRange(0.75, 1.0), BABYLON.Scalar.RandomRange(0.5, 1.25), BABYLON.Scalar.RandomRange(0.25, 0.5))
-            sphere._children[0].material.albedoColor = sphere._children[0].material.albedoColor.scale(BABYLON.Scalar.RandomRange(0.5, 2));
+            sphere._children[0].material.albedoColor = new Color3(Scalar.RandomRange(0.75, 1.0), Scalar.RandomRange(0.5, 1.25), Scalar.RandomRange(0.25, 0.5))
+            sphere._children[0].material.albedoColor = sphere._children[0].material.albedoColor.scale(Scalar.RandomRange(0.5, 2));
 
-            sphere.animationGroup = new BABYLON.AnimationGroup('animationGroupLeaves_' + (this.sprouts.length - 1));
+            sphere.animationGroup = new AnimationGroup('animationGroupLeaves_' + (this.sprouts.length - 1));
             let animation = this.scene.animationGroups[0].targetedAnimations[0].animation.clone();
             let targetAnimation = sphere._children[0].morphTargetManager.getTarget(0);
             animation.name += '_' + (this.sprouts.length - 1);
@@ -74,6 +85,10 @@ export default class GrowthPath3D {
         return this.curve
     }
 
+    setPointsInner (pointsInner) {
+        this.pointsInner = pointsInner;
+    }
+
     resetGrowth() {
         let vv = [];
         for (let k = 1; k <  this.pointsInner.length; k++) {
@@ -82,14 +97,14 @@ export default class GrowthPath3D {
             var tgtsDirection = pathDirection.getTangents();
             var binormsDirection = pathDirection.getBinormals();
 
-            var matrix1 = BABYLON.Matrix.RotationAxis(tgtsDirection[0], Math.random() * 100);
-            var v1 = BABYLON.Vector3.TransformCoordinates(tgtsDirection[0].scale(l * 0.075).add(binormsDirection[0].scale(l * Scalar.RandomRange(0.06, 0.1))), matrix1).add(this.pointsInner[k-1]);
+            var matrix1 = Matrix.RotationAxis(tgtsDirection[0], Math.random() * 100);
+            var v1 = Vector3.TransformCoordinates(tgtsDirection[0].scale(l * 0.075).add(binormsDirection[0].scale(l * Scalar.RandomRange(0.06, 0.1))), matrix1).add(this.pointsInner[k-1]);
             vv.push(v1);
             let num = this.numPointsperInterval;
             let f = (1 / (num)).toFixed(2);
             for (let i = 1; i < num; i++) {
-                var matrix = BABYLON.Matrix.RotationAxis(tgtsDirection[0], Math.random() * 100);
-                var v = BABYLON.Vector3.TransformCoordinates(tgtsDirection[0]
+                var matrix = Matrix.RotationAxis(tgtsDirection[0], Math.random() * 100);
+                var v = Vector3.TransformCoordinates(tgtsDirection[0]
                     .scale(l * i * f)
                     .add(binormsDirection[0]
                         .scale(l * Scalar.RandomRange(0.025, 0.035))), matrix)
@@ -97,8 +112,8 @@ export default class GrowthPath3D {
                 vv.push(v)
             }
 
-            var matrix8 = BABYLON.Matrix.RotationAxis(tgtsDirection[0], Math.random() * 100);
-            var v8 = BABYLON.Vector3.TransformCoordinates(tgtsDirection[0].scale(l * 0.95).add(binormsDirection[0].scale(l * Scalar.RandomRange(0.1, 0.14))), matrix8).add(this.pointsInner[k-1]);
+            var matrix8 = Matrix.RotationAxis(tgtsDirection[0], Math.random() * 100);
+            var v8 = Vector3.TransformCoordinates(tgtsDirection[0].scale(l * 0.95).add(binormsDirection[0].scale(l * Scalar.RandomRange(0.1, 0.14))), matrix8).add(this.pointsInner[k-1]);
             vv.push(v8);
         }
         // let vcTgt0 = BABYLON.Mesh.CreateLines("tgt", [this.beginPoint, this.endPoint], this.scene);

@@ -1,5 +1,12 @@
 import GrowthPath3D from "./GrowthPath3D";
-import {} from 'babylonjs';
+import {
+    Mesh,
+    Scalar,
+    Color3,
+    Vector3,
+    Axis,
+
+} from '@babylonjs/core';
 import AnimationDiameterStem from "./AnimationDiameterStem";
 import AnimationLeafDeath from "./AnimationLeafDeath";
 export default class Growth {
@@ -23,6 +30,7 @@ export default class Growth {
         scene
     ) {
 
+        this.points = points
         this.offSetSprouts = offSetSprouts || 20;
         this.scene = scene;
         this.numTubes = numTubes || 1;
@@ -57,7 +65,7 @@ export default class Growth {
             let objCurve = new GrowthPath3D(
                 // beginPoint.subtract(new BABYLON.Vector3(1.5, 0, 0)).add(new BABYLON.Vector3(randomX, randomY, randomZ).scale(0.75)),
                 // endPoint.add(new BABYLON.Vector3(1.5, 0, 0)).add(new BABYLON.Vector3(randomXX, randomYY, randomZZ).scale(0.75)),
-                points,
+                this.points,
                 this.numSegmentPerPoint,
                 this.numPointsperInterval,
                 this.dotIterationStep,
@@ -71,13 +79,23 @@ export default class Growth {
             this.objectsCurve.push(objCurve);
             let curve = objCurve.getPath();
 
-            var tube = BABYLON.Mesh.CreateTube('tube_' + i, curve, 0.1, this.sectionPoints, null, BABYLON.Mesh.NO_CAP, this.scene, true, BABYLON.Mesh.FRONTSIDE,);
+            var tube = Mesh.CreateTube('tube_' + i, curve, 0.1, this.sectionPoints, null, Mesh.NO_CAP, this.scene, true, Mesh.FRONTSIDE,);
             tube.setEnabled(false);
-            objCurve.diameter = BABYLON.Scalar.RandomRange(this.diameter - 0.01, this.diameter + 0.01);
+            objCurve.diameter = Scalar.RandomRange(this.diameter - 0.01, this.diameter + 0.01);
             objCurve.deltaMoveSprouts = this.deltaMoveSprouts;
             objCurve.tube = tube;
             tube.material = this.tubeMaterial;
         }
+    }
+
+    setPoints (points) {
+        this.points = points;
+
+        this.objectsCurve.map(v => {
+            v.setPointsInner(this.points);
+            v.resetGrowth();
+        });
+
     }
 
     setLeaf (leaf) {
@@ -99,10 +117,10 @@ export default class Growth {
             v.sprouts.map(g => {
                 g.setEnabled(false);
                 g.animationGroup.stop();
-                g._children[0].material.albedoColor = new BABYLON.Color3(BABYLON.Scalar.RandomRange(0.75, 1.0), BABYLON.Scalar.RandomRange(0.5, 1.25), BABYLON.Scalar.RandomRange(0.25, 0.5))
-                g._children[0].material.albedoColor = g._children[0].material.albedoColor.scale(BABYLON.Scalar.RandomRange(0.5, 2));
+                g._children[0].material.albedoColor = new Color3(Scalar.RandomRange(0.75, 1.0), Scalar.RandomRange(0.5, 1.25), Scalar.RandomRange(0.25, 0.5))
+                g._children[0].material.albedoColor = g._children[0].material.albedoColor.scale(Scalar.RandomRange(0.5, 2));
             });
-            v.diameter = BABYLON.Scalar.RandomRange(this.diameter - 0.0025, this.diameter + 0.01);
+            v.diameter = Scalar.RandomRange(this.diameter - 0.0025, this.diameter + 0.01);
             // v.animations = [];
             v.startGrowth();
         });
@@ -122,20 +140,20 @@ export default class Growth {
                         }
 
                         if (enableSprouts) {
-                            let scale = BABYLON.Scalar.RandomRange(this.scale - 0.075, this.scale + 0.075);
+                            let scale = Scalar.RandomRange(this.scale - 0.075, this.scale + 0.075);
                             v.sprouts[v.index - (this.offSetSprouts + 1)].setEnabled(true);
-                            v.sprouts[v.index - (this.offSetSprouts + 1)].scaling = new BABYLON.Vector3(scale, scale, scale);
+                            v.sprouts[v.index - (this.offSetSprouts + 1)].scaling = new Vector3(scale, scale, scale);
                             v.sprouts[v.index - (this.offSetSprouts + 1)].position = v.points[v.index - 1].clone();
                             v.sprouts[v.index - (this.offSetSprouts + 1)].lookAt(v.points[v.index-2].clone());
-                            v.sprouts[v.index - (this.offSetSprouts + 1)].rotate(BABYLON.Axis.X, BABYLON.Scalar.RandomRange(0.25, 0.5), BABYLON.Mesh.LOCAL);
-                            v.sprouts[v.index - (this.offSetSprouts + 1)].rotate(BABYLON.Axis.Y, BABYLON.Scalar.RandomRange(3, 3.75), BABYLON.Mesh.LOCAL);
-                            v.sprouts[v.index - (this.offSetSprouts + 1)].rotate(BABYLON.Axis.Z, Math.random() * 100, BABYLON.Mesh.LOCAL);
+                            v.sprouts[v.index - (this.offSetSprouts + 1)].rotate(Axis.X, Scalar.RandomRange(0.25, 0.5), Mesh.LOCAL);
+                            v.sprouts[v.index - (this.offSetSprouts + 1)].rotate(Axis.Y, Scalar.RandomRange(3, 3.75), Mesh.LOCAL);
+                            v.sprouts[v.index - (this.offSetSprouts + 1)].rotate(Axis.Z, Math.random() * 100, Mesh.LOCAL);
                             v.sprouts[v.index - (this.offSetSprouts + 1)].directionIndex = v.index - 1;
                             if (v.sprouts[v.index - (this.offSetSprouts + 1)].animationGroup.isPlaying) {
                                 v.sprouts[v.index - (this.offSetSprouts + 1)].animationGroup.stop();
                             }
                             if (!v.sprouts[v.index - (this.offSetSprouts + 1)].animationGroup.isPlaying) {
-                                v.sprouts[v.index - (this.offSetSprouts + 1)].animationGroup.start(false, BABYLON.Scalar.RandomRange(deltaTime * 50, deltaTime * 60), 0, 2);
+                                v.sprouts[v.index - (this.offSetSprouts + 1)].animationGroup.start(false, Scalar.RandomRange(deltaTime * 50, deltaTime * 60), 0, 2);
                             }
                         }
                     }
@@ -146,7 +164,7 @@ export default class Growth {
                         obj.dispose();
                     }
 
-                    var tube = BABYLON.Mesh.CreateTube('tube_' + i, curve, v.diameter, this.sectionPoints, function (i, distance) {
+                    var tube = Mesh.CreateTube('tube_' + i, curve, v.diameter, this.sectionPoints, function (i, distance) {
                         if (distance <= v.totalLength / 10) {
                             return distance * v.diameter;
                         } else if (distance > v.totalLength / 10 && distance <= v.totalLength / 1.1) {
@@ -154,7 +172,7 @@ export default class Growth {
                         } else {
                             return (v.totalLength - distance) * v.diameter < 0 ? 0 : (v.totalLength - distance) * v.diameter
                         }
-                    }, BABYLON.Mesh.NO_CAP, this.scene, true, BABYLON.Mesh.FRONTSIDE,);
+                    }, Mesh.NO_CAP, this.scene, true, Mesh.FRONTSIDE,);
                     v.tube = tube;
                     tube.material = this.tubeMaterial;
                 } else if (v.reverse) {
@@ -165,7 +183,7 @@ export default class Growth {
                         obj.dispose();
                     }
 
-                    var tube = BABYLON.Mesh.CreateTube('tube_' + i, curve, v.diameter, this.sectionPoints, function (i, distance) {
+                    var tube = Mesh.CreateTube('tube_' + i, curve, v.diameter, this.sectionPoints, function (i, distance) {
                         if (distance <= (v.totalLength - v.tempLength)/ 10) {
                             return distance * v.diameter;
                         } else if (distance > (v.totalLength - v.tempLength) / 10 && distance <= (v.totalLength - v.tempLength) / 1.1) {
@@ -173,7 +191,7 @@ export default class Growth {
                         } else {
                             return (v.totalLength  - v.tempLength - distance) * v.diameter
                         }
-                    }, BABYLON.Mesh.NO_CAP, this.scene, true, BABYLON.Mesh.FRONTSIDE,);
+                    }, Mesh.NO_CAP, this.scene, true, Mesh.FRONTSIDE,);
                     v.tube = tube;
                     tube.material = this.tubeMaterial;
 
@@ -182,9 +200,9 @@ export default class Growth {
                             v.sprouts[v.index - (this.offSetSprouts + 1)].animationGroup.stop();
                         }
                         if (!v.sprouts[v.index - (this.offSetSprouts + 1)].animationGroup.isPlaying) {
-                            v.sprouts[v.index - (this.offSetSprouts + 1)].animationGroup.start(false, -BABYLON.Scalar.RandomRange(deltaTime * 25, deltaTime * 35), 2, 0);
-                            v.sprouts[v.index - (this.offSetSprouts + 1)]._children[0].material.albedoColor = new BABYLON.Color3(BABYLON.Scalar.RandomRange(5.5, 7.5), BABYLON.Scalar.RandomRange(0.75, 1), BABYLON.Scalar.RandomRange(0.35, 0.5));
-                            this.tubeMaterial.albedoColor = new BABYLON.Color3(BABYLON.Scalar.RandomRange(1.5, 2.5), BABYLON.Scalar.RandomRange(0.75, 0.8), BABYLON.Scalar.RandomRange(0.35, 0.5));
+                            v.sprouts[v.index - (this.offSetSprouts + 1)].animationGroup.start(false, -Scalar.RandomRange(deltaTime * 25, deltaTime * 35), 2, 0);
+                            v.sprouts[v.index - (this.offSetSprouts + 1)]._children[0].material.albedoColor = new Color3(Scalar.RandomRange(5.5, 7.5), Scalar.RandomRange(0.75, 1), Scalar.RandomRange(0.35, 0.5));
+                            this.tubeMaterial.albedoColor = new Color3(Scalar.RandomRange(1.5, 2.5), Scalar.RandomRange(0.75, 0.8), Scalar.RandomRange(0.35, 0.5));
                         }
                     }
                     if (v.index > this.offSetSprouts && v.sprouts[v.index + 1 - (this.offSetSprouts + 1)]) {
@@ -192,8 +210,8 @@ export default class Growth {
                             v.sprouts[v.index + 1 - (this.offSetSprouts + 1)].animationGroup.stop();
                         }
                         if (!v.sprouts[v.index + 1 - (this.offSetSprouts + 1)].animationGroup.isPlaying) {
-                            v.sprouts[v.index + 1 - (this.offSetSprouts + 1)].animationGroup.start(false, -BABYLON.Scalar.RandomRange(deltaTime * 25, deltaTime * 35), 2, 0);
-                            v.sprouts[v.index + 1 - (this.offSetSprouts + 1)]._children[0].material.albedoColor = new BABYLON.Color3(BABYLON.Scalar.RandomRange(5.5, 7.5), BABYLON.Scalar.RandomRange(0.75, 1), BABYLON.Scalar.RandomRange(0.35, 0.5));
+                            v.sprouts[v.index + 1 - (this.offSetSprouts + 1)].animationGroup.start(false, -Scalar.RandomRange(deltaTime * 25, deltaTime * 35), 2, 0);
+                            v.sprouts[v.index + 1 - (this.offSetSprouts + 1)]._children[0].material.albedoColor = new Color3(Scalar.RandomRange(5.5, 7.5), Scalar.RandomRange(0.75, 1), Scalar.RandomRange(0.35, 0.5));
                         }
                     }
                 } else if (v.plantDeath) {
@@ -204,16 +222,16 @@ export default class Growth {
                                     g.animationGroup.stop();
                                 }
                                 if (!g.animationGroup.isPlaying) {
-                                    g.animationGroup.start(false, -BABYLON.Scalar.RandomRange(deltaTime * 12.5, deltaTime * 17.5), 2, 0);
+                                    g.animationGroup.start(false, -Scalar.RandomRange(deltaTime * 12.5, deltaTime * 17.5), 2, 0);
                                     AnimationLeafDeath.call(g._children[0].material,
-                                        new BABYLON.Color3(BABYLON.Scalar.RandomRange(5.5, 7.5), BABYLON.Scalar.RandomRange(0.25, 0.5), BABYLON.Scalar.RandomRange(0.125, 0.5)),
+                                        new Color3(Scalar.RandomRange(5.5, 7.5), Scalar.RandomRange(0.25, 0.5), Scalar.RandomRange(0.125, 0.5)),
                                         90,
                                         v.scene
                                     );
                                 }
                             }
                         });
-                        this.tubeMaterial.albedoColor = new BABYLON.Color3(BABYLON.Scalar.RandomRange(1.5, 2.5), BABYLON.Scalar.RandomRange(0.75, 0.8), BABYLON.Scalar.RandomRange(0.35, 0.5));
+                        this.tubeMaterial.albedoColor = new Color3(Scalar.RandomRange(1.5, 2.5), Scalar.RandomRange(0.75, 0.8), Scalar.RandomRange(0.35, 0.5));
 
                         let animationDiameterStem = AnimationDiameterStem.call(v, 90);
                         animationDiameterStem.onAnimationEnd = function () {
@@ -230,7 +248,7 @@ export default class Growth {
                             obj.dispose();
                         }
 
-                        var tube = BABYLON.Mesh.CreateTube('tube_' + i, curve, v.diameter, this.sectionPoints, function (i, distance) {
+                        var tube = Mesh.CreateTube('tube_' + i, curve, v.diameter, this.sectionPoints, function (i, distance) {
                             if (distance <= v.totalLength / 10) {
                                 return distance * v.diameter;
                             } else if (distance > v.totalLength / 10 && distance <= v.totalLength / 1.1) {
@@ -238,7 +256,7 @@ export default class Growth {
                             } else {
                                 return (v.totalLength - distance) * v.diameter
                             }
-                        }, BABYLON.Mesh.NO_CAP, this.scene, true, BABYLON.Mesh.FRONTSIDE,);
+                        }, Mesh.NO_CAP, this.scene, true, Mesh.FRONTSIDE,);
                         v.tube = tube;
                         tube.material = this.tubeMaterial;
                     }

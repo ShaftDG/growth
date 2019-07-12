@@ -1,4 +1,5 @@
-export default BABYLON.Scene.prototype.showFPS = function showFPS(args){
+import { Scene } from "@babylonjs/core/scene";
+export default Scene.prototype.showFPS = function showFPS(args){
     args = args || {};
     var ioSpeed = args.ioSpeed || 30;
     var location = args.location || 'tl';

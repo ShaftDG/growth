@@ -1,10 +1,10 @@
-import {} from 'babylonjs';
+import {Animation,CubicEase,EasingFunction} from '@babylonjs/core';
 
 export default function AnimationEmissiveColor(target, duration, loop, scene)
 {
     var object = this;
 
-    var animationEmissiveColor = new BABYLON.Animation("animationEmissiveColor", "emissiveColor", 1.0, BABYLON.Animation.ANIMATIONTYPE_COLOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+    var animationEmissiveColor = new Animation("animationEmissiveColor", "emissiveColor", 1.0, Animation.ANIMATIONTYPE_COLOR3, Animation.ANIMATIONLOOPMODE_CYCLE);
 
     // the object destination position
     var nextPos = target;
@@ -32,10 +32,10 @@ export default function AnimationEmissiveColor(target, duration, loop, scene)
     //11.	SineEase()
     // And if you want a total control, you can use a Bezier Curve animationForward
     //12.   BezierCurveEase(x1, y1, x2, y2)
-    var easingFunction = new BABYLON.CubicEase();
+    var easingFunction = new CubicEase();
 
     // For each easing function, you can choose beetween EASEIN (default), EASEOUT, EASEINOUT
-    easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT);
+    easingFunction.setEasingMode(EasingFunction.EASINGMODE_EASEOUT);
 
     // Adding easing function to my animationForward
     animationEmissiveColor.setEasingFunction(easingFunction);

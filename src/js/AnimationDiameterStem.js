@@ -1,10 +1,12 @@
-import {} from 'babylonjs';
+import {
+    Animation,
+} from '@babylonjs/core';
 
 export default function AnimationDiameterStem(duration) {
     var object = this;
 
     //Create a Vector3 animationForward at 30 FPS
-    var animationDiameterStem = new BABYLON.Animation("animationDiameterStem", "diameter", 1, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+    var animationDiameterStem = new Animation("animationDiameterStem", "diameter", 1, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
 
     // Animation keys
     var keysDiameter = [];
