@@ -28,7 +28,7 @@ export default class CreateReel {
             for (var i = 0; i < 5; i++) {
                 let CoTSector = new TransformNode("CoTSector");
                 // for (let j = 0; j < symbols.length; j++) {
-                    let obj = symbols[Math.round(Scalar.RandomRange(0, 6))].clone();
+                    let obj = symbols[/*Math.round(Scalar.RandomRange(0, 6))*/6].clone();
                     let z = radius * Math.cos(this.angles[i]);
                     let y = radius * Math.sin(this.angles[i]);
                     obj.rotate(Axis.X, this.angles[i], Mesh.WORLD);
@@ -208,7 +208,7 @@ export default class CreateReel {
             } else {
                 this.indexSymbol = 0;
             }
-            if (this.indexSection < 20) {
+            if (this.indexSection < this.numSymbolPerReel) {
                 this.indexSection++;
             } else {
                 this.indexSection = 1;

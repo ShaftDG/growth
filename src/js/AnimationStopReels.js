@@ -46,7 +46,7 @@ export default function AnimationStopReels(target, duration, callbackUp, callbac
 // Attach your event to your animation
     animationStopReels.addEvent(eventAnimationUp);
 
-    var eventAnimationDown = new AnimationEvent(30, function() {
+    var eventAnimationDown = new AnimationEvent(20, function() {
         callbackDown();
     });
 // Attach your event to your animation
