@@ -27,13 +27,15 @@ export default class CreateReel {
         this.endIncrementIndexLineWin = false;
             for (var i = 0; i < 5; i++) {
                 let CoTSector = new TransformNode("CoTSector");
+                let CoTSector_child = new TransformNode("CoTSector_child");
+                CoTSector_child.parent = CoTSector;
                 // for (let j = 0; j < symbols.length; j++) {
-                    let obj = symbols[/*Math.round(Scalar.RandomRange(0, 6))*/6].clone();
+                    let obj = symbols[/*Math.round(Scalar.RandomRange(0, 6))*/7].clone();
                     let z = radius * Math.cos(this.angles[i]);
                     let y = radius * Math.sin(this.angles[i]);
                     obj.rotate(Axis.X, this.angles[i], Mesh.WORLD);
                     obj.position = new Vector3(positionReel.x, y, z);
-                    obj.parent = CoTSector;
+                    obj.parent = CoTSector_child;
                     // obj.setEnabled(false);
                 // }
                 // let randomIndexSymbol = Math.round(BABYLON.Scalar.RandomRange(0, 6));
@@ -56,15 +58,15 @@ export default class CreateReel {
 
     replaceSymbol(object, index, indexSymbol) {
 
-        object._children[0].animation = [];
-        object._children[0].dispose();
+        object._children[0]._children[0].animation = [];
+        object._children[0]._children[0].dispose();
 
         let obj = this.symbols[indexSymbol].clone();
         let z = this.radius * Math.cos(this.angles[index]);
         let y = this.radius * Math.sin(this.angles[index]);
         obj.rotate(Axis.X, this.angles[index], Mesh.WORLD);
         obj.position = new Vector3(this.positionReel.x, y, z);
-        obj.parent = object;
+        obj.parent = object._children[0];
     }
     setVisibleSymbol(object, indexSymbol) {
         object._children.map(g => {
@@ -158,10 +160,11 @@ export default class CreateReel {
         let invertParentWorldMatrix = this.meshes[index].getWorldMatrix().clone();
         invertParentWorldMatrix.invert();
         let absolutePosition = this.meshes[index]._children[0].getAbsolutePosition();
-        let worldPosition = new Vector3(absolutePosition.x, absolutePosition.y, absolutePosition.z - 1);
+        let worldPosition = new Vector3(absolutePosition.x, absolutePosition.y, absolutePosition.z - 2);
         let position = Vector3.TransformCoordinates(worldPosition, invertParentWorldMatrix);
+        console.log( this.meshes[index]._children[0]._children[0].id)
         AnimationScalePulse.call(this.meshes[index]._children[0],
-            new Vector3(-7,-7,-7),
+            new Vector3(-0.1,-0.1,-0.1),
             position,
             60,
             stopedCallback,

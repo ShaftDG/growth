@@ -33,6 +33,7 @@ import {
     Mesh,
     ActionManager,
     ExecuteCodeAction,
+    Camera,
     // DirectionalLight,
     // HemisphericLight,
     // CubeTexture
@@ -70,8 +71,9 @@ window.addEventListener('DOMContentLoaded', function(){
             var assetsManager = new AssetsManager(scene);
             // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
             // var camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 20, -50), scene);
-            var camera = new ArcRotateCamera('Camera', 0, 0, 0.5, new Vector3(0, 8, 41), scene);
-            // camera.fov = 0.6;
+            var camera = new ArcRotateCamera('Camera', 0, 0, 0.5, new Vector3(0, 8, 68), scene);
+            camera.fovMode = Camera.FOVMODE_HORIZONTAL_FIXED;
+            // camera.fov = 0.5;
             // camera.setPosition(new BABYLON.Vector3(0, 20, -20));
             // camera.lowerRadiusLimit = camera.radius;
             // camera.upperRadiusLimit = 5;
@@ -305,92 +307,64 @@ window.addEventListener('DOMContentLoaded', function(){
 
             let symbols = [];
 // gltf-pipeline -i grapes.glb -o tmp/grapesDraco.glb -d
-            var meshTaskBell = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'bell_Draco.glb');
+            var meshTaskBell = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'bell_final_Draco.glb');
             meshTaskBell.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
-
-                task.loadedMeshes[0].rotate(Axis.X, 0.176, Mesh.WORLD);
-                task.loadedMeshes[0].rotate(Axis.Y, -0.201, Mesh.WORLD);
-                task.loadedMeshes[0].rotate(Axis.Z, -0.739, Mesh.WORLD);
-
-                // task.loadedMeshes[0]._children[0].
-                task.loadedMeshes[0].scaling = new Vector3(0.04,0.04,0.04);
-                // task.loadedMeshes[0].scaling = new Vector3(4,4,4);
-                // task.loadedMeshes[0]._children[0].material.environmentIntensity = 0.75;
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.emissiveColor = new BABYLON.Color3(2,2,2);
-                // task.loadedMeshes[0]._children[0].material.useParallax = true;
-                // task.loadedMeshes[0]._children[0].material.useParallaxOcclusion = true;
-                // task.loadedMeshes[0]._children[0].material.parallaxScaleBias = 0.01;
-                task.loadedMeshes[0].receiveShadows = true;
-                // task.loadedMeshes[0].position = new BABYLON.Vector3(0,10,30);
+                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols.push(task.loadedMeshes[0]);
             };
-            var meshTaskCherry = assetsManager.addMeshTask('cherry', '', baseURL + 'assets/models/', 'cherry.glb');
-            meshTaskCherry.onSuccess = function (task) {
-                task.loadedMeshes[0].setEnabled(false);
-                // task.loadedMeshes[0].rotate(Axis.Z, -0.761, Mesh.LOCAL);
-                // task.loadedMeshes[0].rotate(Axis.X, 0.175, Mesh.LOCAL);
-                task.loadedMeshes[0].scaling = new Vector3(0.04,0.04,0.04);
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
-                symbols.push(task.loadedMeshes[0]);
-            };
-            var meshTaskGrapes = assetsManager.addMeshTask('grapes', '', baseURL + 'assets/models/', 'grapes.glb');
-            meshTaskGrapes.onSuccess = function (task) {
-                task.loadedMeshes[0].setEnabled(false);
-                // task.loadedMeshes[0].rotate(Axis.Z, -0.761, Mesh.LOCAL);
-                // task.loadedMeshes[0].rotate(Axis.X, 0.175, Mesh.LOCAL);
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.roughness = 1.5;
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
-                task.loadedMeshes[0].scaling = new Vector3(0.04,0.04,0.04);
-                symbols.push(task.loadedMeshes[0]);
-            };
-            var meshTaskLemon = assetsManager.addMeshTask('lemon', '', baseURL + 'assets/models/', 'star.glb');
+            var meshTaskLemon = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'lemon_final_Draco.glb');
             meshTaskLemon.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
-                task.loadedMeshes[0].scaling = new Vector3(0.0225,0.0225,0.0225);
+                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols.push(task.loadedMeshes[0]);
             };
-            var meshTaskOrange = assetsManager.addMeshTask('orange', '', baseURL + 'assets/models/', 'orange.glb');
+            var meshTaskWild = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'wild_final_Draco.glb');
+            meshTaskWild.onSuccess = function (task) {
+                task.loadedMeshes[0].setEnabled(false);
+                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
+                symbols.push(task.loadedMeshes[0]);
+            };
+            var meshTaskCherry = assetsManager.addMeshTask('cherry', '', baseURL + 'assets/models/tmp/', 'cherry_final_Draco.glb');
+            meshTaskCherry.onSuccess = function (task) {
+                task.loadedMeshes[0].setEnabled(false);
+                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
+                symbols.push(task.loadedMeshes[0]);
+            };
+            var meshTaskGrapes = assetsManager.addMeshTask('grapes', '', baseURL + 'assets/models/tmp/', 'grape_final_Draco.glb');
+            meshTaskGrapes.onSuccess = function (task) {
+                task.loadedMeshes[0].setEnabled(false);
+                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
+                symbols.push(task.loadedMeshes[0]);
+            };
+            var meshTaskLemon = assetsManager.addMeshTask('lemon', '', baseURL + 'assets/models/tmp/', 'star_final_Draco.glb');
+            meshTaskLemon.onSuccess = function (task) {
+                task.loadedMeshes[0].setEnabled(false);
+                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
+                symbols.push(task.loadedMeshes[0]);
+            };
+            var meshTaskOrange = assetsManager.addMeshTask('orange', '', baseURL + 'assets/models/tmp/', 'orange_final_Draco.glb');
             meshTaskOrange.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
-                // task.loadedMeshes[0].rotate(Axis.Z, -0.761, Mesh.LOCAL);
-                // task.loadedMeshes[0].rotate(Axis.X, 0.175, Mesh.LOCAL);
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.roughness = 1.75;
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.metallic = 0;
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].rotate(Axis.X, -1.6, Mesh.LOCAL);
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].rotate(Axis.Y, 2.6, Mesh.LOCAL);
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].rotate(Axis.Z, -0.6, Mesh.LOCAL);
-                task.loadedMeshes[0].scaling = new Vector3(0.04,0.04,0.04);
+                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols.push(task.loadedMeshes[0]);
             };
-            var meshTaskPlum = assetsManager.addMeshTask('plum', '', baseURL + 'assets/models/', 'plum.glb');
+            var meshTaskPlum = assetsManager.addMeshTask('plum', '', baseURL + 'assets/models/tmp/', 'plum_final_Draco.glb');
             meshTaskPlum.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
-                // task.loadedMeshes[0].rotate(Axis.Z, -0.761, Mesh.LOCAL);
-                // task.loadedMeshes[0].rotate(Axis.X, 0.175, Mesh.LOCAL);
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.roughness = 1.5;
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].rotate(Axis.Z, -0.6, Mesh.WORLD);
-                task.loadedMeshes[0].scaling = new Vector3(0.04,0.04,0.04);
+                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols.push(task.loadedMeshes[0]);
             };
-            var meshTaskSeven = assetsManager.addMeshTask('seven', '', baseURL + 'assets/models/', 'seven.glb');
+            var meshTaskSeven = assetsManager.addMeshTask('seven', '', baseURL + 'assets/models/tmp/', 'seven_final_Draco.glb');
             meshTaskSeven.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
-                task.loadedMeshes[0].scaling = new Vector3(0.035,0.035,0.035);
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
+                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols.push(task.loadedMeshes[0]);
             };
-            var meshTaskWatermelon = assetsManager.addMeshTask('watermelon', '', baseURL + 'assets/models/', 'watermelon.glb');
+            var meshTaskWatermelon = assetsManager.addMeshTask('watermelon', '', baseURL + 'assets/models/tmp/', 'watermelon_final_Draco.glb');
             meshTaskWatermelon.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
-                // task.loadedMeshes[0].rotate(Axis.Z, 0.2, Mesh.WORLD);
-                // task.loadedMeshes[0].rotate(Axis.Y, 0.6, Mesh.WORLD);
-                // task.loadedMeshes[0].rotate(Axis.Z, -0.761, Mesh.LOCAL);
-                // task.loadedMeshes[0].rotate(Axis.X, 0.175, Mesh.LOCAL);
-                task.loadedMeshes[0].scaling = new Vector3(0.0375,0.0375,0.0375);
-                // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.environmentIntensity = 0.25;
+                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols.push(task.loadedMeshes[0]);
             };
 
@@ -438,7 +412,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 // task.loadedMeshes[0].position.x = 0.1;
                 line3 = task.loadedMeshes[0]._children[0]._children[7]._children[0];
                 line3.material.albedoTexture = textureThreeOff.texture;
-                line3.material.albedoColor = new Color3(1, 1, 0.4);
+                line3.material.albedoColor = new Color3(0.8, 0.8, 0);
                 line3.material.emissiveTexture = textureThreeEm.texture;
                 line3.material.metallic = 0;
                 console.log(task.loadedMeshes[0]._children[0])
@@ -448,7 +422,12 @@ window.addEventListener('DOMContentLoaded', function(){
                 task.loadedMeshes[0].scaling = new Vector3(24.5,24.5,-24.5);
                 task.loadedMeshes[0]._children[0]._children[22]._children[0].material.unlit = true;
                 task.loadedMeshes[0]._children[0]._children[33]._children[0].material.unlit = true;
-                task.loadedMeshes[0]._children[0]._children[38]._children[0].material.roughness = 0.25;
+                // task.loadedMeshes[0]._children[0]._children[20]._children[0].material.roughness = 0.1;
+                // task.loadedMeshes[0]._children[0]._children[20]._children[0].material.metallic = 1.1;
+                // task.loadedMeshes[0]._children[0]._children[38]._children[0].material.roughness = 0.25;
+
+                // task.loadedMeshes[0]._children[0]._children[30]._children[0].material.roughness = 0.1;
+                // task.loadedMeshes[0]._children[0]._children[36]._children[0].material.roughness = 0.1;
                 // task.loadedMeshes[0]._children[0]._children[1]._children[0].material.unlit = true;
                 // console.log(task.loadedMeshes[0]._children[0]._children[3]._children[0])
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.isEnabled = true;
@@ -456,7 +435,6 @@ window.addEventListener('DOMContentLoaded', function(){
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.roughness = 0; // 0-1 defaults to 0
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material._environmentIntensity = 0.25;
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.texture = texture; // R is storing intensity and G roughness
-
 
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.isTintEnabled = true;
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.tintColor = Color3.Teal();
@@ -664,7 +642,7 @@ window.addEventListener('DOMContentLoaded', function(){
                             // planeMaterial.albedoColor = new Color3(0.75, 0.75, 0.25).scale(0.1);
                             // planeMaterial.emissiveColor = new Color3(0, 0, 0);
                             line3.material.albedoTexture = textureThreeOff.texture;
-                            line3.material.albedoColor = new Color3(1, 1, 0.4);
+                            line3.material.albedoColor = new Color3(0.8, 0.8, 0);
                             line3.material.emissiveColor = new Color3(0, 0, 0);
                             onoffEm = !onoffEm;
                         }
