@@ -139,7 +139,7 @@ export default function AnimationScalePulse(targetScale, targetPosition, duratio
 // Attach your event to your animation
 //     animationScalePulse.addEvent(eventAnimationDown);
 // console.log(object)
-    scene.beginAnimation(
+    let animScale = scene.beginAnimation(
         object._children[0],
         0,
         90,
@@ -147,7 +147,7 @@ export default function AnimationScalePulse(targetScale, targetPosition, duratio
         duration,
         // stopedCalback
     );
-   scene.beginAnimation(
+    let animPosition = scene.beginAnimation(
         object,
         0,
         90,
@@ -155,4 +155,9 @@ export default function AnimationScalePulse(targetScale, targetPosition, duratio
         duration,
         stopedCalback
     );
+
+    return  {
+        animScale: animScale,
+        animPosition: animPosition
+    }
 }

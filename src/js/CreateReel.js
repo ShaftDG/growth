@@ -4,7 +4,7 @@ import AnimationScalePulse from "./AnimationScalePulse";
 import AnimationStopReels from "./AnimationStopReels";
 
 export default class CreateReel {
-    constructor(symbols, angles, radius, section, numSymbolPerReel, positionReel, scene) {
+    constructor(symbols, angles, radius, section, numSymbolPerReel, positionReel, qwe, scene) {
         this.symbols = symbols;
         this.radius = radius;
         this.positionReel = positionReel;
@@ -25,16 +25,23 @@ export default class CreateReel {
         this.angles = angles;
         this.indexLineWin = 0;
         this.endIncrementIndexLineWin = false;
+        let yui = 0;
             for (var i = 0; i < 5; i++) {
                 let CoTSector = new TransformNode("CoTSector");
                 let CoTSector_child = new TransformNode("CoTSector_child");
                 CoTSector_child.parent = CoTSector;
                 // for (let j = 0; j < symbols.length; j++) {
-                    let obj = symbols[/*Math.round(Scalar.RandomRange(0, 6))*/7].clone();
+
+
+                    let obj = symbols[/*Math.round(Scalar.RandomRange(0, 6))*/qwe + yui < 10 && i >= 1 && i <= 3 ? qwe + yui : Math.round(Scalar.RandomRange(0, 9))].clone();
+                if (i >= 1 && i <= 3) {
+                    yui++
+                }
                     let z = radius * Math.cos(this.angles[i]);
                     let y = radius * Math.sin(this.angles[i]);
                     obj.rotate(Axis.X, this.angles[i], Mesh.WORLD);
                     obj.position = new Vector3(positionReel.x, y, z);
+                    obj.defaultScaling = new Vector3(obj.scaling.x, obj.scaling.y, obj.scaling.z);
                     obj.parent = CoTSector_child;
                     // obj.setEnabled(false);
                 // }
@@ -58,6 +65,7 @@ export default class CreateReel {
 
     replaceSymbol(object, index, indexSymbol) {
 
+        object._children[0].animations = [];
         object._children[0]._children[0].animation = [];
         object._children[0]._children[0].dispose();
 
@@ -66,6 +74,7 @@ export default class CreateReel {
         let y = this.radius * Math.sin(this.angles[index]);
         obj.rotate(Axis.X, this.angles[index], Mesh.WORLD);
         obj.position = new Vector3(this.positionReel.x, y, z);
+        obj.defaultScaling = new Vector3(obj.scaling.x, obj.scaling.y, obj.scaling.z);
         obj.parent = object._children[0];
     }
     setVisibleSymbol(object, indexSymbol) {
@@ -97,7 +106,17 @@ export default class CreateReel {
             //     g.setEnabled(false);
             // });
             // v._children[randomIndexSymbol].setEnabled(true);
+
+            if (v.animationScalePulse) {
+                v.animationScalePulse.animScale.stop();
+                v.animationScalePulse.animPosition.stop();
+            }
+            v._children[0].animations = [];
+            v._children[0]._children[0].animations = [];
+            v._children[0].position = new Vector3(0,0,0);
+            v._children[0]._children[0].scaling = v._children[0]._children[0].defaultScaling.clone();
         });
+        this.moveWinS = false;
         this.endRotate = false;
         this.stoped = false;
         this.beginStop = false;
@@ -162,8 +181,7 @@ export default class CreateReel {
         let absolutePosition = this.meshes[index]._children[0].getAbsolutePosition();
         let worldPosition = new Vector3(absolutePosition.x, absolutePosition.y, absolutePosition.z - 2);
         let position = Vector3.TransformCoordinates(worldPosition, invertParentWorldMatrix);
-        console.log( this.meshes[index]._children[0]._children[0].id)
-        AnimationScalePulse.call(this.meshes[index]._children[0],
+        this.meshes[index].animationScalePulse = AnimationScalePulse.call(this.meshes[index]._children[0],
             new Vector3(-0.1,-0.1,-0.1),
             position,
             60,

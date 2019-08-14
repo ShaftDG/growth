@@ -45,6 +45,8 @@ export default class GenerateWinCombination {
         this.boolFreeSpin = false;
         this.numFreeSpinToRound = 2;
 
+        this.gettedWinning = true;
+
         this.r = [
             [0, 0, 3, 2, 0, 2, 2, 7, 1, 5, 6, 2, 7, 5, 6, 5, 3, 1, 4, 1, 4, 6, 4, 3, 0],
             [0, 0, 0, 3, 4, 6, 4, 2, 4, 0, 2, 5, 0, 5, 0, 5, 4, 1, 0, 1, 6, 7, 0, 7, 6],
@@ -144,6 +146,7 @@ export default class GenerateWinCombination {
         for (var j = 0; j < this.maskWinLine.length; j++) {
             this.numSymbline[j] = 0;
         }
+        this.gettedWinning = true;
         console.log("Total Score", this.totalScore);
     }
 
@@ -178,6 +181,7 @@ export default class GenerateWinCombination {
     }
 
     generate () {
+        this.gettedWinning = false;
         this.numFreeSpinSymb = 0;
         this.boolPlusFreeSpin = false;
         this.isFreeSpin = false;
