@@ -51,6 +51,7 @@ import './js/showFPS';
 import CreateReel from "./js/CreateReel";
 import GenerateWinCombination from "./js/GenerateWinCombination";
 import ParticlesSquare from './js/ParticlesSquare';
+import ChangeCustomVertexParticles from './js/changeCustomVertexParticles';
 
 import Fire from './js/FireParticles';
 
@@ -90,30 +91,47 @@ window.addEventListener('DOMContentLoaded', function(){
             // camera.attachControl(canvas, false);
             scene.showFPS();
 
-            let fire = new Fire({
-                engine: engine,
-                scene: scene,
-                sizeParticle: 8,
-                countParticles: 12
-            });
+            let fires = [];
+            new ChangeCustomVertexParticles();
+            for (let i = 0; i < 3; i++) {
+                let fire = new Fire({
+                    engine: engine,
+                    scene: scene,
+                    sizeParticle: 8,
+                    countParticles: 12
+                });
+                fires.push(fire);
+            }
 
             var textureNoiseCombustion = assetsManager.addTextureTask('textureNoiseCombustion', baseURL + 'assets/textures/fire/originFire.png', null, false);
             textureNoiseCombustion.onSuccess = function(task) {
-                fire.setTextureNoiseCombustion(task.texture);
+                fires.map(v => {
+                    v.setTextureNoiseCombustion(task.texture);
+                })
+                // fire.setTextureNoiseCombustion(task.texture);
             };
 
-            var textureNoiseCombustion1 = assetsManager.addTextureTask('textureNoiseCombustion1', baseURL + 'assets/textures/fire/tonguesOfFire.png', null, false);
+            var textureNoiseCombustion1 = assetsManager.addTextureTask('textureNoiseCombustion1', baseURL + 'assets/textures/fire/noiseTexture.png', null, false);
             textureNoiseCombustion1.onSuccess = function(task) {
-                fire.setTextureNoiseCombustion1(task.texture);
+                fires.map(v => {
+                    v.setTextureNoiseCombustion1(task.texture);
+                })
+                // fire.setTextureNoiseCombustion1(task.texture);
             };
 
             var textureFire = assetsManager.addTextureTask('textureFire', baseURL + 'assets/textures/fire/flare2.png', null, false);
             textureFire.onSuccess = function(task) {
-                fire.setTextureFlame(task.texture);
+                fires.map(v => {
+                    v.setTextureFlame(task.texture);
+                })
+                // fire.setTextureFlame(task.texture);
             };
             var textureFireOrigin = assetsManager.addTextureTask('textureFireOrigin', baseURL + 'assets/textures/fire/flare4.png', null, false);
             textureFireOrigin.onSuccess = function(task) {
-                fire.setTextureOrigin(task.texture);
+                fires.map(v => {
+                    v.setTextureOrigin(task.texture);
+                })
+                // fire.setTextureOrigin(task.texture);
             };
 
             // var pipeline = new BABYLON.StandardRenderingPipeline(
@@ -173,7 +191,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 task.texture.rotationY = Math.PI;
                 task.texture.gammaSpace = false;
                 task.texture.invertZ = true;
-                // scene.environmentTexture = task.texture;
+                scene.environmentTexture = task.texture;
                 // scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
             };
             var taskEnvTexture3 = assetsManager.addCubeTextureTask('studioEnv3', baseURL + 'assets/textures/them/3.dds');
@@ -200,12 +218,12 @@ window.addEventListener('DOMContentLoaded', function(){
 
             //HDR_110_Tunnel_Env.hdr
             // Main_Game-Zborka_v02.hdr
-            var taskHdrTexture = assetsManager.addHDRCubeTextureTask('studioHDR', baseURL + 'assets/textures/hfq.hdr', 16, false, true, true, true);
+            var taskHdrTexture = assetsManager.addHDRCubeTextureTask('studioHDR', baseURL + 'assets/textures/hfq_3.hdr', 16, false, true, true, true);
             taskHdrTexture.onSuccess = function(task) {
-                // task.texture.rotationY = Math.PI;
-                task.texture.invertZ = true;
-                scene.environmentTexture = task.texture;
-                scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
+                task.texture.rotationY = Math.PI;
+                // task.texture.invertZ = true;
+                // scene.environmentTexture = task.texture;
+                // scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
             };
 
             // scene.environmentTexture = hdrTexture;
@@ -524,7 +542,12 @@ window.addEventListener('DOMContentLoaded', function(){
                     reels.push(reel);
                 }
 
-                fire.setEmitter(reels[1].meshes[2]._children[0]._children[0]._children[0]);
+                for (let j = 0; j < 3; j++) {
+                    fires[j].setEmitter(reels[j].meshes[2]._children[0]._children[0]._children[0]);
+                    // fires[j].start();
+                }
+
+                // fire.setEmitter(reels[0].meshes[2]._children[0]._children[0]._children[0]);
                 objGrowth.setPoints([
                     new Vector3(12,10,20),
                     new Vector3(10,10,20),
@@ -678,7 +701,10 @@ window.addEventListener('DOMContentLoaded', function(){
                         parameter: 'f'
                     },
                     function (evt) {
-                        fire.start();
+                        fires.map(v => {
+                            v.start();
+                        })
+                        // fire.start();
                     }
                 )
             );
@@ -689,7 +715,10 @@ window.addEventListener('DOMContentLoaded', function(){
                         parameter: 'r'
                     },
                     function (evt) {
-                        fire.stop();
+                        fires.map(v => {
+                            v.stop();
+                        })
+                        // fire.stop();
                     }
                 )
             );
