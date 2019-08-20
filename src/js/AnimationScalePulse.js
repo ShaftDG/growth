@@ -1,5 +1,10 @@
 import * as tslib_1 from 'tslib';
-import {Animation,BackEase,EasingFunction} from '@babylonjs/core';
+import {
+    Animation,
+    BackEase,
+    EasingFunction,
+    Vector3
+} from '@babylonjs/core';
 import {IEasingFunction} from "@babylonjs/core/Animations/easing";
 
 export default function AnimationScalePulse(targetScale, targetPosition, duration, /*callbackUp, callbackDown,*/ stopedCalback, scene) {
@@ -120,12 +125,75 @@ export default function AnimationScalePulse(targetScale, targetPosition, duratio
     // Adding easing function to my animationForward
     animationPositionPulse.setEasingFunction(funnyEase1);
 //////////////////////////////////////////////
+    var animationRotatePulse = new Animation("animationRotatePulse", "rotation", 1, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CYCLE);
+
+    let tempRotation = object._children[0].rotation.clone();
+    // Animation keys
+    let keysRotation = [];
+    keysRotation.push({ frame: 0, value: object._children[0].rotation });
+    keysRotation.push({ frame: 90, value: tempRotation.add(new Vector3(Math.PI/10,-Math.PI/4,-Math.PI/10)) });
+    // keysRotation.push({ frame: 90, value: tempRotation });
+    // keysPosition.push({ frame: 60, value: object.position });
+    // keysPosition.push({ frame: 90, value: targetPosition });
+    // keysPosition.push({ frame: 90, value: object.position });
+    // keysPosition.push({ frame: 60, value: targetPosition });
+    // keysPosition.push({ frame: 59, value: object.position });
+    // keysPosition.push({ frame: 89, value: targetPosition });
+    // keysPosition.push({ frame: 90, value: object.position });
+
+    animationRotatePulse.setKeys(keysRotation);
+
+    // Adding an easing function
+    // You can use :
+    //1.	CircleEase()
+    //2.	BackEase(amplitude)
+    //3.	BounceEase(bounces, bounciness)
+    //4.	CubicEase()
+    //5.	ElasticEase(oscillations, springiness)
+    //6.	ExponentialEase(exponent)
+    //7.	PowerEase(power)
+    //8.	QuadraticEase()
+    //9.	QuarticEase()
+    //10.	QuinticEase()
+    //11.	SineEase()
+    // And if you want a total control, you can use a Bezier Curve animationForward
+    //12.   BezierCurveEase(x1, y1, x2, y2)
+    // let easingFunctionRotation = new BackEase(10);
+
+    // For each easing function, you can choose beetween EASEIN (default), EASEOUT, EASEINOUT
+    // easingFunctionRotation.setEasingMode(EasingFunction.EASINGMODE_EASEOUT);
+
+    // Adding easing function to my animationForward
+    // animationRotatePulse.setEasingFunction(easingFunctionRotation);
+    let FunnyEase2 = (function (_super) {
+        tslib_1.__extends(FunnyEase, _super);
+        function FunnyEase() {
+            _super.apply(this, arguments);
+            ;}
+        FunnyEase.prototype.easeInCore = function (gradient) {
+            // Here is the core method you should change to make your own Easing Function
+            // Gradient is the percent of value change
+            // return (Math.pow(Math.pow(gradient, 20), Math.pow(gradient, 20)) / Math.pow(Math.pow(gradient, 5), Math.pow(gradient, 5))) * Math.pow(Math.pow(gradient, 1.5), Math.pow(gradient, 1.5));
+            return (Math.sin(Math.PI * ((gradient * 6) - 0.5))) + 2;
+
+        };
+        return FunnyEase;
+    })(EasingFunction);
+
+    let funnyEase2 = new FunnyEase2();
+    // For each easing function, you can choose beetween EASEIN (default), EASEOUT, EASEINOUT
+    funnyEase2.setEasingMode(EasingFunction.EASINGMODE_EASEOUT);
+
+    // Adding easing function to my animationForward
+    animationRotatePulse.setEasingFunction(funnyEase2);
+//////////////////////////////////////////////
 
     object.animations = [];
     object._children[0].animations = [];
     object._children[0].animations.push(animationScalePulse);
     // object.animations.push(animationScalePulse);
     object.animations.push(animationPositionPulse);
+    object._children[0].animations.push(animationRotatePulse);
 
     // var eventAnimationUp = new AnimationEvent(10, function() {
     //     callbackUp();

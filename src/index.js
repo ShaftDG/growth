@@ -35,12 +35,17 @@ import {
     ActionManager,
     ExecuteCodeAction,
     Camera,
+    StandardRenderingPipeline,
     DirectionalLight,
     HemisphericLight,
     StandardMaterial
     // CubeTexture
 } from '@babylonjs/core';
+import {
+    GUI3DManager,
+} from '@babylonjs/gui'
 import {GLTFFileLoader,GLTFLoaderAnimationStartMode} from '@babylonjs/loaders';
+// import {StandardRenderingPipeline} from '@babylonjs/post-processes';
 import CreateCanvas from './js/CreateCanvas';
 import Growth from './js/Growth';
 import './js/showFPS';
@@ -52,6 +57,8 @@ import CreateReel from "./js/CreateReel";
 import GenerateWinCombination from "./js/GenerateWinCombination";
 import ParticlesSquare from './js/ParticlesSquare';
 import ChangeCustomVertexParticles from './js/changeCustomVertexParticles';
+
+import MakeButton from './js/MakeButton';
 
 import Fire from './js/FireParticles';
 
@@ -72,8 +79,8 @@ window.addEventListener('DOMContentLoaded', function(){
         var createScene = function () {
             // create a basic BJS Scene object
             var scene = new Scene(engine);
-            var gl = new GlowLayer("glow", scene);
-            gl.intensity = 0.5;
+            // var gl = new GlowLayer("glow", scene);
+            // gl.intensity = 1.0;
             var assetsManager = new AssetsManager(scene);
             // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
             // var camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 20, -50), scene);
@@ -88,16 +95,16 @@ window.addEventListener('DOMContentLoaded', function(){
             // camera.setTarget(BABYLON.Vector3.Zero());
 
             // attach the camera to the canvas
-            // camera.attachControl(canvas, false);
+            camera.attachControl(canvas, false);
             scene.showFPS();
 
             let fires = [];
             new ChangeCustomVertexParticles();
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < 10; i++) {
                 let fire = new Fire({
                     engine: engine,
                     scene: scene,
-                    sizeParticle: 8,
+                    sizeParticle: 9,
                     countParticles: 12
                 });
                 fires.push(fire);
@@ -134,14 +141,21 @@ window.addEventListener('DOMContentLoaded', function(){
                 // fire.setTextureOrigin(task.texture);
             };
 
-            // var pipeline = new BABYLON.StandardRenderingPipeline(
+            // var pipeline = new StandardRenderingPipeline(
             //     "standard", // The name of the pipeline
             //     scene, // The scene instance
             //     1.0, // The rendering pipeline ratio
             //     null, // The original post-process that the pipeline will be based on
             //     [camera] // The list of cameras to be attached to
             // );
-            // pipeline.exposure = 10;
+            // // pipeline.exposure = 1.0;
+            // pipeline.samples = 4;
+            // pipeline.fxaaEnabled = true;
+            // pipeline.bloomEnabled = true;
+            // pipeline.bloomThreshold = 0.8;
+            // pipeline.bloomWeight = 2.0;
+            // pipeline.bloomKernel = 64;
+            // pipeline.bloomScale = 0.5;
             // create a basic light, aiming 0,1,0 - meaning, to the sky
             // var light = new HemisphericLight('light1', new Vector3(0, 1, -10), scene);
             // light.intensity = 0.5;
@@ -191,13 +205,16 @@ window.addEventListener('DOMContentLoaded', function(){
                 task.texture.rotationY = Math.PI;
                 task.texture.gammaSpace = false;
                 task.texture.invertZ = true;
-                scene.environmentTexture = task.texture;
+                // scene.environmentTexture = task.texture;
                 // scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
             };
             var taskEnvTexture3 = assetsManager.addCubeTextureTask('studioEnv3', baseURL + 'assets/textures/them/3.dds');
             taskEnvTexture3.onSuccess = function(task) {
                 // task.texture.rotationY = Math.PI;
+                // task.texture.rotationY = Math.PI;
                 task.texture.gammaSpace = false;
+                // task.texture.invertZ = true;
+                scene.environmentTexture = task.texture;
             };
 
             var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', baseURL + 'assets/textures/them/environmentSceneDarkest.env');
@@ -222,8 +239,8 @@ window.addEventListener('DOMContentLoaded', function(){
             taskHdrTexture.onSuccess = function(task) {
                 task.texture.rotationY = Math.PI;
                 // task.texture.invertZ = true;
-                // scene.environmentTexture = task.texture;
-                // scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
+                scene.environmentTexture = task.texture;
+                scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
             };
 
             // scene.environmentTexture = hdrTexture;
@@ -462,6 +479,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 objGrowth.setLeaf(task.loadedMeshes[0]);
             };
 
+            let managerGUI = new GUI3DManager(scene);
             let line3;
             let meshTaskMain = assetsManager.addMeshTask('main', '', baseURL + 'assets/models/tmp/', 'MainGame_Draco.glb');
             meshTaskMain.onSuccess = function (task) {
@@ -487,14 +505,19 @@ window.addEventListener('DOMContentLoaded', function(){
                 // line3.material.albedoColor = new Color3(0.8, 0.8, 0);
                 // line3.material.emissiveTexture = textureThreeEm.texture;
                 // line3.material.metallic = 0;
-                // console.log(task.loadedMeshes[0]);
-                task.loadedMeshes[0].position.y = 10;
-                task.loadedMeshes[0].position.z = 11;
+
+                task.loadedMeshes[0]._children.map((v, i) => {
+                    console.log(v.id, i);
+                });
+
+
+                task.loadedMeshes[0].position.y = 11.05;
+                task.loadedMeshes[0].position.z = 10.75;
                 // task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.105,0.105,0.105);
                 task.loadedMeshes[0].scaling = new Vector3(4.8,4.8,-4.8);
-                task.loadedMeshes[0]._children[0].material.unlit = true;
+                task.loadedMeshes[0]._children[34].material.unlit = true;
                 // task.loadedMeshes[0]._children[10].material.unlit = true;
-                task.loadedMeshes[0]._children[11].material.unlit = true;
+                task.loadedMeshes[0]._children[3].material.unlit = true;
                 // task.loadedMeshes[0]._children[0]._children[33]._children[0].material.unlit = true;
                 // task.loadedMeshes[0]._children[0]._children[20]._children[0].material.roughness = 0.1;
                 // task.loadedMeshes[0]._children[0]._children[20]._children[0].material.metallic = 1.1;
@@ -513,6 +536,48 @@ window.addEventListener('DOMContentLoaded', function(){
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.isTintEnabled = true;
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.tintColor = Color3.Teal();
                 // task.loadedMeshes[0]._children[0]._children[0]._children[0].material.clearCoat.bumpTexture = texture; // dedicated bump texture for the coat
+
+                let optionStartButton = {
+                    deltaPush: new Vector3(0,0,-0.03)
+                };
+
+                let startButton = new MakeButton("startButton", task.loadedMeshes[0]._children[31], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
+                startButton.onPointerUpObservable.add(function () {
+                    console.time()
+                    if (!generateWinCombination.gettedWinning) {
+                        generateWinCombination.gettingWinnings();
+                    }
+
+                    generateWinCombination.generate();
+
+                    if (reels[reels.length - 1].stoped) {
+                        reels.map(v => {
+                            v.startRotate(true);
+                        });
+                        forceStop = undefined;
+                    }
+
+                    setTimeout(function () {
+                        enableEndRotateAnimation = true;
+                        reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
+                        forceStop = true;
+                    }, 500);
+                    console.timeEnd()
+                });
+
+                let autoPlay = new MakeButton("autoPlay", task.loadedMeshes[0]._children[32], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
+                autoPlay.onPointerUpObservable.add(function () {
+                    fires.map(v => {
+                        v.stop();
+                    })
+                });
+
+                let maxBet = new MakeButton("maxBet", task.loadedMeshes[0]._children[31], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
+                maxBet.onPointerUpObservable.add(function () {
+                    fires.map(v => {
+                        v.start();
+                    })
+                });
             };
 
             let generateWinCombination = new GenerateWinCombination(5,3,7);
@@ -531,22 +596,22 @@ window.addEventListener('DOMContentLoaded', function(){
             let stopIndex = 0;
             let enableEndRotateAnimation = false;
             let forceStop = undefined;
-            let intf = 0;
+
             scene.executeWhenReady(function() {
 
                 // fire.start();
                 // particles.start();
-                for (var j = 0; j < 5; j++) {
-                    let reel = new CreateReel(symbols, angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), intf, scene);
-                    intf += 3;
+                for (var j = 0, i = 0; j < 5; j++, i += 3) {
+                    let reel = new CreateReel(symbols, angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), i, scene);
                     reels.push(reel);
                 }
 
-                for (let j = 0; j < 3; j++) {
-                    fires[j].setEmitter(reels[j].meshes[2]._children[0]._children[0]._children[0]);
-                    // fires[j].start();
+                for (let i = 0, j = 0; i < 3; i++, j += 3) {
+                    fires[0 + j].setEmitter(reels[i].meshes[1]._children[0]._children[0]);
+                    fires[1 + j].setEmitter(reels[i].meshes[2]._children[0]._children[0]);
+                    fires[2 + j].setEmitter(reels[i].meshes[3]._children[0]._children[0]);
                 }
-
+                fires[9].setEmitter(reels[3].meshes[1]._children[0]._children[0]);
                 // fire.setEmitter(reels[0].meshes[2]._children[0]._children[0]._children[0]);
                 objGrowth.setPoints([
                     new Vector3(12,10,20),
@@ -601,7 +666,7 @@ window.addEventListener('DOMContentLoaded', function(){
             let numReels = 0;
             scene.registerBeforeRender(function () {
 // console.time();
-                let deltaTime = scene.getEngine().getDeltaTime()*0.006;
+                let deltaTime = scene.getEngine().getDeltaTime()*0.01;
                 reels.map(v => {
                     v.update(deltaTime);
                 });
@@ -623,7 +688,7 @@ window.addEventListener('DOMContentLoaded', function(){
                                 if (indexLineWin < generateWinCombination.winLineNum-1) {
                                     indexLineWin++;
                                     generateWinCombination.moveArray[indexLineWin].map((v, i) => {
-                                        reels[i].moveWinSymbols(v, switchReels)
+                                        reels[i].moveWinSymbols(v, generateWinCombination.arrayCombination[stopIndex], switchReels)
                                     })
                                 } else {
                                     indexLineWin = 0;
@@ -649,7 +714,7 @@ window.addEventListener('DOMContentLoaded', function(){
                         }
 
                         generateWinCombination.moveArray[indexLineWin].map((v, i) => {
-                            reels[i].moveWinSymbols(v, switchReels)
+                            reels[i].moveWinSymbols(v, generateWinCombination.arrayCombination[stopIndex], switchReels)
                         })
                         // generateWinCombination.gettingWinnings();
 

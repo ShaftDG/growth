@@ -382,7 +382,7 @@ export default class FireParticles {
         this.effect.onBind = function () {
             effect.setFloat("time", time);
 
-            order = (Date.now() - start_time) * 0.00125;
+            order = (Date.now() - start_time) * 0.0009;
             start_time = Date.now();
             time += order;
             // if (time > 3) {
@@ -390,45 +390,53 @@ export default class FireParticles {
             // }
         };
 
-        this.ashesParticles = new ParticleSystem("ashesParticles", 20, options.scene, this.effect, true);
-        this.ashesParticles.startSpriteCellID = 10;
-        this.ashesParticles.endSpriteCellID = 31;
-        this.ashesParticles.spriteCellHeight = 256;
-        this.ashesParticles.spriteCellWidth = 128;
-        this.ashesParticles.spriteCellChangeSpeed = 5;
-        // this.ashesParticles.spriteRandomStartCell = true;
+        this.ashesParticles = new ParticleSystem("ashesParticles", 40, options.scene, this.effect);
+
         this.ashesParticlesEmitter = new TransformNode("");
 
         this.ashesParticles.emitter = this.ashesParticlesEmitter; // the starting object, the emitter
         this.ashesParticles.minScaleX = 0.85;
         this.ashesParticles.minScaleY = 0.7;
-        this.ashesParticles.maxScaleX = 1.1;
-        this.ashesParticles.maxScaleY = 0.8;
-        this.ashesParticles.preWarmCycles = 20;
-        this.ashesParticles.preWarmStepOffset = 2;
+        this.ashesParticles.maxScaleX = 1.0;
+        this.ashesParticles.maxScaleY = 1.0;
+        // this.ashesParticles.preWarmCycles = 20;
+        // this.ashesParticles.preWarmStepOffset = 2;
         this.ashesParticles.addSizeGradient(0, options.sizeParticle * 0.2, options.sizeParticle * 0.2);
         this.ashesParticles.addSizeGradient(0.1, options.sizeParticle * 0.6, options.sizeParticle * 0.6);
         this.ashesParticles.addSizeGradient(0.2, options.sizeParticle * 0.7, options.sizeParticle * 0.7);
         this.ashesParticles.addSizeGradient(0.3, options.sizeParticle * 0.8, options.sizeParticle * 0.8);
-        this.ashesParticles.addSizeGradient(0.8, options.sizeParticle * 0.2, options.sizeParticle * 0.7);
-        this.ashesParticles.addSizeGradient(0.9, options.sizeParticle * 0.1, options.sizeParticle * 0.7);
-        this.ashesParticles.addSizeGradient(1.0, options.sizeParticle * 0.0, options.sizeParticle * 0.0);
+        this.ashesParticles.addSizeGradient(0.8, options.sizeParticle * 0.4, options.sizeParticle * 0.7);
+        this.ashesParticles.addSizeGradient(0.9, options.sizeParticle * 0.3, options.sizeParticle * 0.7);
+        this.ashesParticles.addSizeGradient(1.0, options.sizeParticle * 0.2, options.sizeParticle * 0.2);
 
         this.ashesParticles.translationPivot = new Vector2(0, -0.35);
 
         // Colors of all particles
+       /* this.ashesParticles.addColorGradient(0.2, new Color4.FromHexString("#fdab8000"));
+        this.ashesParticles.addColorGradient(0.7, new Color4.FromHexString("#f27d0c55"));
+        this.ashesParticles.addColorGradient(0.6, new Color4.FromHexString("#f28d00ff"));
+        // this.ashesParticles.addColorGradient(0.25, new Color4.FromHexString("#757676ff"));
+        this.ashesParticles.addColorGradient(0.4, new Color4.FromHexString("#643901ff"));
+        // this.ashesParticles.addColorGradient(0.75, new Color4.FromHexString("#f27d0c00")); //77
+        // this.ashesParticles.addColorGradient(0.9, new Color4.FromHexString("#75767600"));  //00
+        // this.ashesParticles.addColorGradient(1.0, new Color4.FromHexString("#00000000"));  //00
+
+        this.ashesParticles.addColorGradient(0.75, new Color4.FromHexString("#f27d0c77"));
+        this.ashesParticles.addColorGradient(0.9, new Color4.FromHexString("#75767688"));
+        this.ashesParticles.addColorGradient(1.0, new Color4.FromHexString("#00000099"));*/
+
         this.ashesParticles.addColorGradient(0.2, new Color4.FromHexString("#fdab8000"));
         this.ashesParticles.addColorGradient(0.7, new Color4.FromHexString("#f27d0c55"));
-        this.ashesParticles.addColorGradient(0.6, new Color4.FromHexString("#f22100ff"));
+        this.ashesParticles.addColorGradient(0.6, new Color4.FromHexString("#f2ebe7ff"));
         // this.ashesParticles.addColorGradient(0.25, new Color4.FromHexString("#757676ff"));
-        this.ashesParticles.addColorGradient(0.4, new Color4.FromHexString("#640300ff"));
-        this.ashesParticles.addColorGradient(0.75, new Color4.FromHexString("#f27d0c00")); //00
-        this.ashesParticles.addColorGradient(0.9, new Color4.FromHexString("#75767600"));  //00
-        this.ashesParticles.addColorGradient(1.0, new Color4.FromHexString("#00000000"));  //00
+        this.ashesParticles.addColorGradient(0.4, new Color4.FromHexString("#643901ff"));
+        // this.ashesParticles.addColorGradient(0.75, new Color4.FromHexString("#f27d0c00")); //77
+        // this.ashesParticles.addColorGradient(0.9, new Color4.FromHexString("#75767600"));  //00
+        // this.ashesParticles.addColorGradient(1.0, new Color4.FromHexString("#00000000"));  //00
 
-        // this.ashesParticles.addColorGradient(0.75, new Color4.FromHexString("#f27d0c55"));
-        // this.ashesParticles.addColorGradient(0.9, new Color4.FromHexString("#75767688"));
-        // this.ashesParticles.addColorGradient(1.0, new Color4.FromHexString("#00000077"));
+        this.ashesParticles.addColorGradient(0.75, new Color4.FromHexString("#f27d0c77"));
+        this.ashesParticles.addColorGradient(0.9, new Color4.FromHexString("#75767655"));
+        this.ashesParticles.addColorGradient(1.0, new Color4.FromHexString("#00000055"));
 
         //
         // this.ashesParticles.color1 = new Color4.FromHexString("#fdcf58ff");
@@ -454,7 +462,7 @@ export default class FireParticles {
         this.ashesParticles.emitRate = options.countParticles / 2;
         //
         // // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
-        this.ashesParticles.blendMode = ParticleSystem.BLENDMODE_STANDARD;
+        this.ashesParticles.blendMode = ParticleSystem.BLENDMODE_ADD;
         //
         // // Set the gravity of all particles
         this.ashesParticles.gravity = new Vector3(0, 0, 0);
@@ -467,7 +475,7 @@ export default class FireParticles {
         this.ashesParticles.minEmitPower = 0;
         this.ashesParticles.maxEmitPower = 0;
         this.ashesParticles.updateSpeed = 0.045;
-        this.ashesParticles.targetStopDuration = 2.0;
+        // this.ashesParticles.targetStopDuration = 2.0;
 
         // No billboard
         // this.ashesParticles.isBillboardBased = false;
@@ -495,13 +503,13 @@ export default class FireParticles {
         var angle = Math.PI / 6;
         let coordParticles = [
 
-            new Vector3(1.45 * Math.sin(angle * 4 + (0.7 * Math.PI)) + 0.25, 1.7 * Math.cos(angle * 4 +  (0.7 * Math.PI)) * 1.7, 1.92),
-            new Vector3(1.45 * Math.sin(angle * 1 + (0.7 * Math.PI)), 1.7 * Math.cos(angle * 1 + (0.7 * Math.PI)), 1.92),
-            new Vector3(1.45 * Math.sin(angle * 0 + (0.7 * Math.PI)) + 0.5, 1.7 * Math.cos(angle * 0 + (0.7 * Math.PI)) * 0.25, -1.92),
-            new Vector3(1.45 * Math.sin(angle * 4 + (0.7 * Math.PI)), 1.7 * Math.cos(angle * 4 +  (0.7 * Math.PI)) * 0.75, -1.92),
-            new Vector3(1.45 * Math.sin(angle * 0 + (0.7 * Math.PI)), 1.7 * Math.cos(angle * 0 + (0.7 * Math.PI)), 1.92),
-            new Vector3(1.45 * Math.sin(angle * 2 + (0.7 * Math.PI)), 1.7 * Math.cos(angle * 2 +  (0.7 * Math.PI)), 1.92),
-            new Vector3(1.45 * Math.sin(angle * 3 + (0.7 * Math.PI)), 1.7 * Math.cos(angle * 3 +  (0.7 * Math.PI)), -1.92),
+            new Vector3(1.25 * Math.sin(angle * 4 + (0.7 * Math.PI)) + 0.25, 1.7 * Math.cos(angle * 4 +  (0.7 * Math.PI)) * 1.7, 1.92),
+            new Vector3(1.25 * Math.sin(angle * 1 + (0.7 * Math.PI)), 1.7 * Math.cos(angle * 1 + (0.7 * Math.PI)), 1.92),
+            new Vector3(1.25 * Math.sin(angle * 0 + (0.7 * Math.PI)) + 0.5, 1.7 * Math.cos(angle * 0 + (0.7 * Math.PI)) * 0.25, -1.92),
+            new Vector3(1.25 * Math.sin(angle * 4 + (0.7 * Math.PI)), 1.7 * Math.cos(angle * 4 +  (0.7 * Math.PI)) * 0.75, -1.92),
+            new Vector3(1.25 * Math.sin(angle * 0 + (0.7 * Math.PI)), 1.7 * Math.cos(angle * 0 + (0.7 * Math.PI)), 1.92),
+            new Vector3(1.25 * Math.sin(angle * 2 + (0.7 * Math.PI)), 1.7 * Math.cos(angle * 2 +  (0.7 * Math.PI)), 1.92),
+            new Vector3(1.25 * Math.sin(angle * 3 + (0.7 * Math.PI)), 1.7 * Math.cos(angle * 3 +  (0.7 * Math.PI)), -1.92),
 
 
 
@@ -538,19 +546,19 @@ export default class FireParticles {
         this.ashesParticles.startPositionFunction = function(worldMatrix, positionToUpdate, particle)
         {
 
-            /*var rndAngle = 2 * (Math.random() * (0.65 - 0.35) + 0.35) * Math.PI;
+            var rndAngle = 2 * (Math.random() * (0.65 - 0.35) + 0.35) * Math.PI;
             var randX = 1.6 * Math.sin(rndAngle);
-            var randY = 1.6 * Math.cos(rndAngle);
-            var randZ = 1.92 * (Math.random() <= 0.35 ? -1 : 1);*/
-
-            var randX = coordParticles[index].x;
-            var randY = coordParticles[index].y;
-            var randZ = coordParticles[index].z;
-            if (index < 5) {
-                index++;
-            } else {
-                index = 0;
-            }
+            var randY = 1.7 * Math.cos(rndAngle);
+            var randZ = 1.92 * (Math.random() <= 0.35 ? -1 : 1);
+            //
+            // var randX = coordParticles[index].x;
+            // var randY = coordParticles[index].y;
+            // var randZ = coordParticles[index].z;
+            // if (index < 5) {
+            //     index++;
+            // } else {
+            //     index = 0;
+            // }
             Vector3.TransformCoordinatesFromFloatsToRef(randX, randY, randZ, worldMatrix, positionToUpdate);
             // console.log(particle);
         }
@@ -584,8 +592,8 @@ export default class FireParticles {
         this.ashesParticles.start();
         // console.log( this.particleSystemFire);
         // console.log( this.effect.getUniform("time"));
-        console.log(Effect.ShadersStore["particlesVertexShader"]);
-        // console.log(Effect.ShadersStore["particlesPixelShader"]);
+        // console.log(Effect.ShadersStore["pbrPixelShader"]);
+        console.log(Effect.ShadersStore["particlesPixelShader"]);
     }
 
     stop() {

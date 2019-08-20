@@ -4,7 +4,7 @@ import AnimationScalePulse from "./AnimationScalePulse";
 import AnimationStopReels from "./AnimationStopReels";
 
 export default class CreateReel {
-    constructor(symbols, angles, radius, section, numSymbolPerReel, positionReel, qwe, scene) {
+    constructor(symbols, angles, radius, section, numSymbolPerReel, positionReel, ins, scene) {
         this.symbols = symbols;
         this.radius = radius;
         this.positionReel = positionReel;
@@ -25,28 +25,31 @@ export default class CreateReel {
         this.angles = angles;
         this.indexLineWin = 0;
         this.endIncrementIndexLineWin = false;
-        let yui = 0;
+        let iiii = ins + 0;
             for (var i = 0; i < 5; i++) {
                 let CoTSector = new TransformNode("CoTSector");
                 let CoTSector_child = new TransformNode("CoTSector_child");
                 CoTSector_child.parent = CoTSector;
-                // for (let j = 0; j < symbols.length; j++) {
-
-
-                    let obj = symbols[/*Math.round(Scalar.RandomRange(0, 6))*/qwe + yui < 10 && i >= 1 && i <= 3 ? qwe + yui : Math.round(Scalar.RandomRange(0, 9))].clone();
-                if (i >= 1 && i <= 3) {
-                    yui++
-                }
+                for (let j = 0; j < symbols.length; j++) {
+                    let obj = symbols[j].clone();
                     let z = radius * Math.cos(this.angles[i]);
                     let y = radius * Math.sin(this.angles[i]);
                     obj.rotate(Axis.X, this.angles[i], Mesh.WORLD);
                     obj.position = new Vector3(positionReel.x, y, z);
                     obj.defaultScaling = new Vector3(obj.scaling.x, obj.scaling.y, obj.scaling.z);
                     obj.parent = CoTSector_child;
-                    // obj.setEnabled(false);
-                // }
-                // let randomIndexSymbol = Math.round(BABYLON.Scalar.RandomRange(0, 6));
-                // CoTSector._children[randomIndexSymbol].setEnabled(true);
+                    obj.setEnabled(false);
+                }
+                let randomIndexSymbol;
+                if (iiii < 10) {
+                    randomIndexSymbol = iiii/*Math.round(Scalar.RandomRange(0, 9))*/;
+                    if (i > 0 && i < 4) {
+                        iiii++
+                    }
+                } else {
+                    randomIndexSymbol = Math.round(Scalar.RandomRange(0, 9));
+                }
+                CoTSector_child._children[randomIndexSymbol].setEnabled(true);
                 CoTSector.parent = this.CoT;
                 this.meshes.push(CoTSector);
             }
@@ -69,6 +72,7 @@ export default class CreateReel {
         object._children[0]._children[0].animation = [];
         object._children[0]._children[0].dispose();
 
+
         let obj = this.symbols[indexSymbol].clone();
         let z = this.radius * Math.cos(this.angles[index]);
         let y = this.radius * Math.sin(this.angles[index]);
@@ -76,25 +80,28 @@ export default class CreateReel {
         obj.position = new Vector3(this.positionReel.x, y, z);
         obj.defaultScaling = new Vector3(obj.scaling.x, obj.scaling.y, obj.scaling.z);
         obj.parent = object._children[0];
+
     }
+
     setVisibleSymbol(object, indexSymbol) {
-        object._children.map(g => {
+        object._children[0]._children.map(g => {
             g.setEnabled(false);
         });
-        object._children[indexSymbol].setEnabled(true);
+        object._children[0]._children[indexSymbol].setEnabled(true);
     }
 
     setVisibleSymbols(arrayObects, indexMiddleSymbol, reelCombination) {
         this.indexUp = indexMiddleSymbol + 1 <= 4 ? indexMiddleSymbol + 1 : 0;
         this.indexDown = indexMiddleSymbol - 1 >= 0 ? indexMiddleSymbol - 1 : 4;
 
+        // this.replaceSymbol(arrayObects[this.indexUp], this.indexUp, reelCombination[0]);
+        // this.replaceSymbol(arrayObects[indexMiddleSymbol], indexMiddleSymbol, reelCombination[1]);
+        // this.replaceSymbol(arrayObects[this.indexDown], this.indexDown, reelCombination[2])
+        //
 
-        this.replaceSymbol(arrayObects[this.indexUp], this.indexUp, reelCombination[0]);
-        this.replaceSymbol(arrayObects[indexMiddleSymbol], indexMiddleSymbol, reelCombination[1]);
-        this.replaceSymbol(arrayObects[this.indexDown], this.indexDown, reelCombination[2])
-        // this.setVisibleSymbol(arrayObects[indexUp], reelCombination[0]);
-        // this.setVisibleSymbol(arrayObects[indexMiddleSymbol], reelCombination[1]);
-        // this.setVisibleSymbol(arrayObects[indexDown], reelCombination[2]);
+        this.setVisibleSymbol(arrayObects[this.indexUp], reelCombination[0]);
+        this.setVisibleSymbol(arrayObects[indexMiddleSymbol], reelCombination[1]);
+        this.setVisibleSymbol(arrayObects[this.indexDown], reelCombination[2]);
     }
 
     startRotate (rotateSlots, stopSymbols) {
@@ -145,6 +152,7 @@ export default class CreateReel {
             function stopedCallback() {
                 that.stoped = true;
             }
+
             AnimationStopReels.call(this.CoT,
                 new Vector3(this.section * (this.indexSection - 1),0,0),
                 150,
@@ -153,6 +161,7 @@ export default class CreateReel {
                 stopedCallback,
                 this.scene
             );
+
             this.beginStop = true;
         }
     }
@@ -168,7 +177,7 @@ export default class CreateReel {
         }
     }
 
-    setAnimationMoveWinSymbol (index, callback) {
+    setAnimationMoveWinSymbol (index, indexReelCombination, callback) {
         this.moveWinS = true;
         let that = this;
         function stopedCallback() {
@@ -178,10 +187,11 @@ export default class CreateReel {
         // this.meshes[index]._children[0].translate(Axis.Z, 20, Space.WORLD);
         let invertParentWorldMatrix = this.meshes[index].getWorldMatrix().clone();
         invertParentWorldMatrix.invert();
-        let absolutePosition = this.meshes[index]._children[0].getAbsolutePosition();
+        let absolutePosition = this.meshes[index]._children[0]._children[indexReelCombination].getAbsolutePosition();
         let worldPosition = new Vector3(absolutePosition.x, absolutePosition.y, absolutePosition.z - 2);
         let position = Vector3.TransformCoordinates(worldPosition, invertParentWorldMatrix);
-        this.meshes[index].animationScalePulse = AnimationScalePulse.call(this.meshes[index]._children[0],
+        console.log(this.meshes[index]._children[0]._children[indexReelCombination].id);
+        this.meshes[index].animationScalePulse = AnimationScalePulse.call(this.meshes[index]._children[0]._children[indexReelCombination],
             new Vector3(-0.1,-0.1,-0.1),
             position,
             60,
@@ -190,17 +200,17 @@ export default class CreateReel {
         );
     }
 
-    moveWinSymbols (winArray, callback) {
+    moveWinSymbols (winArray, reelCombination, callback) {
         if (!this.rotateSlots && this.stoped) {
 
             // console.log(winArray)
             // winArray.map((v, i) => {
                if (winArray[0] > 0) {
-                   this.setAnimationMoveWinSymbol(this.indexUp, callback);
+                   this.setAnimationMoveWinSymbol(this.indexUp, reelCombination[0], callback);
                } else if (winArray[1] > 0) {
-                   this.setAnimationMoveWinSymbol(this.indexMiddleSymbol, callback);
+                   this.setAnimationMoveWinSymbol(this.indexMiddleSymbol, reelCombination[1], callback);
                } else if (winArray[2] > 0) {
-                   this.setAnimationMoveWinSymbol(this.indexDown, callback);
+                   this.setAnimationMoveWinSymbol(this.indexDown, reelCombination[2], callback);
                } else {
                    callback()
                }
