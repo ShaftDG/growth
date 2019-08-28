@@ -17,7 +17,7 @@ export default class ChangeCustomVertexParticles {
                 );
 
     /*    Effect.ShadersStore
-            ["customFireParticleFragmentShader"] =
+            ["customFire1ParticleFragmentShader"] =
             "#ifdef GL_ES\n" +
             "precision highp float;\n" +
             "#endif\n" +
@@ -87,7 +87,8 @@ export default class ChangeCustomVertexParticles {
             "        if ( mixing < 0.2 ) discard;\n" +
             "        gl_FragColor += vec4( (mix(vec3(0.0),col * col2,a) ), 1.0);\n" +
             "        gl_FragColor.a = mix(c2,  c1, gl_FragColor.g * gl_FragColor.r) * vColor.a * a * 1.4 * speedFactor;\n" +
-            "}\n";*/
+            "}\n";
+
         Effect.ShadersStore
             ["customFireParticleFragmentShader"] =
             "#ifdef GL_ES\n" +
@@ -128,18 +129,18 @@ export default class ChangeCustomVertexParticles {
             "void main(void) {\n" +
             "        if (vUV.x <= 0.3 || vUV.x >= 0.8 || vUV.y <= 0.05 || vUV.y >= 0.9) discard;\n" +
             "        gl_FragColor = vColor;\n" +
-            "        float speedFactor = clamp(normalize(vSize.y) * texture2D( customNoiseSamplerParticles, vec2(vPosition.y)).r, 0.2, 0.65);\n" +
-            "        float distortFlameFactor = clamp(vColor.a * vSize.x * normalize(vSize.y) * texture2D( customNoiseSamplerParticles, vec2(abs(vPosition.y))).g * 0.5, 1.0, 1.4);\n" +
+            "        float speedFactor = clamp(normalize(vSize.y) * texture2D( customNoiseSamplerParticles, vec2(vPosition.y)).r, 0.1, 0.65);\n" +
+            "        float distortFlameFactor = clamp(vColor.a * vSize.x * normalize(vSize.y) * texture2D( customNoiseSamplerParticles, vec2(abs(vPosition.y))).g * 0.5, 1.0, 1.2);\n" +
             "        vec2 q = vUV;\n" +
             "        vec2 uv = vUV;\n" +
             "        float strength = floor(q.x+1.0);\n" +
             "        float T3 = max(3.,1.25*strength) * time * speedFactor;\n" +
             "        float T3_a = max(3.,1.25*strength) * time * speedFactor;\n" +
             "        q.x -= 0.5;\n" +
-            "        q.y -= 0.25 * distortFlameFactor;\n" +
+            "        q.y -= 0.225 * distortFlameFactor;\n" +
             "        float n = fbm(strength * vec2(q.x * distortFlameFactor, q.y * distortFlameFactor * 0.95) - vec2(0.5,T3), speedFactor);\n" +
             "        float n2 = fbm2(strength * vec2(q.x * distortFlameFactor, q.y * distortFlameFactor * 0.95) - vec2(0.5,T3_a), speedFactor);\n" +
-            "        float c = 1.25 - 24.0 * pow(\n" +
+            "        float c = 1.0 - 8.0 * pow(\n" +
             "            //  max( 0.0, length(q*vec2(2.2+q.y*4.25,0.175)) - n * max( 0.35, q.y+.05 ) ),\n" +
             "            max( 0.0, length(q*vec2(1.4+q.y*2.25,0.875)) - n * max( 0.25, q.y+.25 ) ),\n" +
             "            1.0 //contrast\n" +
@@ -157,8 +158,8 @@ export default class ChangeCustomVertexParticles {
             "        float a = c2 * c1 / (pow(uv.y,-0.0005));\n" +
             "        float mixing = mix(mix(col.r, col.g, a), col.b, a);\n" +
             "        if ( mixing < 0.2 ) discard;\n" +
-            "        gl_FragColor *= vec4( (mix(vec3(0.5),col * col2 * col,a) )*0.85, 1.0);\n" +
+            "        gl_FragColor *= vec4( (mix(vec3(0.0),col * col2,a) ) * 1.5 * distortFlameFactor, 1.0);\n" +
             "        gl_FragColor.a = mix(c2,  c1, gl_FragColor.g * gl_FragColor.r) * vColor.a * a * 1.4 * speedFactor;\n" +
-            "}\n";
+            "}\n";*/
     }
 }

@@ -1,5 +1,14 @@
 
-import {Axis, Mesh, Scalar, TransformNode, Vector3} from '@babylonjs/core';
+import {
+    Axis,
+    Mesh,
+    // Material,
+    Scalar,
+    TransformNode,
+    Vector3,
+    // StandardMaterial,
+    // Color3
+} from '@babylonjs/core';
 import AnimationScalePulse from "./AnimationScalePulse";
 import AnimationStopReels from "./AnimationStopReels";
 
@@ -32,6 +41,19 @@ export default class CreateReel {
                 CoTSector_child.parent = CoTSector;
                 for (let j = 0; j < symbols.length; j++) {
                     let obj = symbols[j].clone();
+                    // console.log(obj._children[0].id, j)
+                    obj._children[0].material = symbols[j]._children[0].material.clone(symbols[j]._children[0].material.id + "_" + i + "_" + j );
+// console.log(obj._children[0].material.id);
+                  /*  let red = new StandardMaterial('red', scene);
+                    red.emissiveColor = new Color3(1, 0, 0);
+                    red.diffuseColor = new Color3(1, 0, 0);
+                    red.sideOrientation = Material.ClockWiseSideOrientation;
+                    obj._children[0].customOutline = obj._children[0].clone('outline_clone');
+                    obj._children[0].customOutline.scaling  = new Vector3(1.1,1.1,1.1);
+                    // obj.customOutline.sideOrientation = Mesh.BACKSIDE;
+                    obj._children[0].customOutline.parent = obj;
+                    obj._children[0].customOutline.material = red;*/
+
                     let z = radius * Math.cos(this.angles[i]);
                     let y = radius * Math.sin(this.angles[i]);
                     obj.rotate(Axis.X, this.angles[i], Mesh.WORLD);
@@ -49,7 +71,8 @@ export default class CreateReel {
                 } else {
                     randomIndexSymbol = Math.round(Scalar.RandomRange(0, 9));
                 }
-                CoTSector_child._children[randomIndexSymbol].setEnabled(true);
+                CoTSector.visibleSymbol = CoTSector_child._children[randomIndexSymbol];
+                CoTSector.visibleSymbol.setEnabled(true);
                 CoTSector.parent = this.CoT;
                 this.meshes.push(CoTSector);
             }
@@ -59,12 +82,12 @@ export default class CreateReel {
         this.rotateSlots = false;
     }
 
-    setVisibleSymbol(object, indexSymbol) {
+  /*  setVisibleSymbol(object, indexSymbol) {
         object._children.map(g => {
             g.setEnabled(false);
         });
         object._children[indexSymbol].setEnabled(true);
-    }
+    }*/
 
     replaceSymbol(object, index, indexSymbol) {
 
@@ -87,7 +110,8 @@ export default class CreateReel {
         object._children[0]._children.map(g => {
             g.setEnabled(false);
         });
-        object._children[0]._children[indexSymbol].setEnabled(true);
+        object.visibleSymbol = object._children[0]._children[indexSymbol];
+        object.visibleSymbol.setEnabled(true);
     }
 
     setVisibleSymbols(arrayObects, indexMiddleSymbol, reelCombination) {
@@ -104,8 +128,13 @@ export default class CreateReel {
         this.setVisibleSymbol(arrayObects[this.indexDown], reelCombination[2]);
     }
 
-    startRotate (rotateSlots, stopSymbols) {
+    startRotate (rotateSlots, fire, stopSymbols) {
+        if (fire) {
+            fire.reset();
+            fire.stop();
+        }
         this.rotateSlots = rotateSlots;
+
         this.meshes.map(v => {
             v.setEnabled(true);
             // let randomIndexSymbol = Math.round(BABYLON.Scalar.RandomRange(0, 6));
@@ -123,6 +152,7 @@ export default class CreateReel {
             v._children[0].position = new Vector3(0,0,0);
             v._children[0]._children[0].scaling = v._children[0]._children[0].defaultScaling.clone();
         });
+
         this.moveWinS = false;
         this.endRotate = false;
         this.stoped = false;
@@ -177,40 +207,42 @@ export default class CreateReel {
         }
     }
 
-    setAnimationMoveWinSymbol (index, indexReelCombination, callback) {
+    setAnimationMoveWinSymbol (index, indexReelCombination, callback, fire) {
         this.moveWinS = true;
         let that = this;
         function stopedCallback() {
             that.moveWinS = false;
+            fire.stop();
             callback()
         }
-        // this.meshes[index]._children[0].translate(Axis.Z, 20, Space.WORLD);
+
         let invertParentWorldMatrix = this.meshes[index].getWorldMatrix().clone();
         invertParentWorldMatrix.invert();
-        let absolutePosition = this.meshes[index]._children[0]._children[indexReelCombination].getAbsolutePosition();
-        let worldPosition = new Vector3(absolutePosition.x, absolutePosition.y, absolutePosition.z - 2);
+        let absolutePosition = this.meshes[index].visibleSymbol.getAbsolutePosition();
+        let worldPosition = new Vector3(absolutePosition.x, absolutePosition.y, absolutePosition.z);
         let position = Vector3.TransformCoordinates(worldPosition, invertParentWorldMatrix);
-        console.log(this.meshes[index]._children[0]._children[indexReelCombination].id);
-        this.meshes[index].animationScalePulse = AnimationScalePulse.call(this.meshes[index]._children[0]._children[indexReelCombination],
-            new Vector3(-0.1,-0.1,-0.1),
+        fire.setEmitterPosition(this.meshes[index].visibleSymbol);
+        fire.start();
+        this.meshes[index].animationScalePulse = AnimationScalePulse.call(this.meshes[index].visibleSymbol,
+            new Vector3(0.0,0.0,0.0),
             position,
-            60,
+            70,
             stopedCallback,
             this.scene
         );
     }
 
-    moveWinSymbols (winArray, reelCombination, callback) {
+    moveWinSymbols (winArray, reelCombination, callback, fire) {
         if (!this.rotateSlots && this.stoped) {
 
             // console.log(winArray)
             // winArray.map((v, i) => {
                if (winArray[0] > 0) {
-                   this.setAnimationMoveWinSymbol(this.indexUp, reelCombination[0], callback);
+                   this.setAnimationMoveWinSymbol(this.indexUp, reelCombination[0], callback, fire);
                } else if (winArray[1] > 0) {
-                   this.setAnimationMoveWinSymbol(this.indexMiddleSymbol, reelCombination[1], callback);
+                   this.setAnimationMoveWinSymbol(this.indexMiddleSymbol, reelCombination[1], callback, fire);
                } else if (winArray[2] > 0) {
-                   this.setAnimationMoveWinSymbol(this.indexDown, reelCombination[2], callback);
+                   this.setAnimationMoveWinSymbol(this.indexDown, reelCombination[2], callback, fire);
                } else {
                    callback()
                }
@@ -226,11 +258,13 @@ export default class CreateReel {
     }
 
     update (deltaTime) {
+
         if (this.rotateSlots) {
             this.CoT.rotation.x += deltaTime;
         }
 
         if (!this.endRotate && this.CoT.rotation.x >= this.section * this.indexSection) {
+            console.time();
             let angle = this.section * ((this.numSymbolPerReel - this.angles.length + 1) + this.indexSymbol) - this.CoT.rotation.x;
             let deltaA = this.CoT.rotation.x - this.section * this.indexSection;
             this.meshes[this.indexSymbol].rotation.x = angle + deltaA;
@@ -244,10 +278,12 @@ export default class CreateReel {
             } else {
                 this.indexSection = 1;
             }
+            console.timeEnd();
         }
 
         if (this.CoT.rotation.x > Math.PI * 2) {
             this.CoT.rotation.x -= Math.PI * 2;
         }
+
     }
 }

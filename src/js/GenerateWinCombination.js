@@ -15,7 +15,7 @@ export default class GenerateWinCombination {
         this.isMaxBet = false;
         this.isMinBet = true;
 
-        this.minLines = 3;
+        this.minLines = 2;
         this.isMaxLines = true;
         this.isMinLines = false;
 
@@ -26,19 +26,19 @@ export default class GenerateWinCombination {
         this.payTable = [
             [0, 25, 100, 1000, 5000], // SYMB_Square
             [0, 25, 50, 200, 500], // SYMB_Diamond
-            [0, 25, 50, 100, 200], // SYMB_Pad
+            [0, 0, 0, 0, 0], // SYMB_Pad
             [0, 25, 50, 100, 200], // SYMB_Octa
             [0, 25, 50, 100, 200], // SYMB_Coin
             [0, 25, 50, 100, 200], // SYMB_Ring
             [0, 25, 50, 100, 200], // SYMB_Bottle
-            [0, 0, 0, 0, 0], // SYMB_PartMap
+            [0, 25, 50, 100, 200], // SYMB_PartMap
             [0, 25, 50, 100, 200], // SYMB_Clover
             [0, 15, 30, 100, 120], // SYMB_Cherry
             [0, 25, 50, 200, 500], // SYMB_Grapes
             [0, 25, 50, 100, 200], // SYMB_Strawberry
         ];
 
-        this.freeSpinSymb = 7;
+        this.freeSpinSymb = 1;
         this.numFreeSpinSymb = 0;
         this.numFreeSpin = 0;
         this.isFreeSpin = false;

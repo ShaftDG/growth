@@ -1,11 +1,12 @@
 import * as tslib_1 from 'tslib';
 import {
     Animation,
-    BackEase,
+    // BackEase,
+    CubicEase,
     EasingFunction,
     Vector3
 } from '@babylonjs/core';
-import {IEasingFunction} from "@babylonjs/core/Animations/easing";
+// import {IEasingFunction} from "@babylonjs/core/Animations/easing";
 
 export default function AnimationScalePulse(targetScale, targetPosition, duration, /*callbackUp, callbackDown,*/ stopedCalback, scene) {
     var object = this;
@@ -131,7 +132,7 @@ export default function AnimationScalePulse(targetScale, targetPosition, duratio
     // Animation keys
     let keysRotation = [];
     keysRotation.push({ frame: 0, value: object._children[0].rotation });
-    keysRotation.push({ frame: 90, value: tempRotation.add(new Vector3(Math.PI/10,-Math.PI/4,-Math.PI/10)) });
+    keysRotation.push({ frame: 120, value: tempRotation.add(new Vector3(0,-Math.PI*4,0))  });
     // keysRotation.push({ frame: 90, value: tempRotation });
     // keysPosition.push({ frame: 60, value: object.position });
     // keysPosition.push({ frame: 90, value: targetPosition });
@@ -158,34 +159,34 @@ export default function AnimationScalePulse(targetScale, targetPosition, duratio
     //11.	SineEase()
     // And if you want a total control, you can use a Bezier Curve animationForward
     //12.   BezierCurveEase(x1, y1, x2, y2)
-    // let easingFunctionRotation = new BackEase(10);
+    let easingFunctionRotation = new CubicEase();
 
     // For each easing function, you can choose beetween EASEIN (default), EASEOUT, EASEINOUT
-    // easingFunctionRotation.setEasingMode(EasingFunction.EASINGMODE_EASEOUT);
+    easingFunctionRotation.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
 
     // Adding easing function to my animationForward
-    // animationRotatePulse.setEasingFunction(easingFunctionRotation);
-    let FunnyEase2 = (function (_super) {
-        tslib_1.__extends(FunnyEase, _super);
-        function FunnyEase() {
-            _super.apply(this, arguments);
-            ;}
-        FunnyEase.prototype.easeInCore = function (gradient) {
-            // Here is the core method you should change to make your own Easing Function
-            // Gradient is the percent of value change
-            // return (Math.pow(Math.pow(gradient, 20), Math.pow(gradient, 20)) / Math.pow(Math.pow(gradient, 5), Math.pow(gradient, 5))) * Math.pow(Math.pow(gradient, 1.5), Math.pow(gradient, 1.5));
-            return (Math.sin(Math.PI * ((gradient * 6) - 0.5))) + 2;
-
-        };
-        return FunnyEase;
-    })(EasingFunction);
-
-    let funnyEase2 = new FunnyEase2();
-    // For each easing function, you can choose beetween EASEIN (default), EASEOUT, EASEINOUT
-    funnyEase2.setEasingMode(EasingFunction.EASINGMODE_EASEOUT);
-
-    // Adding easing function to my animationForward
-    animationRotatePulse.setEasingFunction(funnyEase2);
+    animationRotatePulse.setEasingFunction(easingFunctionRotation);
+    // let FunnyEase2 = (function (_super) {
+    //     tslib_1.__extends(FunnyEase, _super);
+    //     function FunnyEase() {
+    //         _super.apply(this, arguments);
+    //         ;}
+    //     FunnyEase.prototype.easeInCore = function (gradient) {
+    //         // Here is the core method you should change to make your own Easing Function
+    //         // Gradient is the percent of value change
+    //         // return (Math.pow(Math.pow(gradient, 20), Math.pow(gradient, 20)) / Math.pow(Math.pow(gradient, 5), Math.pow(gradient, 5))) * Math.pow(Math.pow(gradient, 1.5), Math.pow(gradient, 1.5));
+    //         return (Math.sin(Math.PI * ((gradient * 6) - 0.5))) + 2;
+    //
+    //     };
+    //     return FunnyEase;
+    // })(EasingFunction);
+    //
+    // let funnyEase2 = new FunnyEase2();
+    // // For each easing function, you can choose beetween EASEIN (default), EASEOUT, EASEINOUT
+    // funnyEase2.setEasingMode(EasingFunction.EASINGMODE_EASEOUT);
+    //
+    // // Adding easing function to my animationForward
+    // animationRotatePulse.setEasingFunction(funnyEase2);
 //////////////////////////////////////////////
 
     object.animations = [];
@@ -210,10 +211,10 @@ export default function AnimationScalePulse(targetScale, targetPosition, duratio
     let animScale = scene.beginAnimation(
         object._children[0],
         0,
-        90,
+        120,
         false,
         duration,
-        // stopedCalback
+        stopedCalback
     );
     let animPosition = scene.beginAnimation(
         object,
@@ -221,7 +222,7 @@ export default function AnimationScalePulse(targetScale, targetPosition, duratio
         90,
         false,
         duration,
-        stopedCalback
+        // stopedCalback
     );
 
     return  {

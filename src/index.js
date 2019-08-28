@@ -21,24 +21,27 @@ import './css/style.css';
 import {
     Engine,
     Scene,
-    GlowLayer,
+    // GlowLayer,
     AssetsManager,
     ArcRotateCamera,
     Vector3,
-    SceneLoader,
-    PBRMaterial,
-    Texture,
     Color3,
-    MeshBuilder,
-    Axis,
-    Mesh,
+    SceneLoader,
+    // PBRMaterial,
+    // Texture,
+    // Color3,
+    // MeshBuilder,
+    // Axis,
+    // Mesh,
     ActionManager,
     ExecuteCodeAction,
-    Camera,
-    StandardRenderingPipeline,
-    DirectionalLight,
-    HemisphericLight,
-    StandardMaterial
+    Camera
+    // StandardRenderingPipeline,
+    // DefaultRenderingPipeline,
+    // ImageProcessingConfiguration,
+    // DirectionalLight,
+    // HemisphericLight,
+    // StandardMaterial
     // CubeTexture
 } from '@babylonjs/core';
 import {
@@ -47,7 +50,7 @@ import {
 import {GLTFFileLoader,GLTFLoaderAnimationStartMode} from '@babylonjs/loaders';
 // import {StandardRenderingPipeline} from '@babylonjs/post-processes';
 import CreateCanvas from './js/CreateCanvas';
-import Growth from './js/Growth';
+// import Growth from './js/Growth';
 import './js/showFPS';
 // import AnimationLeafDeath from "./js/AnimationLeafDeath";
 // import AnimationEmissiveColor from "./js/AnimationEmissiveColor";
@@ -55,15 +58,19 @@ import './js/showFPS';
 // import AnimationStopReels from "./js/AnimationStopReels";
 import CreateReel from "./js/CreateReel";
 import GenerateWinCombination from "./js/GenerateWinCombination";
-import ParticlesSquare from './js/ParticlesSquare';
+// import ParticlesSquare from './js/ParticlesSquare';
 import ChangeCustomVertexParticles from './js/changeCustomVertexParticles';
 
 import MakeButton from './js/MakeButton';
 
 import Fire from './js/FireParticles';
+import {NoiseProceduralTexture, Scalar} from "@babylonjs/core/index";
 
-let objGrowth;
+// let objGrowth;
+// let baseURL = document.location.href + '/';
 let baseURL = '/src/';
+// console.log(document.location.href)
+
 let canvas = CreateCanvas();
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -73,7 +80,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
 
         // load the 3D engine
-        var engine = new Engine(canvas, true, {preserveDrawingBuffer: false, stencil: false}, false);
+        var engine = new Engine(canvas, true, {preserveDrawingBuffer: true, stencil: true}, false);
 
         // createScene function that creates and return the scene
         var createScene = function () {
@@ -84,7 +91,7 @@ window.addEventListener('DOMContentLoaded', function(){
             var assetsManager = new AssetsManager(scene);
             // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
             // var camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 20, -50), scene);
-            var camera = new ArcRotateCamera('Camera', 0, 0, 0.5, new Vector3(0, 8, 67), scene);
+            var camera = new ArcRotateCamera('Camera', 0, 0, 0.5, new Vector3(0, 8, 70), scene);
             camera.fovMode = Camera.FOVMODE_HORIZONTAL_FIXED;
             // camera.fov = 0.5;
             // camera.setPosition(new BABYLON.Vector3(0, 20, -20));
@@ -95,17 +102,27 @@ window.addEventListener('DOMContentLoaded', function(){
             // camera.setTarget(BABYLON.Vector3.Zero());
 
             // attach the camera to the canvas
-            camera.attachControl(canvas, false);
+            // camera.attachControl(canvas, false);
             scene.showFPS();
 
+         //   let startButton, autoPlay, maxBet;
+
             let fires = [];
+            var noiseTexture = new NoiseProceduralTexture("perlin", 32, scene);
+            noiseTexture.animationSpeedFactor = 10;
+            noiseTexture.persistence = 0.8;
+            noiseTexture.brightness = .5;
+            noiseTexture.octaves = 8;
             new ChangeCustomVertexParticles();
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 5; i++) {
                 let fire = new Fire({
                     engine: engine,
                     scene: scene,
-                    sizeParticle: 9,
-                    countParticles: 12
+                    sizeParticlesAddBlendMode: 7,
+                    sizeParticlesStandardBlendMode: 7,
+                    countParticlesAddBlendMode: 6,
+                    countParticlesStandardBlendMode: 3,
+                    noiseTexture: noiseTexture
                 });
                 fires.push(fire);
             }
@@ -118,29 +135,60 @@ window.addEventListener('DOMContentLoaded', function(){
                 // fire.setTextureNoiseCombustion(task.texture);
             };
 
+            var textureSpark = assetsManager.addTextureTask('textureNoiseCombustionAlpha', baseURL + 'assets/textures/fire/sparks.png', null, false);
+            textureSpark.onSuccess = function(task) {
+                fires.map(v => {
+                    v.setTextureSpark(task.texture);
+                })
+                // fire.setTextureNoiseCombustion(task.texture);
+            };
+
+
+            var textureSparkStretched = assetsManager.addTextureTask('textureNoiseCombustionAlpha', baseURL + 'assets/textures/fire/sparkStretched.png', null, false);
+            textureSparkStretched.onSuccess = function(task) {
+                fires.map(v => {
+                    v.setTextureSparkStretched(task.texture);
+                })
+                // fire.setTextureNoiseCombustion(task.texture);
+            };
+
             var textureNoiseCombustion1 = assetsManager.addTextureTask('textureNoiseCombustion1', baseURL + 'assets/textures/fire/noiseTexture.png', null, false);
             textureNoiseCombustion1.onSuccess = function(task) {
+
                 fires.map(v => {
                     v.setTextureNoiseCombustion1(task.texture);
                 })
                 // fire.setTextureNoiseCombustion1(task.texture);
             };
 
-            var textureFire = assetsManager.addTextureTask('textureFire', baseURL + 'assets/textures/fire/flare2.png', null, false);
-            textureFire.onSuccess = function(task) {
-                fires.map(v => {
-                    v.setTextureFlame(task.texture);
-                })
-                // fire.setTextureFlame(task.texture);
-            };
-            var textureFireOrigin = assetsManager.addTextureTask('textureFireOrigin', baseURL + 'assets/textures/fire/flare4.png', null, false);
-            textureFireOrigin.onSuccess = function(task) {
-                fires.map(v => {
-                    v.setTextureOrigin(task.texture);
-                })
-                // fire.setTextureOrigin(task.texture);
-            };
+            // var textureFire = assetsManager.addTextureTask('textureFire', baseURL + 'assets/textures/fire/flare2.png', null, false);
+            // textureFire.onSuccess = function(task) {
+            //     fires.map(v => {
+            //         v.setTextureFlame(task.texture);
+            //     })
+            //     // fire.setTextureFlame(task.texture);
+            // };
+            // var textureFireOrigin = assetsManager.addTextureTask('textureFireOrigin', baseURL + 'assets/textures/fire/flare4.png', null, false);
+            // textureFireOrigin.onSuccess = function(task) {
+            //     fires.map(v => {
+            //         v.setTextureOrigin(task.texture);
+            //     })
+            //     // fire.setTextureOrigin(task.texture);
+            // };
+            // Set up new rendering pipeline
+            // var pipeline = new DefaultRenderingPipeline("default", true, scene);
 
+            // Tone mapping
+            // scene.imageProcessingConfiguration.toneMappingEnabled = true;
+            // scene.imageProcessingConfiguration.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
+            // scene.imageProcessingConfiguration.exposure = 3;
+
+            // Bloom
+            // pipeline.bloomEnabled = true;
+            // pipeline.bloomThreshold = 0.1;
+            // pipeline.bloomWeight = 3;
+            // pipeline.bloomKernel = 64;
+            // pipeline.bloomScale = .5;
             // var pipeline = new StandardRenderingPipeline(
             //     "standard", // The name of the pipeline
             //     scene, // The scene instance
@@ -148,7 +196,7 @@ window.addEventListener('DOMContentLoaded', function(){
             //     null, // The original post-process that the pipeline will be based on
             //     [camera] // The list of cameras to be attached to
             // );
-            // // pipeline.exposure = 1.0;
+            // pipeline.exposure = 1.0;
             // pipeline.samples = 4;
             // pipeline.fxaaEnabled = true;
             // pipeline.bloomEnabled = true;
@@ -195,29 +243,29 @@ window.addEventListener('DOMContentLoaded', function(){
             // var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', baseURL + 'assets/textures/environmentExp.env');
             // var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', baseURL + 'assets/textures/them/environmentSceneDarkest.env');
             // var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', baseURL + 'assets/textures/righthdrSpecularHDR.dds');
-            var taskEnvTexture1 = assetsManager.addCubeTextureTask('studioEnv1', baseURL + 'assets/textures/them/2.dds');
+           /* var taskEnvTexture1 = assetsManager.addCubeTextureTask('studioEnv1', baseURL + 'assets/textures/them/2.dds');
             taskEnvTexture1.onSuccess = function(task) {
                 // task.texture.rotationY = Math.PI;
                 task.texture.gammaSpace = false;
-            };
-            var taskEnvTexture2 = assetsManager.addCubeTextureTask('studioEnv2', baseURL + 'assets/textures/hfgSpecularHDR.dds');
+                // scene.environmentTexture = task.texture;
+            }*/;
+            var taskEnvTexture2 = assetsManager.addCubeTextureTask('studioEnv2', baseURL + 'assets/textures/them/3.dds');
             taskEnvTexture2.onSuccess = function(task) {
-                task.texture.rotationY = Math.PI;
+                // task.texture.rotationY = Math.PI;
                 task.texture.gammaSpace = false;
-                task.texture.invertZ = true;
+                // task.texture.invertZ = true;
                 // scene.environmentTexture = task.texture;
                 // scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
             };
-            var taskEnvTexture3 = assetsManager.addCubeTextureTask('studioEnv3', baseURL + 'assets/textures/them/3.dds');
+            var taskEnvTexture3 = assetsManager.addCubeTextureTask('studioEnv3', baseURL + 'assets/textures/them/4SpecularHDR.dds');
             taskEnvTexture3.onSuccess = function(task) {
-                // task.texture.rotationY = Math.PI;
                 // task.texture.rotationY = Math.PI;
                 task.texture.gammaSpace = false;
                 // task.texture.invertZ = true;
                 scene.environmentTexture = task.texture;
             };
 
-            var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', baseURL + 'assets/textures/them/environmentSceneDarkest.env');
+          /*  var taskEnvTexture = assetsManager.addCubeTextureTask('studioEnv', baseURL + 'assets/textures/them/environmentSceneDarkest.env');
             taskEnvTexture.onSuccess = function(task) {
                 task.texture.rotationY = Math.PI;
                 task.texture.gammaSpace = false;
@@ -226,7 +274,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
                 // scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
                 // scene.environmentTexture.samplingMode = Texture.NEAREST_SAMPLINGMODE;
-            };
+            };*/
 
             // var taskBRDFTexture = assetsManager.addTextureTask('studioBRDF', baseURL + 'assets/textures/them/2Brdf.dds');
             // taskBRDFTexture.onSuccess = function(task) {
@@ -235,12 +283,12 @@ window.addEventListener('DOMContentLoaded', function(){
 
             //HDR_110_Tunnel_Env.hdr
             // Main_Game-Zborka_v02.hdr
-            var taskHdrTexture = assetsManager.addHDRCubeTextureTask('studioHDR', baseURL + 'assets/textures/hfq_3.hdr', 16, false, true, true, true);
+            var taskHdrTexture = assetsManager.addHDRCubeTextureTask('studioHDR', baseURL + 'assets/textures/them/hfq_4.hdr', 16, false, true, true, true);
             taskHdrTexture.onSuccess = function(task) {
                 task.texture.rotationY = Math.PI;
                 // task.texture.invertZ = true;
-                scene.environmentTexture = task.texture;
-                scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
+                // scene.environmentTexture = task.texture;
+                // scene.createDefaultSkybox(task.texture, true, 1000, 0.005);
             };
 
             // scene.environmentTexture = hdrTexture;
@@ -254,7 +302,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 }
             });
 
-            let tubeMaterial = new PBRMaterial('tubeMaterial', scene);
+         /*   let tubeMaterial = new PBRMaterial('tubeMaterial', scene);
             tubeMaterial.metallic = 0.0;
             tubeMaterial.roughness = 0.25;
             tubeMaterial.environmentTexture = scene.environmentTexture;
@@ -309,7 +357,7 @@ window.addEventListener('DOMContentLoaded', function(){
             var textureParticles = assetsManager.addTextureTask('textureParticles', baseURL + 'assets/textures/particle.png');
             textureParticles.onSuccess = function(task) {
                particles.setTexture(task.texture);
-            };
+            };*/
 
             // let planeMaterial = new PBRMaterial('planeMaterial', scene);
             // planeMaterial.albedoColor = new Color3(0.75, 0.75, 0.25).scale(0.1);
@@ -322,7 +370,7 @@ window.addEventListener('DOMContentLoaded', function(){
             // plane.position.z = 20;
             // plane.material = planeMaterial;
 
-            var textureThreeOn = assetsManager.addTextureTask('textureThreeOn', baseURL + 'assets/textures/line/threeOn.png');
+     /*       var textureThreeOn = assetsManager.addTextureTask('textureThreeOn', baseURL + 'assets/textures/line/threeOn.png');
             textureThreeOn.onSuccess = function(task) {
                 task.texture.vScale = -1;
             };
@@ -380,7 +428,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 tubeMaterial,
                 assetsManager,
                 scene
-            );
+            );*/
 
             // var motionblur = new BABYLON.MotionBlurPostProcess(
             //     "mb", // The name of the effect.
@@ -432,10 +480,11 @@ window.addEventListener('DOMContentLoaded', function(){
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols[5] = task.loadedMeshes[0];
             };
-            var meshTaskOrange = assetsManager.addMeshTask('orange', '', baseURL + 'assets/models/tmp/', 'orange_final_Draco.glb');
+            var meshTaskOrange = assetsManager.addMeshTask('orange', '', baseURL + 'assets/models/tmp/', 'orange_final1_Draco.glb');
             meshTaskOrange.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
+                // task.loadedMeshes[0]._children[0].material.albedoColor = new Color3(1.5,0.5,1.0);
                 symbols[6] = task.loadedMeshes[0];
             };
             var meshTaskPlum = assetsManager.addMeshTask('plum', '', baseURL + 'assets/models/tmp/', 'plum_final_Draco.glb');
@@ -469,7 +518,7 @@ window.addEventListener('DOMContentLoaded', function(){
             // cylinder.material = materialCilynder;
             // // cylinder.material.unlit = true;
 
-            let meshTask = assetsManager.addMeshTask('leaf', '', baseURL + 'assets/models/', 'leaf.glb');
+        /*    let meshTask = assetsManager.addMeshTask('leaf', '', baseURL + 'assets/models/', 'leaf.glb');
 
             meshTask.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
@@ -477,7 +526,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 task.loadedMeshes[0]._children[0].material.roughness = 0.25;
                 task.loadedMeshes[0]._children[0].material.environmentTexture = scene.environmentTexture;
                 objGrowth.setLeaf(task.loadedMeshes[0]);
-            };
+            };*/
 
             let managerGUI = new GUI3DManager(scene);
             let line3;
@@ -506,18 +555,20 @@ window.addEventListener('DOMContentLoaded', function(){
                 // line3.material.emissiveTexture = textureThreeEm.texture;
                 // line3.material.metallic = 0;
 
-                task.loadedMeshes[0]._children.map((v, i) => {
-                    console.log(v.id, i);
-                });
+                // task.loadedMeshes[0]._children.map((v, i) => {
+                //     console.log(v.id, i);
+                // });
 
 
-                task.loadedMeshes[0].position.y = 11.05;
-                task.loadedMeshes[0].position.z = 10.75;
+                task.loadedMeshes[0].position.y = 10.05;
+                task.loadedMeshes[0].position.z = 11;
                 // task.loadedMeshes[0].scaling = new BABYLON.Vector3(0.105,0.105,0.105);
                 task.loadedMeshes[0].scaling = new Vector3(4.8,4.8,-4.8);
                 task.loadedMeshes[0]._children[34].material.unlit = true;
                 // task.loadedMeshes[0]._children[10].material.unlit = true;
-                task.loadedMeshes[0]._children[3].material.unlit = true;
+                task.loadedMeshes[0]._children[4].material.unlit = true;
+
+                // task.loadedMeshes[0]._children[31].material.unlit = true;
                 // task.loadedMeshes[0]._children[0]._children[33]._children[0].material.unlit = true;
                 // task.loadedMeshes[0]._children[0]._children[20]._children[0].material.roughness = 0.1;
                 // task.loadedMeshes[0]._children[0]._children[20]._children[0].material.metallic = 1.1;
@@ -542,45 +593,56 @@ window.addEventListener('DOMContentLoaded', function(){
                 };
 
                 let startButton = new MakeButton("startButton", task.loadedMeshes[0]._children[31], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
-                startButton.onPointerUpObservable.add(function () {
-                    console.time()
-                    if (!generateWinCombination.gettedWinning) {
-                        generateWinCombination.gettingWinnings();
-                    }
+                startButton.pushButton.onPointerUpObservable.add(function () {
 
-                    generateWinCombination.generate();
+                    if (reels[reels.length - 1].rotateSlots && !reels[reels.length - 1].stoped) {
 
-                    if (reels[reels.length - 1].stoped) {
-                        reels.map(v => {
-                            v.startRotate(true);
+                        reels.map((v, i) => {
+                            v.stopRotate(false, generateWinCombination.arrayCombination[i]);
                         });
-                        forceStop = undefined;
+
+                    } else {
+
+                        if (!generateWinCombination.gettedWinning) {
+                            generateWinCombination.gettingWinnings();
+                        }
+
+                        generateWinCombination.generate();
+
+                        if (reels[reels.length - 1].stoped) {
+                            reels.map((v, i) => {
+                                v.startRotate(true, fires[i]);
+                            });
+                        }
+
+                        setTimeout(function () {
+                            enableEndRotateAnimation = true;
+                            reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
+                        }, 500);
                     }
 
-                    setTimeout(function () {
-                        enableEndRotateAnimation = true;
-                        reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
-                        forceStop = true;
-                    }, 500);
-                    console.timeEnd()
                 });
 
-                let autoPlay = new MakeButton("autoPlay", task.loadedMeshes[0]._children[32], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
-                autoPlay.onPointerUpObservable.add(function () {
+          /*      let autoPlay = new MakeButton("autoPlay", task.loadedMeshes[0]._children[32], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
+                autoPlay.pushButton.onPointerUpObservable.add(function () {
                     fires.map(v => {
                         v.stop();
                     })
                 });
 
                 let maxBet = new MakeButton("maxBet", task.loadedMeshes[0]._children[31], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
-                maxBet.onPointerUpObservable.add(function () {
+                maxBet.pushButton.onPointerUpObservable.add(function () {
                     fires.map(v => {
                         v.start();
                     })
-                });
+                });*/
+
+                // startButton.setTexture(textureNoiseCombustion1.texture);
+                // autoPlay.setTexture(textureNoiseCombustion1.texture);
+                // maxBet.setTexture(textureNoiseCombustion1.texture);
             };
 
-            let generateWinCombination = new GenerateWinCombination(5,3,7);
+            let generateWinCombination = new GenerateWinCombination(5,3,10);
 
             let numSymbolPerReel = 16;
             let section = (Math.PI * 2) / numSymbolPerReel;
@@ -603,25 +665,23 @@ window.addEventListener('DOMContentLoaded', function(){
                 // particles.start();
                 for (var j = 0, i = 0; j < 5; j++, i += 3) {
                     let reel = new CreateReel(symbols, angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), i, scene);
+                    fires[j].setEmitter(reel.meshes[Math.round(Scalar.RandomRange(1, 3))]._children[0]._children[0]);
                     reels.push(reel);
                 }
 
-                for (let i = 0, j = 0; i < 3; i++, j += 3) {
-                    fires[0 + j].setEmitter(reels[i].meshes[1]._children[0]._children[0]);
-                    fires[1 + j].setEmitter(reels[i].meshes[2]._children[0]._children[0]);
-                    fires[2 + j].setEmitter(reels[i].meshes[3]._children[0]._children[0]);
-                }
-                fires[9].setEmitter(reels[3].meshes[1]._children[0]._children[0]);
+                // for (let i = 0; i < 5; i++) {
+                //     fires[i].setEmitter(reels[i].meshes[Math.round(Scalar.RandomRange(1, 3))]._children[0]._children[0]);
+                // }
                 // fire.setEmitter(reels[0].meshes[2]._children[0]._children[0]._children[0]);
-                objGrowth.setPoints([
-                    new Vector3(12,10,20),
-                    new Vector3(10,10,20),
-                    new Vector3(5,15,20),
-                    new Vector3(0,10,20),
-                    new Vector3(-5,15,20),
-                    new Vector3(-10,10,20),
-                    new Vector3(-12,10,20),
-                ]);
+                /*   objGrowth.setPoints([
+                       new Vector3(12,10,20),
+                       new Vector3(10,10,20),
+                       new Vector3(5,15,20),
+                       new Vector3(0,10,20),
+                       new Vector3(-5,15,20),
+                       new Vector3(-10,10,20),
+                       new Vector3(-12,10,20),
+                   ]);*/
 
                 // for (var i = 0; i < scene.meshes.length; i++) {
                 //     shadowGenerator.addShadowCaster(scene.meshes[i]);
@@ -659,102 +719,102 @@ window.addEventListener('DOMContentLoaded', function(){
                 //     }
                 // }, 1000);
                 // shadowGenerator.getShadowMap().refreshRate = BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
-            });
 
-            let indexLineWin = 0;
-            let numWinSymbols = 0;
-            let numReels = 0;
-            scene.registerBeforeRender(function () {
+                let indexLineWin = 0;
+                let numWinSymbols = 0;
+                let numReels = 0;
+                scene.registerBeforeRender(function () {
 // console.time();
-                let deltaTime = scene.getEngine().getDeltaTime()*0.01;
-                reels.map(v => {
-                    v.update(deltaTime);
-                });
+                    let deltaTime = scene.getEngine().getDeltaTime() * 0.01;
+                    reels.map(v => {
+                        v.update(deltaTime);
+                    });
 
-                if (enableEndRotateAnimation && reels[stopIndex].stoped) {
-                    if (stopIndex < 4) {
-                        stopIndex++;
-                        reels[stopIndex].stopRotate(false, generateWinCombination.arrayCombination[stopIndex]);
-                    } else {
-                        stopIndex = 0;
-                        enableEndRotateAnimation = false;
+                    if (enableEndRotateAnimation && reels[stopIndex].stoped) {
+                        if (stopIndex < 4) {
+                            stopIndex++;
+                            reels[stopIndex].stopRotate(false, generateWinCombination.arrayCombination[stopIndex]);
+                        } else {
+                            stopIndex = 0;
+                            enableEndRotateAnimation = false;
 
-                        function switchReels() {
-                            if (numReels < 4) {
-                                numReels++;
-                            } else {
-                                numReels = 0;
-                                numWinSymbols = 0;
-                                if (indexLineWin < generateWinCombination.winLineNum-1) {
-                                    indexLineWin++;
-                                    generateWinCombination.moveArray[indexLineWin].map((v, i) => {
-                                        reels[i].moveWinSymbols(v, generateWinCombination.arrayCombination[stopIndex], switchReels)
-                                    })
+                            function switchReels() {
+                                if (numReels < 4) {
+                                    numReels++;
                                 } else {
-                                    indexLineWin = 0;
+                                    numReels = 0;
                                     numWinSymbols = 0;
-                                    generateWinCombination.gettingWinnings();
+                                    if (indexLineWin < generateWinCombination.winLineNum - 1) {
+                                        indexLineWin++;
+                                        generateWinCombination.moveArray[indexLineWin].map((v, i) => {
+                                            reels[i].moveWinSymbols(v, generateWinCombination.arrayCombination[stopIndex], switchReels, fires[i])
+                                        })
+                                    } else {
+                                        indexLineWin = 0;
+                                        numWinSymbols = 0;
+                                        generateWinCombination.gettingWinnings();
+                                        // scene.imageProcessingConfiguration.exposure = 1.0;
+                                        // generateWinCombination.generate();
+                                        //
+                                        // if (reels[reels.length - 1].stoped) {
+                                        //     reels.map(v => {
+                                        //         v.startRotate(true);
+                                        //     });
+                                        //     forceStop = undefined;
+                                        // }
 
-                                    // generateWinCombination.generate();
-                                    //
-                                    // if (reels[reels.length - 1].stoped) {
-                                    //     reels.map(v => {
-                                    //         v.startRotate(true);
-                                    //     });
-                                    //     forceStop = undefined;
-                                    // }
-
-                                    // setTimeout(function () {
-                                    //     enableEndRotateAnimation = true;
-                                    //     reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
-                                    //     forceStop = true;
-                                    // }, 500);
+                                        // setTimeout(function () {
+                                        //     enableEndRotateAnimation = true;
+                                        //     reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
+                                        //     forceStop = true;
+                                        // }, 500);
+                                    }
                                 }
                             }
+
+                            generateWinCombination.moveArray[indexLineWin].map((v, i) => {
+                                reels[i].moveWinSymbols(v, generateWinCombination.arrayCombination[stopIndex], switchReels, fires[i])
+                            })
+                            // generateWinCombination.gettingWinnings();
+
+                            /*      generateWinCombination.generate();
+
+                                      if (reels[reels.length - 1].stoped) {
+                                          reels.map(v => {
+                                              v.startRotate(true);
+                                          });
+                                          forceStop = undefined;
+                                      }
+
+                                  setTimeout(function () {
+                                      if (forceStop === undefined) {
+                                          forceStop = false;
+                                      } else {
+                                          forceStop = true;
+                                      }
+
+                                      if (forceStop) {
+                                          reels.map((v, i) => {
+                                              v.stopRotate(false, generateWinCombination.arrayCombination[i]);
+                                          });
+                                          forceStop = undefined;
+                                      } else {
+                                          enableEndRotateAnimation = true;
+                                          reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
+                                      }
+                                  }, 1000);*/
+
                         }
-
-                        generateWinCombination.moveArray[indexLineWin].map((v, i) => {
-                            reels[i].moveWinSymbols(v, generateWinCombination.arrayCombination[stopIndex], switchReels)
-                        })
-                        // generateWinCombination.gettingWinnings();
-
-                  /*      generateWinCombination.generate();
-
-                            if (reels[reels.length - 1].stoped) {
-                                reels.map(v => {
-                                    v.startRotate(true);
-                                });
-                                forceStop = undefined;
-                            }
-
-                        setTimeout(function () {
-                            if (forceStop === undefined) {
-                                forceStop = false;
-                            } else {
-                                forceStop = true;
-                            }
-
-                            if (forceStop) {
-                                reels.map((v, i) => {
-                                    v.stopRotate(false, generateWinCombination.arrayCombination[i]);
-                                });
-                                forceStop = undefined;
-                            } else {
-                                enableEndRotateAnimation = true;
-                                reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
-                            }
-                        }, 1000);*/
-
                     }
-                }
 
 
 // console.timeEnd();
-                objGrowth.update(deltaTime);
-                // if (objGrowth.ended) {
-                //     objGrowth.startGrowth();
-                // }
-                particles.motionUpdate(deltaTime);
+//                 objGrowth.update(deltaTime);
+                    // if (objGrowth.ended) {
+                    //     objGrowth.startGrowth();
+                    // }
+                    // particles.motionUpdate(deltaTime);
+                });
             });
 
             scene.actionManager = new ActionManager(scene);
@@ -787,8 +847,40 @@ window.addEventListener('DOMContentLoaded', function(){
                     }
                 )
             );
-
             scene.actionManager.registerAction(
+                new ExecuteCodeAction(
+                    {
+                        trigger: ActionManager.OnKeyDownTrigger,
+                        parameter: '1'
+                    },
+                    function (evt) {
+                        scene.environmentTexture = taskEnvTexture2.texture;
+                    }
+                )
+            );
+            scene.actionManager.registerAction(
+                new ExecuteCodeAction(
+                    {
+                        trigger: ActionManager.OnKeyDownTrigger,
+                        parameter: '2'
+                    },
+                    function (evt) {
+                        scene.environmentTexture = taskEnvTexture3.texture;
+                    }
+                )
+            );
+            scene.actionManager.registerAction(
+                new ExecuteCodeAction(
+                    {
+                        trigger: ActionManager.OnKeyDownTrigger,
+                        parameter: '3'
+                    },
+                    function (evt) {
+                        scene.environmentTexture = taskHdrTexture.texture;
+                    }
+                )
+            );
+     /*       scene.actionManager.registerAction(
                 new ExecuteCodeAction(
                     {
                         trigger: ActionManager.OnKeyDownTrigger,
@@ -854,39 +946,7 @@ window.addEventListener('DOMContentLoaded', function(){
                     }
                 )
             );
-            scene.actionManager.registerAction(
-                new ExecuteCodeAction(
-                    {
-                        trigger: ActionManager.OnKeyDownTrigger,
-                        parameter: '1'
-                    },
-                    function (evt) {
-                        scene.environmentTexture = taskEnvTexture1.texture;
-                    }
-                )
-            );
-            scene.actionManager.registerAction(
-                new ExecuteCodeAction(
-                    {
-                        trigger: ActionManager.OnKeyDownTrigger,
-                        parameter: '2'
-                    },
-                    function (evt) {
-                        scene.environmentTexture = taskEnvTexture2.texture;
-                    }
-                )
-            );
-            scene.actionManager.registerAction(
-                new ExecuteCodeAction(
-                    {
-                        trigger: ActionManager.OnKeyDownTrigger,
-                        parameter: '3'
-                    },
-                    function (evt) {
-                        scene.environmentTexture = taskEnvTexture3.texture;
-                    }
-                )
-            );
+
             scene.actionManager.registerAction(
                 new ExecuteCodeAction(
                     {
@@ -974,7 +1034,7 @@ window.addEventListener('DOMContentLoaded', function(){
                         }
                     }
                 )
-            );
+            );*/
             // return the created scene
             assetsManager.load();
 

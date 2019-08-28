@@ -74,7 +74,8 @@ let conf = {
             chunkFilename: "./css/[id].css"
         }),
         new CopyWebpackPlugin([
-            {from:path.resolve(__dirname,'src', 'assets'), to:path.resolve(__dirname, 'dist', 'assets')}
+            {from:path.resolve(__dirname,'src', 'assets'), to:path.resolve(__dirname, 'dist', 'assets')},
+            {from:path.resolve(__dirname,'src', 'Shaders'), to:path.resolve(__dirname, 'dist', 'src', 'Shaders')}
         ]),
         // new webpack.DefinePlugin({
         //     'CANVAS_RENDERER': JSON.stringify(true),
