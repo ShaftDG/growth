@@ -1,3 +1,5 @@
+// import "@babylonjs/core/Debug/debugLayer";
+// import "@babylonjs/inspector";
 
 import './css/style.css';
 // import { Engine } from '@babylonjs/core/Engines';
@@ -21,11 +23,13 @@ import './css/style.css';
 import {
     Engine,
     Scene,
+    // Animation,
+    // ParticleHelper,
     // GlowLayer,
     AssetsManager,
     ArcRotateCamera,
     Vector3,
-    Color3,
+    // Color3,
     SceneLoader,
     // PBRMaterial,
     // Texture,
@@ -35,7 +39,8 @@ import {
     // Mesh,
     ActionManager,
     ExecuteCodeAction,
-    Camera
+    Camera,
+    Constants,
     // StandardRenderingPipeline,
     // DefaultRenderingPipeline,
     // ImageProcessingConfiguration,
@@ -63,12 +68,16 @@ import ChangeCustomVertexParticles from './js/changeCustomVertexParticles';
 
 import MakeButton from './js/MakeButton';
 
-import Fire from './js/FireParticles';
+// import Fire from './js/FireParticles';
+import FireHelper from './js/FireParticlesHelper';
 import {NoiseProceduralTexture, Scalar} from "@babylonjs/core/index";
+// import {EngineStore} from "@babylonjs/core/Engines/engineStore";
+// import {Logger} from "@babylonjs/core/Misc/logger";
 
 // let objGrowth;
-// let baseURL = document.location.href + '/';
-let baseURL = '/src/';
+let baseURL = document.location.href + 'src/';
+Constants.PARTICLES_BaseAssetsUrl = baseURL + 'assets';
+// let baseURL = '/src/';
 // console.log(document.location.href)
 
 let canvas = CreateCanvas();
@@ -86,6 +95,7 @@ window.addEventListener('DOMContentLoaded', function(){
         var createScene = function () {
             // create a basic BJS Scene object
             var scene = new Scene(engine);
+            // scene.debugLayer.show();
             // var gl = new GlowLayer("glow", scene);
             // gl.intensity = 1.0;
             var assetsManager = new AssetsManager(scene);
@@ -107,23 +117,29 @@ window.addEventListener('DOMContentLoaded', function(){
 
          //   let startButton, autoPlay, maxBet;
 
+
+
             let fires = [];
             var noiseTexture = new NoiseProceduralTexture("perlin", 32, scene);
             noiseTexture.animationSpeedFactor = 10;
             noiseTexture.persistence = 0.8;
             noiseTexture.brightness = .5;
             noiseTexture.octaves = 8;
+
+            let fireHelper = new FireHelper(scene, engine);
+
             new ChangeCustomVertexParticles();
             for (let i = 0; i < 5; i++) {
-                let fire = new Fire({
-                    engine: engine,
-                    scene: scene,
-                    sizeParticlesAddBlendMode: 7,
-                    sizeParticlesStandardBlendMode: 7,
-                    countParticlesAddBlendMode: 6,
-                    countParticlesStandardBlendMode: 3,
-                    noiseTexture: noiseTexture
-                });
+                // let fire = new Fire({
+                //     engine: engine,
+                //     scene: scene,
+                //     sizeParticlesAddBlendMode: 7,
+                //     sizeParticlesStandardBlendMode: 7,
+                //     countParticlesAddBlendMode: 6,
+                //     countParticlesStandardBlendMode: 3,
+                //     noiseTexture: noiseTexture
+                // });
+                let fire = new FireHelper(scene, engine);
                 fires.push(fire);
             }
 
@@ -132,7 +148,6 @@ window.addEventListener('DOMContentLoaded', function(){
                 fires.map(v => {
                     v.setTextureNoiseCombustion(task.texture);
                 })
-                // fire.setTextureNoiseCombustion(task.texture);
             };
 
             var textureSpark = assetsManager.addTextureTask('textureNoiseCombustionAlpha', baseURL + 'assets/textures/fire/sparks.png', null, false);
@@ -140,7 +155,6 @@ window.addEventListener('DOMContentLoaded', function(){
                 fires.map(v => {
                     v.setTextureSpark(task.texture);
                 })
-                // fire.setTextureNoiseCombustion(task.texture);
             };
 
 
@@ -149,7 +163,6 @@ window.addEventListener('DOMContentLoaded', function(){
                 fires.map(v => {
                     v.setTextureSparkStretched(task.texture);
                 })
-                // fire.setTextureNoiseCombustion(task.texture);
             };
 
             var textureNoiseCombustion1 = assetsManager.addTextureTask('textureNoiseCombustion1', baseURL + 'assets/textures/fire/noiseTexture.png', null, false);
@@ -157,8 +170,8 @@ window.addEventListener('DOMContentLoaded', function(){
 
                 fires.map(v => {
                     v.setTextureNoiseCombustion1(task.texture);
-                })
-                // fire.setTextureNoiseCombustion1(task.texture);
+                });
+                fireHelper.setTextureNoiseCombustion1(task.texture);
             };
 
             // var textureFire = assetsManager.addTextureTask('textureFire', baseURL + 'assets/textures/fire/flare2.png', null, false);
@@ -441,70 +454,168 @@ window.addEventListener('DOMContentLoaded', function(){
 
             // var paralaxTexture = new BABYLON.Texture(baseURL + 'assets/textures/nornallll.png', scene);
 
-            let symbols = new Array(10);
+
+
+            // let symbols = new Array(10);
+            // let skeletons = new Array(10);
+            // let animationsGroups = new Array(10);
+
 // gltf-pipeline -i grapes.glb -o tmp/grapesDraco.glb -d
-            var meshTaskBell = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'bell_final_Draco.glb');
+      /*      let meshTaskBell = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'bell_final_Draco.glb');
             meshTaskBell.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols[0] = task.loadedMeshes[0];
             };
-            var meshTaskLemon = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'lemon_final_Draco.glb');
+            let meshTaskLemon = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'lemon_final_Draco.glb');
             meshTaskLemon.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0]._children[0].material.roughness = 0.35;
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols[1] = task.loadedMeshes[0];
             };
-            var meshTaskWild = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'wild_final_Draco.glb');
+            let meshTaskWild = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'wild_final_Draco.glb');
             meshTaskWild.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols[2] = task.loadedMeshes[0];
             };
-            var meshTaskCherry = assetsManager.addMeshTask('cherry', '', baseURL + 'assets/models/tmp/', 'cherry_final_Draco.glb');
+            let meshTaskCherry = assetsManager.addMeshTask('cherry', '', baseURL + 'assets/models/tmp/', 'cherry_final_Draco.glb');
             meshTaskCherry.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols[3] = task.loadedMeshes[0];
             };
-            var meshTaskGrapes = assetsManager.addMeshTask('grapes', '', baseURL + 'assets/models/tmp/', 'grape_final_Draco.glb');
+            function cloneGLB(mesh, skeleton, animationGroup) {
+                let obj = mesh.clone();
+                console.log(obj)
+                obj.position.y += 10;
+                obj.position.z += 20;
+                if (skeleton) {
+                    let _skeleton = skeleton.clone("Armature_clone", "Skeleton_clone");
+                    obj._children[0]._children[0].skeleton = _skeleton;
+                    // obj._children[0]._children[0].skeleton.overrideMesh = obj;
+                    obj._children[0]._children[0].applySkeleton(_skeleton);
+
+                    function linkBones(array, nameTarget) {
+                        let _target = null;
+                        for (let k = 0; k < array.length; k++) {
+                            if (array[k]._children) {
+                                _target = linkBones(array[k]._children, nameTarget)
+                            }
+                            let stringArray = array[k].name.split('.');
+                            if (stringArray[stringArray.length - 1] === nameTarget) {
+                                _target = array[k]
+                            }
+                            if (_target) {
+                                return _target
+                            }
+                        }
+                        return _target
+                    }
+                    for (let f = 0; f < _skeleton.bones.length; f++) {
+                        let target = linkBones(obj._children, _skeleton.bones[f].name);
+                        _skeleton.bones[f].linkTransformNode(target);
+
+                        let cylinder = MeshBuilder.CreateSphere("cylinder", {diameter: 0.1}, scene);
+                        cylinder.position = target.getAbsolutePosition();
+                        let materialCilynder = new PBRMaterial("materialCilynder", scene);
+                        materialCilynder.albedoColor = new Color3(1.0,0.0,0.0);
+                        cylinder.material = materialCilynder;
+                    }
+
+                    let _animationGroup = animationGroup.clone("clonedAnimationsGroups_clone", function (target) {
+
+                        let nameTarget = target.name;
+
+                        function AnimationClone(array, skeleton) {
+                            for (let k = 0; k < array.length; k++) {
+                                if (array[k]._children) {
+
+                                    AnimationClone(array[k]._children, skeleton)
+                                }
+                                let stringArray = array[k].name.split('.');
+                                if (stringArray[stringArray.length - 1] === nameTarget) {
+                                    target = array[k];
+                                }
+                            }
+                        }
+                        AnimationClone(obj._children[0]._children[1]._children, _skeleton);
+
+                        return target;
+                    });
+                    console.log(_animationGroup)
+                    _animationGroup.start(true);
+                }
+            }
+            let meshTaskGrapes = assetsManager.addMeshTask('grapes', '', baseURL + 'assets/models/tmp/', 'grape_final_anim_Draco.glb');
             meshTaskGrapes.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
-                task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
+                // task.loadedMeshes[0].position.x = -10;
+                // task.loadedMeshes[0].rotate(Axis.X, 1.5, Mesh.WORLD);
+
+                task.loadedMeshes[0].scaling = new Vector3(4,4,4);
+                // task.loadedMeshes[0]._children[0]._children[1].dispose();
+                skeletons[4] = task.loadedSkeletons[0];
                 symbols[4] = task.loadedMeshes[0];
+                animationsGroups[4] =  task.loadedAnimationGroups[0];
+                console.log(task)
+                scene.animationGroups[0].start(true);
+
+                // cloneGLB(task.loadedMeshes[0], task.loadedSkeletons[0], task.loadedAnimationGroups[0])
             };
-            var meshTaskLemon = assetsManager.addMeshTask('lemon', '', baseURL + 'assets/models/tmp/', 'star_final_Draco.glb');
-            meshTaskLemon.onSuccess = function (task) {
+            let meshTaskStar = assetsManager.addMeshTask('lemon', '', baseURL + 'assets/models/tmp/', 'star_final_Draco.glb');
+            meshTaskStar.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols[5] = task.loadedMeshes[0];
             };
-            var meshTaskOrange = assetsManager.addMeshTask('orange', '', baseURL + 'assets/models/tmp/', 'orange_final1_Draco.glb');
+            let meshTaskOrange = assetsManager.addMeshTask('orange', '', baseURL + 'assets/models/tmp/', 'orange_final1_Draco.glb');
             meshTaskOrange.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 // task.loadedMeshes[0]._children[0].material.albedoColor = new Color3(1.5,0.5,1.0);
                 symbols[6] = task.loadedMeshes[0];
             };
-            var meshTaskPlum = assetsManager.addMeshTask('plum', '', baseURL + 'assets/models/tmp/', 'plum_final_Draco.glb');
+            let meshTaskPlum = assetsManager.addMeshTask('plum', '', baseURL + 'assets/models/tmp/', 'plum_final_Draco.glb');
             meshTaskPlum.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols[7] = task.loadedMeshes[0];
             };
-            var meshTaskSeven = assetsManager.addMeshTask('seven', '', baseURL + 'assets/models/tmp/', 'seven_final_Draco.glb');
+            let meshTaskSeven = assetsManager.addMeshTask('seven', '', baseURL + 'assets/models/tmp/', 'seven_final_Draco.glb');
             meshTaskSeven.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols[8] = task.loadedMeshes[0];
             };
-            var meshTaskWatermelon = assetsManager.addMeshTask('watermelon', '', baseURL + 'assets/models/tmp/', 'watermelon_final_Draco.glb');
+            let meshTaskWatermelon = assetsManager.addMeshTask('watermelon', '', baseURL + 'assets/models/tmp/', 'watermelon_final_Draco.glb');
             meshTaskWatermelon.onSuccess = function (task) {
                 task.loadedMeshes[0].setEnabled(false);
                 task.loadedMeshes[0].scaling = new Vector3(4,4,-4);
                 symbols[9] = task.loadedMeshes[0];
-            };
+            };*/
+// let arr = [];
+//             for (var i = 0; i < 5; i++) {
+//                 let meshTaskGrapes1 = assetsManager.addMeshTask('grapes', '', baseURL + 'assets/models/tmp/', 'grape_final_anim_Draco.glb');
+//                 arr.push(meshTaskGrapes1);
+//                 // arr[arr.length - 1].scaling = new Vector3(0.04, 0.04, -0.04);
+//                 // arr[arr.length - 1].position = new Vector3(12.6 - i * 6.3, 10, 20);
+//                 // console.log(meshTaskGrapes1)
+//                 let ii = i;
+//                 arr[arr.length - 1].onSuccess = function (task) {
+//                     // task.loadedMeshes[0].setEnabled(false);
+//                     task.loadedMeshes[0].scaling = new Vector3(0.04, 0.04, -0.04);
+//                     task.loadedMeshes[0].position = new Vector3(12.6 - ii * 6.3, 10, 20);
+//                     task.loadedAnimationGroups[0].start(true);
+//                     // console.log(task, scene.animationGroups)
+//                     // skeletons[4] = task.loadedSkeletons[0];
+//                     // symbols[4] = task.loadedMeshes[0];
+//                     // animationsGroups[4] =  task.loadedAnimationGroups[0];
+//                     // scene.animationGroups[i].start(true);
+//                 };
+//             }
+//             console.log(arr)
 
             // let cylinder = MeshBuilder.CreateCylinder("cylinder", {diameterBottom: 20, diameterTop: 20, height: 40, tessellation: 16}, scene);
             // cylinder.position.y = 10;
@@ -529,7 +640,7 @@ window.addEventListener('DOMContentLoaded', function(){
             };*/
 
             let managerGUI = new GUI3DManager(scene);
-            let line3;
+            // let line3;
             let meshTaskMain = assetsManager.addMeshTask('main', '', baseURL + 'assets/models/tmp/', 'MainGame_Draco.glb');
             meshTaskMain.onSuccess = function (task) {
                 // task.loadedMeshes[0].setEnabled(false);
@@ -592,16 +703,51 @@ window.addEventListener('DOMContentLoaded', function(){
                     deltaPush: new Vector3(0,0,-0.03)
                 };
 
+                function startMoveWinLines(reel) {
+                    reel.onStopEndObservable.addOnce(function () {
+                        if (generateWinCombination.getTotalRound() > 0) {
+                            let index = generateWinCombination.numWinSymbline.indexOf(1);
+                            generateWinCombination.moveArray[index].map((v, i) => {
+                                reels[i].moveWinSymbols(v, fires[i]);
+                            });
+
+                            function iterationMoveWinEnd() {
+                                reels[1].onMoveWinEndObservable.clear();
+                                generateWinCombination.numWinSymbline[index] = 0;
+                                index = generateWinCombination.numWinSymbline.indexOf(1);
+                                if (index !== -1) {
+                                    generateWinCombination.moveArray[index].map((v, i) => {
+                                        reels[i].moveWinSymbols(v, fires[i]);
+                                    });
+                                    reels[1].onMoveWinEndObservable.addOnce(function () {
+                                        iterationMoveWinEnd();
+                                    });
+                                }
+                            }
+
+                            reels[1].onMoveWinEndObservable.addOnce(function () {
+                                iterationMoveWinEnd();
+                            });
+                        }
+                    });
+                }
+
                 let startButton = new MakeButton("startButton", task.loadedMeshes[0]._children[31], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
                 startButton.pushButton.onPointerUpObservable.add(function () {
 
                     if (reels[reels.length - 1].rotateSlots && !reels[reels.length - 1].stoped) {
+                        // reels.map((v, i) => {
+                        //     if (!v.stoped) {
+                        //         v.stopRotate(false, generateWinCombination.arrayCombination[i]);
+                        //         v.onStopEndObservable.clear();
+                        //         if (i === reels.length - 1) {
+                        //             startMoveWinLines(v);
+                        //         }
+                        //     }
+                        // });
 
-                        reels.map((v, i) => {
-                            v.stopRotate(false, generateWinCombination.arrayCombination[i]);
-                        });
-
-                    } else {
+                    } else if (reels[reels.length - 1].stoped && !reels[reels.length - 1].rotateSlots) {
+                        reels[0].onMoveWinEndObservable.clear();
 
                         if (!generateWinCombination.gettedWinning) {
                             generateWinCombination.gettingWinnings();
@@ -611,16 +757,32 @@ window.addEventListener('DOMContentLoaded', function(){
 
                         if (reels[reels.length - 1].stoped) {
                             reels.map((v, i) => {
+                                v.onStopEndObservable.clear();
                                 v.startRotate(true, fires[i]);
                             });
                         }
-
+                        let stopIndex = 0;
                         setTimeout(function () {
                             enableEndRotateAnimation = true;
-                            reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
+                            reels[stopIndex].stopRotate(false, generateWinCombination.arrayCombination[stopIndex]);
                         }, 500);
-                    }
 
+                        function iterationStopEnd() {
+                            reels[stopIndex].onStopEndObservable.clear();
+                            if (stopIndex < 4) {
+                                stopIndex++;
+                                reels[stopIndex].stopRotate(false, generateWinCombination.arrayCombination[stopIndex]);
+                                reels[stopIndex].onStopEndObservable.addOnce(function () {
+                                    iterationStopEnd();
+                                });
+                            }
+                        }
+
+                        reels[stopIndex].onStopEndObservable.addOnce(function () {
+                            iterationStopEnd();
+                        });
+                        startMoveWinLines(reels[reels.length - 1]);
+                    }
                 });
 
           /*      let autoPlay = new MakeButton("autoPlay", task.loadedMeshes[0]._children[32], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
@@ -659,16 +821,27 @@ window.addEventListener('DOMContentLoaded', function(){
             let enableEndRotateAnimation = false;
             let forceStop = undefined;
 
-            scene.executeWhenReady(function() {
+            for (var j = 0, i = 0; j < 5; j++, i += 3) {
+                let reel = new CreateReel(angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), i, baseURL, assetsManager, scene);
+                // fires[j].setEmitter(reel.meshes[Math.round(Scalar.RandomRange(1, 3))].visibleSymbol);
+                reels.push(reel);
+            }
+            // fireHelper.setEmitter(reels[0].meshes[Math.round(Scalar.RandomRange(1, 3))].visibleSymbol);
 
+            scene.executeWhenReady(function() {
+                for (var j = 0; j < 5; j++) {
+                    reels[j].beginVisibleSymbol();
+                    fires[j].setEmitter(reels[j].meshes[Math.round(Scalar.RandomRange(1, 3))].visibleSymbol);
+                }
+                // scene.animationGroups.map(v => { v.start(true) });
                 // fire.start();
                 // particles.start();
-                for (var j = 0, i = 0; j < 5; j++, i += 3) {
-                    let reel = new CreateReel(symbols, angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), i, scene);
-                    fires[j].setEmitter(reel.meshes[Math.round(Scalar.RandomRange(1, 3))]._children[0]._children[0]);
+               /* for (var j = 0, i = 0; j < 5; j++, i += 3) {
+                    let reel = new _CreateReel(symbols, skeletons, animationsGroups, angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), i, scene);
+                    fires[j].setEmitter(reel.meshes[Math.round(Scalar.RandomRange(1, 3))].visibleSymbol);
                     reels.push(reel);
                 }
-
+                fireHelper.setEmitter(reels[0].meshes[Math.round(Scalar.RandomRange(1, 3))].visibleSymbol);*/
                 // for (let i = 0; i < 5; i++) {
                 //     fires[i].setEmitter(reels[i].meshes[Math.round(Scalar.RandomRange(1, 3))]._children[0]._children[0]);
                 // }
@@ -720,9 +893,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 // }, 1000);
                 // shadowGenerator.getShadowMap().refreshRate = BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
 
-                let indexLineWin = 0;
-                let numWinSymbols = 0;
-                let numReels = 0;
+
                 scene.registerBeforeRender(function () {
 // console.time();
                     let deltaTime = scene.getEngine().getDeltaTime() * 0.01;
@@ -730,82 +901,67 @@ window.addEventListener('DOMContentLoaded', function(){
                         v.update(deltaTime);
                     });
 
-                    if (enableEndRotateAnimation && reels[stopIndex].stoped) {
-                        if (stopIndex < 4) {
-                            stopIndex++;
-                            reels[stopIndex].stopRotate(false, generateWinCombination.arrayCombination[stopIndex]);
-                        } else {
-                            stopIndex = 0;
-                            enableEndRotateAnimation = false;
-
-                            function switchReels() {
-                                if (numReels < 4) {
-                                    numReels++;
-                                } else {
-                                    numReels = 0;
-                                    numWinSymbols = 0;
-                                    if (indexLineWin < generateWinCombination.winLineNum - 1) {
-                                        indexLineWin++;
-                                        generateWinCombination.moveArray[indexLineWin].map((v, i) => {
-                                            reels[i].moveWinSymbols(v, generateWinCombination.arrayCombination[stopIndex], switchReels, fires[i])
-                                        })
-                                    } else {
-                                        indexLineWin = 0;
-                                        numWinSymbols = 0;
-                                        generateWinCombination.gettingWinnings();
-                                        // scene.imageProcessingConfiguration.exposure = 1.0;
-                                        // generateWinCombination.generate();
-                                        //
-                                        // if (reels[reels.length - 1].stoped) {
-                                        //     reels.map(v => {
-                                        //         v.startRotate(true);
-                                        //     });
-                                        //     forceStop = undefined;
-                                        // }
-
-                                        // setTimeout(function () {
-                                        //     enableEndRotateAnimation = true;
-                                        //     reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
-                                        //     forceStop = true;
-                                        // }, 500);
-                                    }
-                                }
-                            }
-
-                            generateWinCombination.moveArray[indexLineWin].map((v, i) => {
-                                reels[i].moveWinSymbols(v, generateWinCombination.arrayCombination[stopIndex], switchReels, fires[i])
-                            })
-                            // generateWinCombination.gettingWinnings();
-
-                            /*      generateWinCombination.generate();
-
-                                      if (reels[reels.length - 1].stoped) {
-                                          reels.map(v => {
-                                              v.startRotate(true);
-                                          });
-                                          forceStop = undefined;
-                                      }
-
-                                  setTimeout(function () {
-                                      if (forceStop === undefined) {
-                                          forceStop = false;
-                                      } else {
-                                          forceStop = true;
-                                      }
-
-                                      if (forceStop) {
-                                          reels.map((v, i) => {
-                                              v.stopRotate(false, generateWinCombination.arrayCombination[i]);
-                                          });
-                                          forceStop = undefined;
-                                      } else {
-                                          enableEndRotateAnimation = true;
-                                          reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
-                                      }
-                                  }, 1000);*/
-
-                        }
-                    }
+                    // if (enableEndRotateAnimation && reels[stopIndex].stoped) {
+                    //     if (stopIndex < 4) {
+                    //         stopIndex++;
+                    //         reels[stopIndex].stopRotate(false, generateWinCombination.arrayCombination[stopIndex]);
+                    //     } else {
+                    //         stopIndex = 0;
+                    //         enableEndRotateAnimation = false;
+                    //
+                    //         if (generateWinCombination.getTotalRound() > 0) {
+                    //             let index = generateWinCombination.numWinSymbline.indexOf(1);
+                    //             generateWinCombination.moveArray[index].map((v, i) => {
+                    //                 reels[i].moveWinSymbols(v, fires[i]);
+                    //             });
+                    //             function iterationMoveWinEnd() {
+                    //                 reels[0].onMoveWinEndObservable.clear();
+                    //                 generateWinCombination.numWinSymbline[index] = 0;
+                    //                 index = generateWinCombination.numWinSymbline.indexOf(1);
+                    //                 if (index !== -1) {
+                    //                     generateWinCombination.moveArray[index].map((v, i) => {
+                    //                         reels[i].moveWinSymbols(v, fires[i]);
+                    //                     });
+                    //                     reels[0].onMoveWinEndObservable.addOnce(function () {
+                    //                         iterationMoveWinEnd();
+                    //                     });
+                    //                 }
+                    //             }
+                    //             reels[0].onMoveWinEndObservable.addOnce(function () {
+                    //                 iterationMoveWinEnd();
+                    //             });
+                    //         }
+                    //         // generateWinCombination.gettingWinnings();
+                    //
+                    //         /*      generateWinCombination.generate();
+                    //
+                    //                   if (reels[reels.length - 1].stoped) {
+                    //                       reels.map(v => {
+                    //                           v.startRotate(true);
+                    //                       });
+                    //                       forceStop = undefined;
+                    //                   }
+                    //
+                    //               setTimeout(function () {
+                    //                   if (forceStop === undefined) {
+                    //                       forceStop = false;
+                    //                   } else {
+                    //                       forceStop = true;
+                    //                   }
+                    //
+                    //                   if (forceStop) {
+                    //                       reels.map((v, i) => {
+                    //                           v.stopRotate(false, generateWinCombination.arrayCombination[i]);
+                    //                       });
+                    //                       forceStop = undefined;
+                    //                   } else {
+                    //                       enableEndRotateAnimation = true;
+                    //                       reels[0].stopRotate(false, generateWinCombination.arrayCombination[0]);
+                    //                   }
+                    //               }, 1000);*/
+                    //
+                    //     }
+                    // }
 
 
 // console.timeEnd();
@@ -829,7 +985,7 @@ window.addEventListener('DOMContentLoaded', function(){
                         fires.map(v => {
                             v.start();
                         })
-                        // fire.start();
+                        // fireHelper.start();
                     }
                 )
             );
@@ -840,10 +996,11 @@ window.addEventListener('DOMContentLoaded', function(){
                         parameter: 'r'
                     },
                     function (evt) {
-                        fires.map(v => {
-                            v.stop();
-                        })
-                        // fire.stop();
+                        // fires.map(v => {
+                        //     v.stop();
+                        // })
+                        fireHelper.stop();
+                        fireHelper.reset();
                     }
                 )
             );

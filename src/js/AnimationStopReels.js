@@ -1,6 +1,6 @@
 import {Animation,ElasticEase,EasingFunction,AnimationEvent} from '@babylonjs/core';
 
-export default function AnimationStopReels(target, duration, callbackUp, callbackDown, stopedCalback, scene) {
+export default function AnimationStopReels(target, duration, callbackUp, callbackDown, callbackDropSymbol, stopedCalback, scene) {
     var object = this;
 
     //Create a Vector3 animationForward at 30 FPS
@@ -51,6 +51,12 @@ export default function AnimationStopReels(target, duration, callbackUp, callbac
     });
 // Attach your event to your animation
     animationStopReels.addEvent(eventAnimationDown);
+
+    var eventAnimationDropSymbol = new AnimationEvent(2, function() {
+        callbackDropSymbol();
+    });
+// Attach your event to your animation
+    animationStopReels.addEvent(eventAnimationDropSymbol);
 // console.log(object)
     var anim = scene.beginAnimation(
         object,

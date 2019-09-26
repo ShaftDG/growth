@@ -8,6 +8,7 @@
     "@babel/preset-env": "^7.3.4",
     "@babylonjs/core": "^4.0.3",
     "@babylonjs/gui": "^4.0.3",
+    "@babylonjs/inspector": "^4.0.3",
     "@babylonjs/loaders": "^4.0.3",
     "@babylonjs/post-processes": "^4.0.3",
     "babel-cli": "^6.26.0",

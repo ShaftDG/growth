@@ -1,6 +1,6 @@
 import {
     ParticleSystem,
-    // ParticleHelper,
+    ParticleHelper,
     NoiseProceduralTexture,
     // AbstractMesh,
     // CylinderParticleEmitter,
@@ -259,7 +259,7 @@ this.emitter = null;
         this.glow.maxEmitPower = 0.4;
         this.glow.addColorGradient(0, new Color4(0.3113, 0.1367, 0.0367, 0));
         this.glow.addColorGradient(0.3, new Color4(0.3113, 0.1367, 0.0367, 0.5));
-        this.glow.addColorGradient(1, new Color4(0.3113, 0.1367, 0.0367, 0));
+        this.glow.addColorGradient(0.6, new Color4(0.3113, 0.1367, 0.0367, 0));
         if (this.isTargetStopDuration) {
             this.glow.targetStopDuration = 2.0;
         }
@@ -269,6 +269,7 @@ this.emitter = null;
 
     setEmitter (emitter) {
         this.emitter = emitter;
+        console.log(1111111111111, this.glow.emitter)
         this.ashesParticlesEmitter.position = emitter.getAbsolutePosition();
         this.ashesParticlesEmitterStandardBlendMode.position = emitter.getAbsolutePosition();
 
@@ -414,6 +415,25 @@ this.emitter = null;
     }
 
     start() {
+
+        var mySet = ParticleHelper.ExportSet( [this.ashesParticlesAddBlendMode, this.ashesParticlesStandardBlendMode, this.sparksCore, this.sparksCoreBurst, this.glow] );
+
+        function exportToJsonFile(jsonData) {
+console.log(jsonData)
+            let dataStr = JSON.stringify(jsonData.serialize());
+
+            // let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            //
+            // let exportFileDefaultName = 'data.json';
+            //
+            // let linkElement = document.createElement('a');
+            // linkElement.setAttribute('href', dataUri);
+            // linkElement.setAttribute('download', exportFileDefaultName);
+            // linkElement.click();
+        }
+
+        exportToJsonFile(mySet);
+
         this.ashesParticlesAddBlendMode.start();
         this.ashesParticlesStandardBlendMode.start();
         this.sparksCore.start();

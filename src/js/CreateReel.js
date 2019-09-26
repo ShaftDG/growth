@@ -1,20 +1,24 @@
 
 import {
+    AnimationGroup,
     Axis,
     Mesh,
     // Material,
     Scalar,
     TransformNode,
     Vector3,
+    MeshBuilder,
+    PBRMaterial,
+    Color3,
     // StandardMaterial,
     // Color3
 } from '@babylonjs/core';
 import AnimationScalePulse from "./AnimationScalePulse";
 import AnimationStopReels from "./AnimationStopReels";
+import {Observable} from "@babylonjs/core/Misc/observable";
 
 export default class CreateReel {
-    constructor(symbols, angles, radius, section, numSymbolPerReel, positionReel, ins, scene) {
-        this.symbols = symbols;
+    constructor(angles, radius, section, numSymbolPerReel, positionReel, ins, baseURL, assetsManager, scene) {
         this.radius = radius;
         this.positionReel = positionReel;
         this.scene = scene;
@@ -29,67 +33,140 @@ export default class CreateReel {
         this.indexDown = 1;
         this.meshes = [];
         this.stoped = true;
-        this.moveWinS = false;
         this.beginStop = false;
         this.angles = angles;
-        this.indexLineWin = 0;
-        this.endIncrementIndexLineWin = false;
         let iiii = ins + 0;
-            for (var i = 0; i < 5; i++) {
-                let CoTSector = new TransformNode("CoTSector");
-                let CoTSector_child = new TransformNode("CoTSector_child");
-                CoTSector_child.parent = CoTSector;
-                for (let j = 0; j < symbols.length; j++) {
-                    let obj = symbols[j].clone();
-                    // console.log(obj._children[0].id, j)
-                    obj._children[0].material = symbols[j]._children[0].material.clone(symbols[j]._children[0].material.id + "_" + i + "_" + j );
-// console.log(obj._children[0].material.id);
-                  /*  let red = new StandardMaterial('red', scene);
-                    red.emissiveColor = new Color3(1, 0, 0);
-                    red.diffuseColor = new Color3(1, 0, 0);
-                    red.sideOrientation = Material.ClockWiseSideOrientation;
-                    obj._children[0].customOutline = obj._children[0].clone('outline_clone');
-                    obj._children[0].customOutline.scaling  = new Vector3(1.1,1.1,1.1);
-                    // obj.customOutline.sideOrientation = Mesh.BACKSIDE;
-                    obj._children[0].customOutline.parent = obj;
-                    obj._children[0].customOutline.material = red;*/
+        this.onMoveWinEndObservable = new Observable();
+        this.onStopEndObservable = new Observable();
+        for (var i = 0; i < 5; i++) {
+            let CoTSector = new TransformNode("CoTSector");
+            let CoTSector_child = new TransformNode("CoTSector_child");
+            CoTSector_child.parent = CoTSector;
 
-                    let z = radius * Math.cos(this.angles[i]);
-                    let y = radius * Math.sin(this.angles[i]);
-                    obj.rotate(Axis.X, this.angles[i], Mesh.WORLD);
-                    obj.position = new Vector3(positionReel.x, y, z);
-                    obj.defaultScaling = new Vector3(obj.scaling.x, obj.scaling.y, obj.scaling.z);
-                    obj.parent = CoTSector_child;
-                    obj.setEnabled(false);
-                }
-                let randomIndexSymbol;
-                if (iiii < 10) {
-                    randomIndexSymbol = iiii/*Math.round(Scalar.RandomRange(0, 9))*/;
-                    if (i > 0 && i < 4) {
-                        iiii++
-                    }
-                } else {
-                    randomIndexSymbol = Math.round(Scalar.RandomRange(0, 9));
-                }
-                CoTSector.visibleSymbol = CoTSector_child._children[randomIndexSymbol];
-                CoTSector.visibleSymbol.setEnabled(true);
-                CoTSector.parent = this.CoT;
-                this.meshes.push(CoTSector);
-            }
-            this.meshes[0].setEnabled(false);
-            this.meshes[4].setEnabled(false);
+
+            // for (let j = 0; j < symbols.length; j++) {
+            //     let obj = symbols[j].clone();
+            //
+            //     let z = radius * Math.cos(this.angles[i]);
+            //     let y = radius * Math.sin(this.angles[i]);
+            //     obj.rotate(Axis.X, this.angles[i], Mesh.WORLD);
+            //     obj.position = new Vector3(positionReel.x, y, z);
+            //     obj.defaultScaling = new Vector3(obj.scaling.x, obj.scaling.y, obj.scaling.z);
+            //     obj.parent = CoTSector_child;
+            //     obj.setEnabled(false);
+            // }
+            // CoTSector.visibleSymbol = CoTSector_child._children[randomIndexSymbol];
+            // CoTSector.visibleSymbol.setEnabled(true);
+            CoTSector._symbols = this._loadModels(positionReel, CoTSector_child, i, baseURL, assetsManager);
+            CoTSector.parent = this.CoT;
+            this.meshes.push(CoTSector);
+        }
+        this.meshes[0].setEnabled(false);
+        this.meshes[4].setEnabled(false);
         this.endRotate = false;
         this.rotateSlots = false;
     }
 
-  /*  setVisibleSymbol(object, indexSymbol) {
-        object._children.map(g => {
-            g.setEnabled(false);
-        });
-        object._children[indexSymbol].setEnabled(true);
-    }*/
+    beginVisibleSymbol() {
 
-    replaceSymbol(object, index, indexSymbol) {
+        this.meshes.map(v => {
+            let randomIndexSymbol = Math.round(Scalar.RandomRange(0, 9));
+            v._symbols.map((n, i) => {
+                n.loadedMeshes[0].parent = v._children[0];
+                if (i === randomIndexSymbol) {
+                    v.visibleSymbol = n.loadedMeshes[0];
+                    n.loadedMeshes[0].setEnabled(true);
+                }
+            });
+
+          /*  if (iiii < 10) {
+                randomIndexSymbol = iiii/!*Math.round(Scalar.RandomRange(0, 9))*!/;
+                if (i > 0 && i < 4) {
+                    iiii++
+                }
+            } else {
+                randomIndexSymbol = Math.round(Scalar.RandomRange(0, 9));
+            }*/
+
+        })
+    }
+    /*  setVisibleSymbol(object, indexSymbol) {
+          object._children.map(g => {
+              g.setEnabled(false);
+          });
+          object._children[indexSymbol].setEnabled(true);
+      }*/
+
+     _updateSettings(obj, positionReel, index, parent, scope) {
+        let z = scope.radius * Math.cos(scope.angles[index]);
+        let y = scope.radius * Math.sin(scope.angles[index]);
+        obj.rotate(Axis.X, scope.angles[index], Mesh.WORLD);
+        obj.scaling = new Vector3(4,4,-4);
+        obj.position = new Vector3(positionReel.x, y, z);
+        obj.defaultScaling = new Vector3(obj.scaling.x, obj.scaling.y, obj.scaling.z);
+        // obj.parent = parent;
+        obj.setEnabled(false);
+    }
+
+    _loadModels(position, parent, indexAngle, baseURL, assetsManager) {
+        let _this = this;
+        let symbols = new Array(10);
+        let meshTaskBell = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'bell_final_anim_Draco.glb');
+        symbols[0] = meshTaskBell;
+        meshTaskBell.onSuccess = function (task) {
+            _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+        };
+        let meshTaskLemon = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'lemon_final_Draco.glb');
+        symbols[1] = meshTaskLemon;
+        meshTaskLemon.onSuccess = function (task) {
+            task.loadedMeshes[0]._children[0].material.roughness = 0.35;
+            _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+        };
+        let meshTaskWild = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'wild_final_Draco.glb');
+        symbols[2] = meshTaskWild;
+        meshTaskWild.onSuccess = function (task) {
+            _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+        };
+        let meshTaskCherry = assetsManager.addMeshTask('cherry', '', baseURL + 'assets/models/tmp/', 'cherry_final_anim_Draco.glb');
+        symbols[3] = meshTaskCherry;
+        meshTaskCherry.onSuccess = function (task) {
+            _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+        };
+        let meshTaskGrapes = assetsManager.addMeshTask('grapes', '', baseURL + 'assets/models/tmp/', 'grape_final_anim_Draco.glb');
+        symbols[4] = meshTaskGrapes;
+        meshTaskGrapes.onSuccess = function (task) {
+            _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+            // task.loadedAnimationGroups[0].start(true);
+        };
+        let meshTaskStar = assetsManager.addMeshTask('lemon', '', baseURL + 'assets/models/tmp/', 'star_final_Draco.glb');
+        symbols[5] = meshTaskStar;
+        meshTaskStar.onSuccess = function (task) {
+            _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+        };
+        let meshTaskOrange = assetsManager.addMeshTask('orange', '', baseURL + 'assets/models/tmp/', 'orange_final1_Draco.glb');
+        symbols[6] = meshTaskOrange;
+        meshTaskOrange.onSuccess = function (task) {
+            _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+        };
+        let meshTaskPlum = assetsManager.addMeshTask('plum', '', baseURL + 'assets/models/tmp/', 'plum_final_Draco.glb');
+        symbols[7] = meshTaskPlum;
+        meshTaskPlum.onSuccess = function (task) {
+            _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+        };
+        let meshTaskSeven = assetsManager.addMeshTask('seven', '', baseURL + 'assets/models/tmp/', 'seven_final_Draco.glb');
+        symbols[8] = meshTaskSeven;
+        meshTaskSeven.onSuccess = function (task) {
+            _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+        };
+        let meshTaskWatermelon = assetsManager.addMeshTask('watermelon', '', baseURL + 'assets/models/tmp/', 'watermelon_final_Draco.glb');
+        symbols[9] = meshTaskWatermelon;
+        meshTaskWatermelon.onSuccess = function (task) {
+            _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+        };
+        return symbols
+    }
+
+   /* replaceSymbol(object, index, indexSymbol) {
 
         object._children[0].animations = [];
         object._children[0]._children[0].animation = [];
@@ -104,7 +181,7 @@ export default class CreateReel {
         obj.defaultScaling = new Vector3(obj.scaling.x, obj.scaling.y, obj.scaling.z);
         obj.parent = object._children[0];
 
-    }
+    }*/
 
     setVisibleSymbol(object, indexSymbol) {
         object._children[0]._children.map(g => {
@@ -147,17 +224,18 @@ export default class CreateReel {
                 v.animationScalePulse.animScale.stop();
                 v.animationScalePulse.animPosition.stop();
             }
-            v._children[0].animations = [];
-            v._children[0]._children[0].animations = [];
-            v._children[0].position = new Vector3(0,0,0);
-            v._children[0]._children[0].scaling = v._children[0]._children[0].defaultScaling.clone();
+            v.visibleSymbol.animations = [];
+            v.visibleSymbol._children[0].animations = [];
+
+            v.visibleSymbol._children[0].position = new Vector3(0,0,0);
+            v.visibleSymbol._children[0].rotation = new Vector3(0,0,0);
+            // v.visibleSymbol._children[0].scaling = v.visibleSymbol.defaultScaling.clone();
         });
 
         this.moveWinS = false;
         this.endRotate = false;
         this.stoped = false;
         this.beginStop = false;
-        this.endIncrementIndexLineWin = false;
     }
 
     stopRotate (rotateSlots, reelCombination) {
@@ -175,12 +253,20 @@ export default class CreateReel {
             function unvisibleUp() {
                 thatMeshes[firstIndex].setEnabled(false);
             }
+            function dropSymbol() {
+                thatMeshes.map(v => {
+                    v._symbols[0].loadedAnimationGroups[0].start(false);
+                    v._symbols[3].loadedAnimationGroups[0].start(false);
+                    v._symbols[4].loadedAnimationGroups[0].start(false);
+                });
+            }
             function unvisibleDown() {
                 thatMeshes[lastIndex].setEnabled(false);
             }
             let that = this;
             function stopedCallback() {
                 that.stoped = true;
+                that.onStopEndObservable.notifyObservers(that);
             }
 
             AnimationStopReels.call(this.CoT,
@@ -188,6 +274,7 @@ export default class CreateReel {
                 150,
                 unvisibleUp,
                 unvisibleDown,
+                dropSymbol,
                 stopedCallback,
                 this.scene
             );
@@ -196,24 +283,12 @@ export default class CreateReel {
         }
     }
 
-    incrementIndexLineWin (callback) {
-        if (this.indexLineWin < 2) {
-            this.indexLineWin++;
-            console.log(222222222222)
-        } else {
-            this.indexLineWin = 0;
-            this.endIncrementIndexLineWin = true;
-            // callback()
-        }
-    }
+    setAnimationMoveWinSymbol (index, fire) {
 
-    setAnimationMoveWinSymbol (index, indexReelCombination, callback, fire) {
-        this.moveWinS = true;
         let that = this;
         function stopedCallback() {
-            that.moveWinS = false;
+            that.onMoveWinEndObservable.notifyObservers(true);
             fire.stop();
-            callback()
         }
 
         let invertParentWorldMatrix = this.meshes[index].getWorldMatrix().clone();
@@ -232,28 +307,17 @@ export default class CreateReel {
         );
     }
 
-    moveWinSymbols (winArray, reelCombination, callback, fire) {
+    moveWinSymbols (winArray, fire) {
         if (!this.rotateSlots && this.stoped) {
-
-            // console.log(winArray)
-            // winArray.map((v, i) => {
-               if (winArray[0] > 0) {
-                   this.setAnimationMoveWinSymbol(this.indexUp, reelCombination[0], callback, fire);
-               } else if (winArray[1] > 0) {
-                   this.setAnimationMoveWinSymbol(this.indexMiddleSymbol, reelCombination[1], callback, fire);
-               } else if (winArray[2] > 0) {
-                   this.setAnimationMoveWinSymbol(this.indexDown, reelCombination[2], callback, fire);
-               } else {
-                   callback()
-               }
-
-
-               /*else if (!this.endIncrementIndexLineWin) {
-                   this.incrementIndexLineWin(callback);
-                   this.moveWinSymbols(winArray, callback);
-               }*/
-            // });
-
+            if (winArray[0] > 0) {
+                this.setAnimationMoveWinSymbol(this.indexUp, fire);
+            } else if (winArray[1] > 0) {
+                this.setAnimationMoveWinSymbol(this.indexMiddleSymbol, fire);
+            } else if (winArray[2] > 0) {
+                this.setAnimationMoveWinSymbol(this.indexDown, fire);
+            } else {
+                this.onMoveWinEndObservable.notifyObservers(true);
+            }
         }
     }
 
@@ -264,7 +328,7 @@ export default class CreateReel {
         }
 
         if (!this.endRotate && this.CoT.rotation.x >= this.section * this.indexSection) {
-            console.time();
+            // console.time();
             let angle = this.section * ((this.numSymbolPerReel - this.angles.length + 1) + this.indexSymbol) - this.CoT.rotation.x;
             let deltaA = this.CoT.rotation.x - this.section * this.indexSection;
             this.meshes[this.indexSymbol].rotation.x = angle + deltaA;
@@ -278,7 +342,7 @@ export default class CreateReel {
             } else {
                 this.indexSection = 1;
             }
-            console.timeEnd();
+            // console.timeEnd();
         }
 
         if (this.CoT.rotation.x > Math.PI * 2) {

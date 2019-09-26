@@ -190,7 +190,7 @@ export default class GenerateWinCombination {
             this.stopPositionArray[j] = stopPosition;
             for (var i = 0; i < this.numPlayingSymbPerCilinder; i++) {
                 this.arrayCombination[j][i] = this.r[j][(stopPosition > 0) ? stopPosition + i - 1 : (i > 0) ? stopPosition + i - 1 : this.r[0].length - 1];
-                // this.arrayCombination[j][i] = 3;
+                // this.arrayCombination[j][i] = 4;
                 if (this.arrayCombination[j][i] == this.freeSpinSymb) {
                     this.moveArrayFreeSpinSymb[j][i] = 1;
                     this.numFreeSpinSymb++;
@@ -265,7 +265,6 @@ export default class GenerateWinCombination {
     getTotalRound () {
         var totalRound = 0;
         for (var i = 0; i < this.numSymbline.length; i++) {
-
             totalRound += this.payTable[this.firstSymbline[i]][this.numSymbline[i]];
         }
         return totalRound * ((this.bet * (this.winLineNum / 3)) / 10.0);
