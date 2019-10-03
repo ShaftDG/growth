@@ -26,7 +26,7 @@ export default class GenerateWinCombination {
         this.payTable = [
             [0, 25, 100, 1000, 5000], // SYMB_Square
             [0, 25, 50, 200, 500], // SYMB_Diamond
-            [0, 0, 0, 0, 0], // SYMB_Pad
+            [50, 50, 50, 50, 50], // SYMB_Pad
             [0, 25, 50, 100, 200], // SYMB_Octa
             [0, 25, 50, 100, 200], // SYMB_Coin
             [0, 25, 50, 100, 200], // SYMB_Ring
@@ -39,6 +39,7 @@ export default class GenerateWinCombination {
         ];
 
         this.freeSpinSymb = 1;
+        this.wildSymb = 2;
         this.numFreeSpinSymb = 0;
         this.numFreeSpin = 0;
         this.isFreeSpin = false;
@@ -105,7 +106,7 @@ export default class GenerateWinCombination {
 
         this.firstSymbline = [];
         for (var j = 0; j < this.maxLines; j++) {
-            this.firstSymbline[j] = 0;
+            this.firstSymbline[j] = null;
         }
 
         this.winLineArray = [];
@@ -190,7 +191,7 @@ export default class GenerateWinCombination {
             this.stopPositionArray[j] = stopPosition;
             for (var i = 0; i < this.numPlayingSymbPerCilinder; i++) {
                 this.arrayCombination[j][i] = this.r[j][(stopPosition > 0) ? stopPosition + i - 1 : (i > 0) ? stopPosition + i - 1 : this.r[0].length - 1];
-                // this.arrayCombination[j][i] = 4;
+                // this.arrayCombination[j][i] = 2;
                 if (this.arrayCombination[j][i] == this.freeSpinSymb) {
                     this.moveArrayFreeSpinSymb[j][i] = 1;
                     this.numFreeSpinSymb++;
@@ -232,12 +233,32 @@ export default class GenerateWinCombination {
 
     winLineRound () {
         for (var j = 0; j < this.winLineNum; j++) {
-            this.firstSymbline[j] = this.winLineArray[j][0];
-            for (var i = 0; i < this.winLineArray[j].length - 1; i++) {
-                if (this.winLineArray[j][i] == this.winLineArray[j][i + 1] && this.winLineArray[j][i] == this.firstSymbline[j]) {
-                    this.numSymbline[j]++;
-                } else {
-                    break;
+            this.firstSymbline[j] = null;
+            if (this.winLineArray[j][0] !== this.wildSymb) {
+                this.firstSymbline[j] = this.winLineArray[j][0];
+                for (var i = 0; i < this.winLineArray[j].length - 1; i++) {
+                    if (this.winLineArray[j][i + 1] == this.wildSymb || this.winLineArray[j][i + 1] == this.firstSymbline[j]) {
+                        this.numSymbline[j]++;
+                    } else {
+                        break;
+                    }
+                }
+            } else {
+                let symbAfterWild = null;
+                for (var i = 0; i < this.winLineArray[j].length - 1; i++) {
+                    if (this.winLineArray[j][i] == this.winLineArray[j][i + 1] || this.winLineArray[j][i + 1] == this.wildSymb) {
+                        this.numSymbline[j]++;
+                    } else if (symbAfterWild === null) {
+                        this.numSymbline[j]++;
+                        symbAfterWild = this.firstSymbline[j] = this.winLineArray[j][i + 1];
+                    } else if (symbAfterWild === this.winLineArray[j][i + 1]) {
+                        this.numSymbline[j]++;
+                    } else {
+                        break;
+                    }
+                }
+                if (this.firstSymbline[j] === null) {
+                    this.firstSymbline[j] = this.wildSymb;
                 }
             }
         }

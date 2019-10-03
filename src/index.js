@@ -23,20 +23,24 @@ import './css/style.css';
 import {
     Engine,
     Scene,
+    Tools,
     // Animation,
     // ParticleHelper,
     // GlowLayer,
     AssetsManager,
     ArcRotateCamera,
+    StandardMaterial,
+    MultiMaterial,
     Vector3,
-    // Color3,
+    Color3,
     SceneLoader,
+    ShaderMaterial,
     // PBRMaterial,
     // Texture,
     // Color3,
     // MeshBuilder,
     // Axis,
-    // Mesh,
+    Mesh,
     ActionManager,
     ExecuteCodeAction,
     Camera,
@@ -44,8 +48,8 @@ import {
     // StandardRenderingPipeline,
     // DefaultRenderingPipeline,
     // ImageProcessingConfiguration,
-    // DirectionalLight,
-    // HemisphericLight,
+    DirectionalLight,
+    HemisphericLight,
     // StandardMaterial
     // CubeTexture
 } from '@babylonjs/core';
@@ -69,8 +73,9 @@ import ChangeCustomVertexParticles from './js/changeCustomVertexParticles';
 import MakeButton from './js/MakeButton';
 
 // import Fire from './js/FireParticles';
+import SparkBackgroundParticles from './js/SparkBackgroundParticles';
 import FireHelper from './js/FireParticlesHelper';
-import {NoiseProceduralTexture, Scalar} from "@babylonjs/core/index";
+import {NoiseProceduralTexture, Scalar, Texture} from "@babylonjs/core/index";
 // import {EngineStore} from "@babylonjs/core/Engines/engineStore";
 // import {Logger} from "@babylonjs/core/Misc/logger";
 
@@ -101,18 +106,18 @@ window.addEventListener('DOMContentLoaded', function(){
             var assetsManager = new AssetsManager(scene);
             // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
             // var camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 20, -50), scene);
-            var camera = new ArcRotateCamera('Camera', 0, 0, 0.5, new Vector3(0, 8, 70), scene);
+            var camera = new ArcRotateCamera('Camera', 0, 0, 0.5, new Vector3(0, 8.7, 65), scene);
             camera.fovMode = Camera.FOVMODE_HORIZONTAL_FIXED;
             // camera.fov = 0.5;
             // camera.setPosition(new BABYLON.Vector3(0, 20, -20));
             // camera.lowerRadiusLimit = camera.radius;
             // camera.upperRadiusLimit = 5;
-            camera.setTarget(new Vector3(0, 8.5, 0));
+            camera.setTarget(new Vector3(0, 8.7, 0));
             // target the camera to scene origin
             // camera.setTarget(BABYLON.Vector3.Zero());
 
             // attach the camera to the canvas
-            // camera.attachControl(canvas, false);
+            camera.attachControl(canvas, false);
             scene.showFPS();
 
          //   let startButton, autoPlay, maxBet;
@@ -143,20 +148,78 @@ window.addEventListener('DOMContentLoaded', function(){
                 fires.push(fire);
             }
 
+            let sparksBackground = [];
+            for (let i = 0; i < 5; i++) {
+                let sparkBackgroundParticles = new SparkBackgroundParticles(scene, engine);
+                sparksBackground.push(sparkBackgroundParticles);
+            }
+
             var textureNoiseCombustion = assetsManager.addTextureTask('textureNoiseCombustion', baseURL + 'assets/textures/fire/originFire.png', null, false);
             textureNoiseCombustion.onSuccess = function(task) {
                 fires.map(v => {
                     v.setTextureNoiseCombustion(task.texture);
-                })
+                });
             };
+
+            var material0 = new StandardMaterial("mat0", scene);
+            material0.diffuseColor = new Color3(1, 0, 0);
+
+            var material1 = new StandardMaterial("mat1", scene);
+            material1.diffuseColor = new Color3(0, 0, 1);
+
+            var material2 = new StandardMaterial("mat2", scene);
+            material2.emissiveColor = new Color3(0.4, 0, 0.4);
+
+            var multimat = new MultiMaterial("multi", scene);
+            multimat.subMaterials.push(material0);
+            multimat.subMaterials.push(material1);
+            multimat.subMaterials.push(material2);
+
+            var cloudMaterial = new ShaderMaterial("cloud", scene, {
+                    vertexElement: "electric",
+                    fragmentElement: "electric"
+                },
+                {
+                    needAlphaBlending: true,
+                    needAlphaTesting: true,
+                    attributes: ["position", "uv"],
+                    uniforms: ["time", "worldViewProjection"]
+                });
+            cloudMaterial.setFloat("time", 0);
+
+            var time = Math.random() * (50-20) + 20;
+            var order = 0.00001;
+            cloudMaterial.onBind = function () {
+                cloudMaterial.setFloat("time", time);
+                time += order;
+                // if (time > 50 || time < 17) {
+                //     order *= -1;
+                // }
+            };
+
+
+            var sphere = Mesh.CreatePlane("Sphere0", 100, scene);
+            sphere.material = material0;
+
+            let sphereClone = sphere.clone();
+            sphereClone.material = cloudMaterial;
+            console.log(sphere)
 
             var textureSpark = assetsManager.addTextureTask('textureNoiseCombustionAlpha', baseURL + 'assets/textures/fire/sparks.png', null, false);
             textureSpark.onSuccess = function(task) {
                 fires.map(v => {
                     v.setTextureSpark(task.texture);
-                })
+                });
             };
 
+            var textureSparkBackground = assetsManager.addTextureTask('textureNoiseCombustionAlpha', baseURL + 'assets/textures/sparkBackground/spark.png', null, false);
+            textureSparkBackground.onSuccess = function(task) {
+                material0.diffuseTexture = task.texture;
+                // material0.diffuseTexture.hasAlpha = true;
+                sparksBackground.map(v => {
+                    v.setTextureSpark(task.texture);
+                })
+            };
 
             var textureSparkStretched = assetsManager.addTextureTask('textureNoiseCombustionAlpha', baseURL + 'assets/textures/fire/sparkStretched.png', null, false);
             textureSparkStretched.onSuccess = function(task) {
@@ -703,51 +766,56 @@ window.addEventListener('DOMContentLoaded', function(){
                     deltaPush: new Vector3(0,0,-0.03)
                 };
 
-                function startMoveWinLines(reel) {
-                    reel.onStopEndObservable.addOnce(function () {
-                        if (generateWinCombination.getTotalRound() > 0) {
-                            let index = generateWinCombination.numWinSymbline.indexOf(1);
+                function startMoveWinLines(callback) {
+                        let index = generateWinCombination.numWinSymbline.indexOf(1);
+                        if (index !== -1) {
                             generateWinCombination.moveArray[index].map((v, i) => {
-                                reels[i].moveWinSymbols(v, fires[i]);
+                                reels[i].moveWinSymbols(v, fires[i], sparksBackground[i]);
                             });
 
                             function iterationMoveWinEnd() {
-                                reels[1].onMoveWinEndObservable.clear();
+                                reels[0].onMoveWinEndObservable.clear();
                                 generateWinCombination.numWinSymbline[index] = 0;
                                 index = generateWinCombination.numWinSymbline.indexOf(1);
                                 if (index !== -1) {
                                     generateWinCombination.moveArray[index].map((v, i) => {
-                                        reels[i].moveWinSymbols(v, fires[i]);
+                                        reels[i].moveWinSymbols(v, fires[i], sparksBackground[i]);
                                     });
-                                    reels[1].onMoveWinEndObservable.addOnce(function () {
-                                        iterationMoveWinEnd();
-                                    });
+                                    reels[0].onMoveWinEndObservable.addOnce(iterationMoveWinEnd);
+                                } else if (callback) {
+                                    callback()
                                 }
                             }
 
-                            reels[1].onMoveWinEndObservable.addOnce(function () {
-                                iterationMoveWinEnd();
-                            });
+                            reels[0].onMoveWinEndObservable.addOnce(iterationMoveWinEnd);
+                        } else if (callback) {
+                            callback()
                         }
-                    });
                 }
 
-                let startButton = new MakeButton("startButton", task.loadedMeshes[0]._children[31], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
-                startButton.pushButton.onPointerUpObservable.add(function () {
-
+                function startRotateSlot(autoPlay) {
                     if (reels[reels.length - 1].rotateSlots && !reels[reels.length - 1].stoped) {
-                        // reels.map((v, i) => {
-                        //     if (!v.stoped) {
-                        //         v.stopRotate(false, generateWinCombination.arrayCombination[i]);
-                        //         v.onStopEndObservable.clear();
-                        //         if (i === reels.length - 1) {
-                        //             startMoveWinLines(v);
-                        //         }
-                        //     }
-                        // });
+
+                        for (let j = 0; j < reels.length; j++) {
+                            reels[j].stopRotate(generateWinCombination.arrayCombination[j]);
+                            reels[j].onStopEndObservable.clear();
+                            reels[j].onMoveWinEndObservable.clear();
+                        }
+                        reels[reels.length - 1].onStopEndObservable.addOnce(function () {
+                            setTimeout(function () {
+                                if (!autoPlay) {
+                                    startMoveWinLines(null);
+                                } else {
+                                    startMoveWinLines(function () {
+                                        startRotateSlot(true)
+                                    });
+                                }
+                            }, 350);
+                        });
 
                     } else if (reels[reels.length - 1].stoped && !reels[reels.length - 1].rotateSlots) {
-                        reels[0].onMoveWinEndObservable.clear();
+
+                        // reels[0].onMoveWinEndObservable.clear();
 
                         if (!generateWinCombination.gettedWinning) {
                             generateWinCombination.gettingWinnings();
@@ -757,47 +825,70 @@ window.addEventListener('DOMContentLoaded', function(){
 
                         if (reels[reels.length - 1].stoped) {
                             reels.map((v, i) => {
+                                v.startRotate(fires[i], sparksBackground[i]);
                                 v.onStopEndObservable.clear();
-                                v.startRotate(true, fires[i]);
+                                v.onMoveWinEndObservable.clear();
                             });
                         }
-                        let stopIndex = 0;
+
                         setTimeout(function () {
-                            enableEndRotateAnimation = true;
-                            reels[stopIndex].stopRotate(false, generateWinCombination.arrayCombination[stopIndex]);
-                        }, 500);
+                            console.log("start stop", stopIndex)
+                            stopIndex = 0;
+                            reels[stopIndex].stopRotate(generateWinCombination.arrayCombination[stopIndex]);
 
-                        function iterationStopEnd() {
-                            reels[stopIndex].onStopEndObservable.clear();
-                            if (stopIndex < 4) {
-                                stopIndex++;
-                                reels[stopIndex].stopRotate(false, generateWinCombination.arrayCombination[stopIndex]);
-                                reels[stopIndex].onStopEndObservable.addOnce(function () {
-                                    iterationStopEnd();
-                                });
+                            function iterationStopEnd() {
+                                console.log(88888888888, stopIndex)
+                                reels[stopIndex].onStopEndObservable.clear();
+                                if (stopIndex < 4) {
+                                    stopIndex++;
+                                    reels[stopIndex].stopRotate(generateWinCombination.arrayCombination[stopIndex]);
+                                    reels[stopIndex].onStopEndObservable.addOnce(iterationStopEnd);
+                                } else {
+                                    setTimeout(function () {
+                                        if (!autoPlay) {
+                                            startMoveWinLines(null);
+                                        } else {
+                                            startMoveWinLines(function () {
+                                                startRotateSlot(true)
+                                            });
+                                        }
+                                    }, 500);
+                                }
                             }
-                        }
+                            reels[stopIndex].onStopEndObservable.addOnce(iterationStopEnd);
+                        }, 500);
+                    }
+                }
+                let stopIndex = 0;
+                let startButton = new MakeButton("startButton", task.loadedMeshes[0]._children[31], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
+                startButton.pushButton.onPointerUpObservable.add(function () {
+                    startRotateSlot();
+                });
 
-                        reels[stopIndex].onStopEndObservable.addOnce(function () {
-                            iterationStopEnd();
-                        });
-                        startMoveWinLines(reels[reels.length - 1]);
+                let autoPlay = new MakeButton("autoPlay", task.loadedMeshes[0]._children[32], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
+                autoPlay.pushButton.onPointerUpObservable.add(function () {
+                    startRotateSlot(true);
+                });
+
+                let isfullScreen = false;
+
+                let fullscreen = new MakeButton("fullscreen", task.loadedMeshes[0]._children[30], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
+                fullscreen.pushButton.onPointerUpObservable.add(function () {
+                    if (!isfullScreen) {
+                        isfullScreen = true;
+                        Tools.RequestFullscreen(canvas);
+                    } else {
+                        isfullScreen = false;
+                        Tools.ExitFullscreen();
                     }
                 });
 
-          /*      let autoPlay = new MakeButton("autoPlay", task.loadedMeshes[0]._children[32], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
-                autoPlay.pushButton.onPointerUpObservable.add(function () {
-                    fires.map(v => {
-                        v.stop();
-                    })
-                });
-
-                let maxBet = new MakeButton("maxBet", task.loadedMeshes[0]._children[31], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
-                maxBet.pushButton.onPointerUpObservable.add(function () {
-                    fires.map(v => {
-                        v.start();
-                    })
-                });*/
+                /*let maxBet = new MakeButton("maxBet", task.loadedMeshes[0]._children[31], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
+               maxBet.pushButton.onPointerUpObservable.add(function () {
+                   fires.map(v => {
+                       v.start();
+                   })
+               });*/
 
                 // startButton.setTexture(textureNoiseCombustion1.texture);
                 // autoPlay.setTexture(textureNoiseCombustion1.texture);
@@ -818,14 +909,16 @@ window.addEventListener('DOMContentLoaded', function(){
             let radius = 12.65;
             let reels = [];
             let stopIndex = 0;
-            let enableEndRotateAnimation = false;
-            let forceStop = undefined;
+            // let enableEndRotateAnimation = false;
+            // let forceStop = undefined;
 
             for (var j = 0, i = 0; j < 5; j++, i += 3) {
-                let reel = new CreateReel(angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), i, baseURL, assetsManager, scene);
+                let reel = new CreateReel("CoT_" + j, angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), i, baseURL, assetsManager, scene, engine);
+                reel.updated();
                 // fires[j].setEmitter(reel.meshes[Math.round(Scalar.RandomRange(1, 3))].visibleSymbol);
                 reels.push(reel);
             }
+
             // fireHelper.setEmitter(reels[0].meshes[Math.round(Scalar.RandomRange(1, 3))].visibleSymbol);
 
             scene.executeWhenReady(function() {
@@ -894,12 +987,12 @@ window.addEventListener('DOMContentLoaded', function(){
                 // shadowGenerator.getShadowMap().refreshRate = BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
 
 
-                scene.registerBeforeRender(function () {
+                // scene.registerBeforeRender(function () {
 // console.time();
-                    let deltaTime = scene.getEngine().getDeltaTime() * 0.01;
-                    reels.map(v => {
-                        v.update(deltaTime);
-                    });
+//                     let deltaTime = scene.getEngine().getDeltaTime() * 0.01;
+                    // reels.map(v => {
+                    //     v.update(deltaTime);
+                    // });
 
                     // if (enableEndRotateAnimation && reels[stopIndex].stoped) {
                     //     if (stopIndex < 4) {
@@ -970,7 +1063,7 @@ window.addEventListener('DOMContentLoaded', function(){
                     //     objGrowth.startGrowth();
                     // }
                     // particles.motionUpdate(deltaTime);
-                });
+                // });
             });
 
             scene.actionManager = new ActionManager(scene);

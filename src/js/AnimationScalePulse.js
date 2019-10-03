@@ -216,17 +216,17 @@ export default function AnimationScalePulse(targetScale, targetPosition, duratio
         duration,
         stopedCalback
     );
-    let animPosition = scene.beginAnimation(
-        object,
-        0,
-        90,
-        false,
-        duration,
-        // stopedCalback
-    );
+    // let animPosition = scene.beginAnimation(
+    //     object,
+    //     0,
+    //     90,
+    //     false,
+    //     duration,
+    //     // stopedCalback
+    // );
 
     return  {
         animScale: animScale,
-        animPosition: animPosition
+        // animPosition: animPosition
     }
 }

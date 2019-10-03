@@ -17,12 +17,16 @@ import AnimationScalePulse from "./AnimationScalePulse";
 import AnimationStopReels from "./AnimationStopReels";
 import {Observable} from "@babylonjs/core/Misc/observable";
 
+import ElectricField from "./ElectricField";
+
 export default class CreateReel {
-    constructor(angles, radius, section, numSymbolPerReel, positionReel, ins, baseURL, assetsManager, scene) {
+    constructor(name, angles, radius, section, numSymbolPerReel, positionReel, ins, baseURL, assetsManager, scene, engine) {
         this.radius = radius;
         this.positionReel = positionReel;
         this.scene = scene;
-        this.CoT = new TransformNode("CoT");
+        this.engine = engine;
+        this.baseURL = baseURL;
+        this.CoT = new TransformNode(name);
         this.CoT.position.y = 10;
         this.section = section;
         this.indexSymbol = 0;
@@ -33,7 +37,6 @@ export default class CreateReel {
         this.indexDown = 1;
         this.meshes = [];
         this.stoped = true;
-        this.beginStop = false;
         this.angles = angles;
         let iiii = ins + 0;
         this.onMoveWinEndObservable = new Observable();
@@ -122,10 +125,13 @@ export default class CreateReel {
             task.loadedMeshes[0]._children[0].material.roughness = 0.35;
             _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
         };
-        let meshTaskWild = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'wild_final_Draco.glb');
+        let meshTaskWild = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'wild_final_anim_Draco.glb');
         symbols[2] = meshTaskWild;
         meshTaskWild.onSuccess = function (task) {
             _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
+            task.loadedMeshes[0]._children[0]._children.map(v => {
+                v.electricField = new ElectricField(v, _this.baseURL, _this.scene, _this.engine);
+            })
         };
         let meshTaskCherry = assetsManager.addMeshTask('cherry', '', baseURL + 'assets/models/tmp/', 'cherry_final_anim_Draco.glb');
         symbols[3] = meshTaskCherry;
@@ -205,12 +211,19 @@ export default class CreateReel {
         this.setVisibleSymbol(arrayObects[this.indexDown], reelCombination[2]);
     }
 
-    startRotate (rotateSlots, fire, stopSymbols) {
+    startRotate (fire, spark) {
         if (fire) {
             fire.reset();
             fire.stop();
+            spark.reset();
+            spark.stop();
+            this.meshes.map(v => {
+                v._symbols[2].loadedMeshes[0]._children[0]._children.map(v => {
+                    v.electricField.stop();
+                })
+            });
         }
-        this.rotateSlots = rotateSlots;
+        this.rotateSlots = true;
 
         this.meshes.map(v => {
             v.setEnabled(true);
@@ -222,7 +235,7 @@ export default class CreateReel {
 
             if (v.animationScalePulse) {
                 v.animationScalePulse.animScale.stop();
-                v.animationScalePulse.animPosition.stop();
+                // v.animationScalePulse.animPosition.stop();
             }
             v.visibleSymbol.animations = [];
             v.visibleSymbol._children[0].animations = [];
@@ -232,15 +245,14 @@ export default class CreateReel {
             // v.visibleSymbol._children[0].scaling = v.visibleSymbol.defaultScaling.clone();
         });
 
-        this.moveWinS = false;
         this.endRotate = false;
         this.stoped = false;
-        this.beginStop = false;
     }
 
-    stopRotate (rotateSlots, reelCombination) {
-        this.rotateSlots = rotateSlots;
-        if (!this.rotateSlots && !this.beginStop) {
+    stopRotate (reelCombination) {
+
+        if (this.rotateSlots) {
+            this.rotateSlots = false;
             this.indexMiddleSymbol = this.indexSymbol + 2 <= 4 ? this.indexSymbol + 2 : this.indexSymbol + 2 - 4 - 1;
             this.endRotate = true;
             this.CoT.rotation.x = this.section * (this.indexSection - 3);
@@ -258,6 +270,8 @@ export default class CreateReel {
                     v._symbols[0].loadedAnimationGroups[0].start(false);
                     v._symbols[3].loadedAnimationGroups[0].start(false);
                     v._symbols[4].loadedAnimationGroups[0].start(false);
+
+                    v._symbols[2].loadedAnimationGroups.map( g => {g.start(false, 1.18) });
                 });
             }
             function unvisibleDown() {
@@ -278,17 +292,14 @@ export default class CreateReel {
                 stopedCallback,
                 this.scene
             );
-
-            this.beginStop = true;
         }
     }
 
-    setAnimationMoveWinSymbol (index, fire) {
+    setAnimationMoveWinSymbol (index, fire, spark) {
 
         let that = this;
         function stopedCallback() {
             that.onMoveWinEndObservable.notifyObservers(true);
-            fire.stop();
         }
 
         let invertParentWorldMatrix = this.meshes[index].getWorldMatrix().clone();
@@ -296,8 +307,18 @@ export default class CreateReel {
         let absolutePosition = this.meshes[index].visibleSymbol.getAbsolutePosition();
         let worldPosition = new Vector3(absolutePosition.x, absolutePosition.y, absolutePosition.z);
         let position = Vector3.TransformCoordinates(worldPosition, invertParentWorldMatrix);
-        fire.setEmitterPosition(this.meshes[index].visibleSymbol);
-        fire.start();
+
+        if (this.meshes[index].visibleSymbol._children[0].name === "wild") {
+
+            spark.setEmitterPosition(this.meshes[index].visibleSymbol);
+            spark.start();
+            this.meshes[index].visibleSymbol._children[0]._children.map(v => {
+                v.electricField.start();
+            })
+        } else {
+            fire.setEmitterPosition(this.meshes[index].visibleSymbol);
+            fire.start();
+        }
         this.meshes[index].animationScalePulse = AnimationScalePulse.call(this.meshes[index].visibleSymbol,
             new Vector3(0.0,0.0,0.0),
             position,
@@ -307,47 +328,49 @@ export default class CreateReel {
         );
     }
 
-    moveWinSymbols (winArray, fire) {
-        if (!this.rotateSlots && this.stoped) {
+    moveWinSymbols (winArray, fire, spark) {
+        if (!this.rotateSlots /*&& this.stoped*/) {
             if (winArray[0] > 0) {
-                this.setAnimationMoveWinSymbol(this.indexUp, fire);
+                this.setAnimationMoveWinSymbol(this.indexUp, fire, spark);
             } else if (winArray[1] > 0) {
-                this.setAnimationMoveWinSymbol(this.indexMiddleSymbol, fire);
+                this.setAnimationMoveWinSymbol(this.indexMiddleSymbol, fire, spark);
             } else if (winArray[2] > 0) {
-                this.setAnimationMoveWinSymbol(this.indexDown, fire);
+                this.setAnimationMoveWinSymbol(this.indexDown, fire, spark);
             } else {
                 this.onMoveWinEndObservable.notifyObservers(true);
             }
         }
     }
 
-    update (deltaTime) {
-
-        if (this.rotateSlots) {
-            this.CoT.rotation.x += deltaTime;
-        }
-
-        if (!this.endRotate && this.CoT.rotation.x >= this.section * this.indexSection) {
-            // console.time();
-            let angle = this.section * ((this.numSymbolPerReel - this.angles.length + 1) + this.indexSymbol) - this.CoT.rotation.x;
-            let deltaA = this.CoT.rotation.x - this.section * this.indexSection;
-            this.meshes[this.indexSymbol].rotation.x = angle + deltaA;
-            if (this.indexSymbol < 4) {
-                this.indexSymbol++;
-            } else {
-                this.indexSymbol = 0;
+    updated () {
+        let _this = this;
+        this.scene.registerBeforeRender(function () {
+            let deltaTime = _this.scene.getEngine().getDeltaTime() * 0.01;
+            if (_this.rotateSlots) {
+                _this.CoT.rotation.x += deltaTime;
             }
-            if (this.indexSection < this.numSymbolPerReel) {
-                this.indexSection++;
-            } else {
-                this.indexSection = 1;
+
+            if (!_this.endRotate && _this.CoT.rotation.x >= _this.section * _this.indexSection) {
+                // console.time();
+                let angle = _this.section * ((_this.numSymbolPerReel - _this.angles.length + 1) + _this.indexSymbol) - _this.CoT.rotation.x;
+                let deltaA = _this.CoT.rotation.x - _this.section * _this.indexSection;
+                _this.meshes[_this.indexSymbol].rotation.x = angle + deltaA;
+                if (_this.indexSymbol < 4) {
+                    _this.indexSymbol++;
+                } else {
+                    _this.indexSymbol = 0;
+                }
+                if (_this.indexSection < _this.numSymbolPerReel) {
+                    _this.indexSection++;
+                } else {
+                    _this.indexSection = 1;
+                }
+                // console.timeEnd();
             }
-            // console.timeEnd();
-        }
 
-        if (this.CoT.rotation.x > Math.PI * 2) {
-            this.CoT.rotation.x -= Math.PI * 2;
-        }
-
+            if (_this.CoT.rotation.x > Math.PI * 2) {
+                _this.CoT.rotation.x -= Math.PI * 2;
+            }
+        })
     }
 }

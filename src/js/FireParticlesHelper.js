@@ -42,7 +42,7 @@ export default class FireParticlesHelper {
             effectStandardBlendMode.onBind = function () {
                 effectStandardBlendMode.setFloat("time", time1);
 
-                order1 = (Date.now() - start_time1) * 0.0009;
+                order1 = (Date.now() - start_time1) * 0.001;
                 start_time1 = Date.now();
                 time1 += order1;
             };
@@ -74,7 +74,7 @@ export default class FireParticlesHelper {
                     var rndAngle = 2 * (Math.random() * (0.65 - 0.35) + 0.35) * Math.PI;
                     var randX = 1.6 * Math.sin(rndAngle);
                     var randY = 1.7 * Math.cos(rndAngle);
-                    var randZ = 1.92 * (Math.random() <= 0.35 ? -1 : 1);
+                    var randZ = 2.0 * (Math.random() <= 0.35 ? -1 : 1);
                     Vector3.TransformCoordinatesFromFloatsToRef(randX, randY, randZ, worldMatrix, positionToUpdate);
                 };
             set.systems[3].startPositionFunction =
@@ -83,7 +83,7 @@ export default class FireParticlesHelper {
                     var rndAngle = 2 * (Math.random() * (0.65 - 0.35) + 0.35) * Math.PI;
                     var randX = 1.6 * Math.sin(rndAngle);
                     var randY = 1.7 * Math.cos(rndAngle);
-                    var randZ = 1.92 * (Math.random() <= 0.35 ? -1 : 1);
+                    var randZ = 2.0 * (Math.random() <= 0.35 ? -1 : 1);
                     Vector3.TransformCoordinatesFromFloatsToRef(randX, randY + 1.0, randZ, worldMatrix, positionToUpdate);
                 };
             set.systems[4].startPositionFunction =
