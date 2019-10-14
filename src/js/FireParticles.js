@@ -228,7 +228,7 @@ this.emitter = null;
         this.sparksCore.updateSpeed = 0.02;
         colorParticles(this.sparksCore);
 
-        this.sparksCoreBurst = new ParticleSystem("sparksCore", 30, options.scene);
+        this.sparksCoreBurst = new ParticleSystem("sparksCoreBurst", 30, options.scene);
         this.sparksCoreBurst.emitter = this.ashesParticlesEmitter; // the starting object, the emitter
         this.sparksCoreBurst.minLifeTime = 0.5;
         this.sparksCoreBurst.maxLifeTime = 1.0;
@@ -246,7 +246,7 @@ this.emitter = null;
         this.sparksCoreBurst.updateSpeed = 0.02;
         colorParticles(this.sparksCoreBurst);
 
-        this.glow = new ParticleSystem("sparksCore", 10, options.scene);
+        this.glow = new ParticleSystem("glow", 10, options.scene);
         this.glow.emitter = this.ashesParticlesEmitter;
         this.glow.emitRate = 5;
         this.glow.minLifeTime = 0.5;

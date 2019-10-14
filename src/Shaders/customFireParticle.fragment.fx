@@ -57,8 +57,8 @@ void main(void) {
         float c2 = n2 * c_a * (1.5-pow(1.0*uv.y,2.0));
         c1=clamp(c1,0.,1.);
         c2=clamp(c2,0.,1.);
-        vec3 col = vec3(1.05*c1, 1.05*c1*c1*c1, c1*c1*c1*c1*c1*c1*c1*c1);
-        vec3 col2 = vec3(1.05*c2, 1.05*c2*c2*c2, c2*c2*c2*c2*c2*c2*c2*c2);
+        vec3 col = vec3(1.05*c1*c1, 1.05*c1*c1*c1*c1*c1, c1*c1*c1*c1*c1*c1*c1*c1*c1*c1);
+        vec3 col2 = vec3(1.05*c2*c2, 1.05*c2*c2*c2*c2*c2, c2*c2*c2*c2*c2*c2*c2*c2*c2*c2);
         float a = c2 * c1 / (pow(uv.y,-0.0005));
         float mixing = mix(mix(col.r, col.g, a), col.b, a);
         if ( mixing < 0.2 ) discard;

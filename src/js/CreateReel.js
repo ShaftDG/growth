@@ -3,6 +3,7 @@ import {
     AnimationGroup,
     Axis,
     Mesh,
+    Texture,
     // Material,
     Scalar,
     TransformNode,
@@ -16,8 +17,7 @@ import {
 import AnimationScalePulse from "./AnimationScalePulse";
 import AnimationStopReels from "./AnimationStopReels";
 import {Observable} from "@babylonjs/core/Misc/observable";
-
-import ElectricField from "./ElectricField";
+import CustomPBRMaterial from "./CustomPBRMaterial";
 
 export default class CreateReel {
     constructor(name, angles, radius, section, numSymbolPerReel, positionReel, ins, baseURL, assetsManager, scene, engine) {
@@ -128,10 +128,36 @@ export default class CreateReel {
         let meshTaskWild = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'wild_final_anim_Draco.glb');
         symbols[2] = meshTaskWild;
         meshTaskWild.onSuccess = function (task) {
+       /*     let myPBRmaterial = new CustomPBRMaterial("mat", _this.scene);
+            // myPBRmaterial.emissiveColor = new Color3(2.0,2.0,2.0);
+            myPBRmaterial.metallic = 1.0; // set to 1 to only use it from the metallicRoughnessTexture
+            myPBRmaterial.roughness = 1.0; // set to 1 to only use it from the metallicRoughnessTexture
+            myPBRmaterial.backFaceCulling = false;
+            myPBRmaterial.albedoTexture = task.loadedMeshes[0]._children[0]._children[0].material.albedoTexture;
+            myPBRmaterial.metallicTexture = task.loadedMeshes[0]._children[0]._children[0].material.metallicTexture;
+            myPBRmaterial.bumpTexture = task.loadedMeshes[0]._children[0]._children[0].material.bumpTexture;
+            myPBRmaterial.emissiveTexture = task.loadedMeshes[0]._children[0]._children[0].material.emissiveTexture;
+            myPBRmaterial.ambientTexture = task.loadedMeshes[0]._children[0]._children[0].material.ambientTexture;
+
+            myPBRmaterial.gradientFireTexture = new Texture(baseURL + 'assets/textures/combustion/Fractal_fire.jpg', _this.scene);
+            myPBRmaterial.customNoiseTexture = new Texture(baseURL + 'assets/textures/combustion/noiseCombustion.png', _this.scene);
+
+            myPBRmaterial.environmentTexture = _this.scene.environmentTexture;
+            myPBRmaterial.forceIrradianceInFragment = true;
+            myPBRmaterial.useAmbientOcclusionFromMetallicTextureRed = true;
+            myPBRmaterial.useAmbientInGrayScale = true;
+            myPBRmaterial.useRoughnessFromMetallicTextureAlpha = false;
+            myPBRmaterial.useRoughnessFromMetallicTextureGreen = true;
+            myPBRmaterial.useMetallnessFromMetallicTextureBlue = true;
+
+            let time = -2.0;
+            myPBRmaterial.onBind = function () {
+                myPBRmaterial._activeEffect.setFloat("time", time);
+                  time += _this.scene.getEngine().getDeltaTime() * 0.0001;
+            };
+
+            task.loadedMeshes[0]._children[0]._children.map(v => {v.material = myPBRmaterial});*/
             _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
-            task.loadedMeshes[0]._children[0]._children.map(v => {
-                v.electricField = new ElectricField(v, _this.baseURL, _this.scene, _this.engine);
-            })
         };
         let meshTaskCherry = assetsManager.addMeshTask('cherry', '', baseURL + 'assets/models/tmp/', 'cherry_final_anim_Draco.glb');
         symbols[3] = meshTaskCherry;
@@ -141,6 +167,34 @@ export default class CreateReel {
         let meshTaskGrapes = assetsManager.addMeshTask('grapes', '', baseURL + 'assets/models/tmp/', 'grape_final_anim_Draco.glb');
         symbols[4] = meshTaskGrapes;
         meshTaskGrapes.onSuccess = function (task) {
+          /*  let myPBRmaterial = new CustomPBRMaterial("mat", _this.scene);
+            myPBRmaterial.metallic = 1.0; // set to 1 to only use it from the metallicRoughnessTexture
+            myPBRmaterial.roughness = 1.0; // set to 1 to only use it from the metallicRoughnessTexture
+            myPBRmaterial.backFaceCulling = false;
+            myPBRmaterial.albedoTexture = task.loadedMeshes[0]._children[0]._children[0].material.albedoTexture;
+            myPBRmaterial.metallicTexture = task.loadedMeshes[0]._children[0]._children[0].material.metallicTexture;
+            myPBRmaterial.bumpTexture = task.loadedMeshes[0]._children[0]._children[0].material.bumpTexture;
+            myPBRmaterial.emissiveTexture = task.loadedMeshes[0]._children[0]._children[0].material.emissiveTexture;
+            myPBRmaterial.ambientTexture = task.loadedMeshes[0]._children[0]._children[0].material.ambientTexture;
+
+            myPBRmaterial.gradientFireTexture = new Texture(baseURL + 'assets/textures/combustion/Fractal_fire.jpg', _this.scene);
+            myPBRmaterial.customNoiseTexture = new Texture(baseURL + 'assets/textures/combustion/noiseCombustion.png', _this.scene);
+
+            myPBRmaterial.environmentTexture = _this.scene.environmentTexture;
+            myPBRmaterial.forceIrradianceInFragment = true;
+            myPBRmaterial.useAmbientOcclusionFromMetallicTextureRed = true;
+            myPBRmaterial.useAmbientInGrayScale = true;
+            myPBRmaterial.useRoughnessFromMetallicTextureAlpha = false;
+            myPBRmaterial.useRoughnessFromMetallicTextureGreen = true;
+            myPBRmaterial.useMetallnessFromMetallicTextureBlue = true;
+
+            let time = -2.0;
+            myPBRmaterial.onBind = function () {
+                myPBRmaterial._activeEffect.setFloat("time", time);
+            };
+
+            task.loadedMeshes[0].combustionMaterial = myPBRmaterial;
+            task.loadedMeshes[0]._children[0]._children.map(v => {v.material = myPBRmaterial});*/
             _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
             // task.loadedAnimationGroups[0].start(true);
         };
@@ -217,11 +271,6 @@ export default class CreateReel {
             fire.stop();
             spark.reset();
             spark.stop();
-            this.meshes.map(v => {
-                v._symbols[2].loadedMeshes[0]._children[0]._children.map(v => {
-                    v.electricField.stop();
-                })
-            });
         }
         this.rotateSlots = true;
 
@@ -272,6 +321,7 @@ export default class CreateReel {
                     v._symbols[4].loadedAnimationGroups[0].start(false);
 
                     v._symbols[2].loadedAnimationGroups.map( g => {g.start(false, 1.18) });
+
                 });
             }
             function unvisibleDown() {
@@ -309,15 +359,18 @@ export default class CreateReel {
         let position = Vector3.TransformCoordinates(worldPosition, invertParentWorldMatrix);
 
         if (this.meshes[index].visibleSymbol._children[0].name === "wild") {
-
             spark.setEmitterPosition(this.meshes[index].visibleSymbol);
             spark.start();
-            this.meshes[index].visibleSymbol._children[0]._children.map(v => {
-                v.electricField.start();
-            })
         } else {
             fire.setEmitterPosition(this.meshes[index].visibleSymbol);
             fire.start();
+            if (this.meshes[index].visibleSymbol.combustionMaterial) {
+                let time = -2.0;
+                this.meshes[index].visibleSymbol.combustionMaterial.onBind = function () {
+                    that.meshes[index].visibleSymbol.combustionMaterial._activeEffect.setFloat("time", time);
+                    time += that.scene.getEngine().getDeltaTime() * 0.003;
+                };
+            }
         }
         this.meshes[index].animationScalePulse = AnimationScalePulse.call(this.meshes[index].visibleSymbol,
             new Vector3(0.0,0.0,0.0),

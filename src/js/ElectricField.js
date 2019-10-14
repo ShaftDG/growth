@@ -8,14 +8,15 @@ import {
     Color3,
     Color4
 } from '@babylonjs/core';
+import {Engine} from "@babylonjs/core/index";
 
 export default class ElectricField {
     constructor(emitter, baseURL, scene, engine) {
 
 // Effect
 
-        var effect = engine.createEffectForParticles("electric", ["time"]);
-        let time = 20;
+        var effect = engine.createEffectForParticles("fire", ["time"], ["iTextureFlame", "iTextureBack", "iTextureAlpha"]);
+       /* let time = 20;
         effect.onBind = function () {
             effect.setFloat("time", time);
             if (time < 50) {
@@ -23,6 +24,18 @@ export default class ElectricField {
             } else {
                 time = 20;
             }
+        };*/
+
+        effect.onBindObservable.add((effect) => {
+            effect.setTexture("iTextureFlame", new Texture(baseURL + 'assets/textures/lightning/noise_1.png', scene));
+            effect.setTexture("iTextureBack", new Texture(baseURL + 'assets/textures/lightning/noise_2.png', scene));
+            effect.setTexture("iTextureAlpha", new Texture(baseURL + 'assets/textures/lightning/noise_3.png', scene));
+        });
+
+        let time = 0.0;
+        effect.onBind = function () {
+            effect.setFloat("time", time);
+            time += scene.getEngine().getDeltaTime() * 0.0002;
         };
 
         // Create a particle system
