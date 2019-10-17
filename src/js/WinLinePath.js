@@ -1,11 +1,6 @@
-import {
-    Path3D,
-    Color3,
-    Matrix,
-    Vector3,
-    MeshBuilder
-} from '@babylonjs/core';
-import {PBRMaterial} from "@babylonjs/core/index";
+import { Path3D } from '@babylonjs/core/Maths/math.path';
+import { Matrix } from '@babylonjs/core/Maths/math.vector';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 
 export default class WinLinePath {
     constructor(

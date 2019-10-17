@@ -5,8 +5,8 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 let conf = {
@@ -43,13 +43,41 @@ let conf = {
     optimization: {
         nodeEnv: 'production',
         minimize: true,
+        // minimizer: [
+        //     new UglifyJsPlugin({
+        //         test: /\.js($|\?)/i,
+        //         cache: true,
+        //         parallel: true,
+        //         uglifyOptions: {
+        //             compress: false,
+        //             ecma: 6,
+        //             mangle: true
+        //         },
+        //         sourceMap: true // set to true if you want JS source maps
+        //     }),
+        //     new OptimizeCSSAssetsPlugin({})
+        // ],
         minimizer: [
-            new UglifyJsPlugin({
-                cache: true,
+            new TerserPlugin({
+                terserOptions: {
+                    ecma: 6,
+                    warnings: false,
+                    parse: {},
+                    compress: {},
+                    mangle: true, // Note `mangle.properties` is `false` by default.
+                    module: false,
+                    output: null,
+                    toplevel: false,
+                    nameCache: null,
+                    ie8: false,
+                    keep_classnames: undefined,
+                    keep_fnames: false,
+                    safari10: false,
+                },
                 parallel: true,
-                sourceMap: true // set to true if you want JS source maps
+                parallel: 4,
+                sourceMap: true,
             }),
-            new OptimizeCSSAssetsPlugin({})
         ],
         splitChunks: {
             // name: 'vendor'

@@ -1,18 +1,16 @@
-import {
-    PBRMaterial,
-    Effect,
-    Scene,
-    EffectFallbacks,
-    MaterialHelper,
-    StandardMaterial,
-    PBRBaseMaterial,
-    VertexBuffer,
-    ImageProcessingConfiguration,
-    Color3
-} from '@babylonjs/core';
+import { ImageProcessingConfiguration } from '@babylonjs/core/Materials/imageProcessingConfiguration';
+import { VertexBuffer } from '@babylonjs/core/Meshes/buffer';
+import { MaterialHelper } from '@babylonjs/core/Materials/materialHelper';
+import { PBRBaseMaterial } from '@babylonjs/core/Materials/PBR/pbrBaseMaterial';
+import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
+import { EffectFallbacks } from '@babylonjs/core/Materials/effectFallbacks';
+import { Effect } from "@babylonjs/core/Materials/effect";
+import { Scene } from '@babylonjs/core/scene';
+import { Color3 } from '@babylonjs/core/Maths/math.color';
+
 import * as tslib_1 from "tslib";
 import {expandToProperty, serialize, serializeAsTexture} from "@babylonjs/core/Misc/decorators";
-import {Tmp} from "@babylonjs/core/Maths/math";
+import {TmpColors} from "@babylonjs/core/Maths/math.color";
 import {MaterialFlags} from "@babylonjs/core/Materials/materialFlags";
 import {PBRClearCoatConfiguration} from "@babylonjs/core/Materials/PBR/pbrClearCoatConfiguration";
 import {PBRSubSurfaceConfiguration} from "@babylonjs/core/Materials/PBR/pbrSubSurfaceConfiguration";
@@ -22,8 +20,6 @@ import {PBRAnisotropicConfiguration} from "@babylonjs/core/Materials/PBR/pbrAnis
 export default class CustomPBRMaterial extends PBRMaterial {
     constructor (name, scene) {
         super(name, scene);
-
-        this._scaledReflectivity = new Color3();
 
         tslib_1.__decorate([
             serializeAsTexture(),
@@ -103,7 +99,7 @@ export default class CustomPBRMaterial extends PBRMaterial {
 
     }
 
-    bindForSubMesh (world, mesh, subMesh) {
+    bindForSubMesh(world, mesh, subMesh) {
         var scene = this.getScene();
         var defines = subMesh._materialDefines;
         if (!defines) {
@@ -156,30 +152,32 @@ export default class CustomPBRMaterial extends PBRMaterial {
                             ubo.updateVector3("vReflectionPosition", cubeTexture.boundingBoxPosition);
                             ubo.updateVector3("vReflectionSize", cubeTexture.boundingBoxSize);
                         }
-                        var polynomials = reflectionTexture.sphericalPolynomial;
-                        if (defines.USESPHERICALFROMREFLECTIONMAP && polynomials) {
-                            if (defines.SPHERICAL_HARMONICS) {
-                                var preScaledHarmonics = polynomials.preScaledHarmonics;
-                                this._activeEffect.setVector3("vSphericalL00", preScaledHarmonics.l00);
-                                this._activeEffect.setVector3("vSphericalL1_1", preScaledHarmonics.l1_1);
-                                this._activeEffect.setVector3("vSphericalL10", preScaledHarmonics.l10);
-                                this._activeEffect.setVector3("vSphericalL11", preScaledHarmonics.l11);
-                                this._activeEffect.setVector3("vSphericalL2_2", preScaledHarmonics.l2_2);
-                                this._activeEffect.setVector3("vSphericalL2_1", preScaledHarmonics.l2_1);
-                                this._activeEffect.setVector3("vSphericalL20", preScaledHarmonics.l20);
-                                this._activeEffect.setVector3("vSphericalL21", preScaledHarmonics.l21);
-                                this._activeEffect.setVector3("vSphericalL22", preScaledHarmonics.l22);
-                            }
-                            else {
-                                this._activeEffect.setFloat3("vSphericalX", polynomials.x.x, polynomials.x.y, polynomials.x.z);
-                                this._activeEffect.setFloat3("vSphericalY", polynomials.y.x, polynomials.y.y, polynomials.y.z);
-                                this._activeEffect.setFloat3("vSphericalZ", polynomials.z.x, polynomials.z.y, polynomials.z.z);
-                                this._activeEffect.setFloat3("vSphericalXX_ZZ", polynomials.xx.x - polynomials.zz.x, polynomials.xx.y - polynomials.zz.y, polynomials.xx.z - polynomials.zz.z);
-                                this._activeEffect.setFloat3("vSphericalYY_ZZ", polynomials.yy.x - polynomials.zz.x, polynomials.yy.y - polynomials.zz.y, polynomials.yy.z - polynomials.zz.z);
-                                this._activeEffect.setFloat3("vSphericalZZ", polynomials.zz.x, polynomials.zz.y, polynomials.zz.z);
-                                this._activeEffect.setFloat3("vSphericalXY", polynomials.xy.x, polynomials.xy.y, polynomials.xy.z);
-                                this._activeEffect.setFloat3("vSphericalYZ", polynomials.yz.x, polynomials.yz.y, polynomials.yz.z);
-                                this._activeEffect.setFloat3("vSphericalZX", polynomials.zx.x, polynomials.zx.y, polynomials.zx.z);
+                        if (!defines.USEIRRADIANCEMAP) {
+                            var polynomials = reflectionTexture.sphericalPolynomial;
+                            if (defines.USESPHERICALFROMREFLECTIONMAP && polynomials) {
+                                if (defines.SPHERICAL_HARMONICS) {
+                                    var preScaledHarmonics = polynomials.preScaledHarmonics;
+                                    this._activeEffect.setVector3("vSphericalL00", preScaledHarmonics.l00);
+                                    this._activeEffect.setVector3("vSphericalL1_1", preScaledHarmonics.l1_1);
+                                    this._activeEffect.setVector3("vSphericalL10", preScaledHarmonics.l10);
+                                    this._activeEffect.setVector3("vSphericalL11", preScaledHarmonics.l11);
+                                    this._activeEffect.setVector3("vSphericalL2_2", preScaledHarmonics.l2_2);
+                                    this._activeEffect.setVector3("vSphericalL2_1", preScaledHarmonics.l2_1);
+                                    this._activeEffect.setVector3("vSphericalL20", preScaledHarmonics.l20);
+                                    this._activeEffect.setVector3("vSphericalL21", preScaledHarmonics.l21);
+                                    this._activeEffect.setVector3("vSphericalL22", preScaledHarmonics.l22);
+                                }
+                                else {
+                                    this._activeEffect.setFloat3("vSphericalX", polynomials.x.x, polynomials.x.y, polynomials.x.z);
+                                    this._activeEffect.setFloat3("vSphericalY", polynomials.y.x, polynomials.y.y, polynomials.y.z);
+                                    this._activeEffect.setFloat3("vSphericalZ", polynomials.z.x, polynomials.z.y, polynomials.z.z);
+                                    this._activeEffect.setFloat3("vSphericalXX_ZZ", polynomials.xx.x - polynomials.zz.x, polynomials.xx.y - polynomials.zz.y, polynomials.xx.z - polynomials.zz.z);
+                                    this._activeEffect.setFloat3("vSphericalYY_ZZ", polynomials.yy.x - polynomials.zz.x, polynomials.yy.y - polynomials.zz.y, polynomials.yy.z - polynomials.zz.z);
+                                    this._activeEffect.setFloat3("vSphericalZZ", polynomials.zz.x, polynomials.zz.y, polynomials.zz.z);
+                                    this._activeEffect.setFloat3("vSphericalXY", polynomials.xy.x, polynomials.xy.y, polynomials.xy.z);
+                                    this._activeEffect.setFloat3("vSphericalYZ", polynomials.yz.x, polynomials.yz.y, polynomials.yz.z);
+                                    this._activeEffect.setFloat3("vSphericalZX", polynomials.zx.x, polynomials.zx.y, polynomials.zx.z);
+                                }
                             }
                         }
                         ubo.updateFloat3("vReflectionMicrosurfaceInfos", reflectionTexture.getSize().width, reflectionTexture.lodGenerationScale, reflectionTexture.lodGenerationOffset);
@@ -223,22 +221,27 @@ export default class CustomPBRMaterial extends PBRMaterial {
                 }
                 // Colors
                 if (defines.METALLICWORKFLOW) {
-                    Tmp.Color3[0].r = (this._metallic === undefined || this._metallic === null) ? 1 : this._metallic;
-                    Tmp.Color3[0].g = (this._roughness === undefined || this._roughness === null) ? 1 : this._roughness;
-                    ubo.updateColor4("vReflectivityColor", Tmp.Color3[0], 0);
+                    TmpColors.Color3[0].r = (this._metallic === undefined || this._metallic === null) ? 1 : this._metallic;
+                    TmpColors.Color3[0].g = (this._roughness === undefined || this._roughness === null) ? 1 : this._roughness;
+                    ubo.updateColor4("vReflectivityColor", TmpColors.Color3[0], 0);
                 }
                 else {
                     ubo.updateColor4("vReflectivityColor", this._reflectivityColor, this._microSurface);
                 }
                 ubo.updateColor3("vEmissiveColor", MaterialFlags.EmissiveTextureEnabled ? this._emissiveColor : Color3.BlackReadOnly);
                 ubo.updateColor3("vReflectionColor", this._reflectionColor);
-                ubo.updateColor4("vAlbedoColor", this._albedoColor, this.alpha);
+                if (!defines.SS_REFRACTION && this.subSurface.linkRefractionWithTransparency) {
+                    ubo.updateColor4("vAlbedoColor", this._albedoColor, 1);
+                }
+                else {
+                    ubo.updateColor4("vAlbedoColor", this._albedoColor, this.alpha);
+                }
                 // Visibility
                 ubo.updateFloat("visibility", mesh.visibility);
                 // Misc
                 this._lightingInfos.x = this._directIntensity;
                 this._lightingInfos.y = this._emissiveIntensity;
-                this._lightingInfos.z = this._environmentIntensity;
+                this._lightingInfos.z = this._environmentIntensity * scene.environmentIntensity;
                 this._lightingInfos.w = this._specularIntensity;
                 ubo.updateVector4("vLightingIntensity", this._lightingInfos);
             }
@@ -267,6 +270,9 @@ export default class CustomPBRMaterial extends PBRMaterial {
                         ubo.setTexture("reflectionSampler", reflectionTexture._lodTextureMid || reflectionTexture);
                         ubo.setTexture("reflectionSamplerLow", reflectionTexture._lodTextureLow || reflectionTexture);
                         ubo.setTexture("reflectionSamplerHigh", reflectionTexture._lodTextureHigh || reflectionTexture);
+                    }
+                    if (defines.USEIRRADIANCEMAP) {
+                        ubo.setTexture("irradianceSampler", reflectionTexture.irradianceTexture);
                     }
                 }
                 if (defines.ENVIRONMENTBRDF) {
@@ -310,7 +316,7 @@ export default class CustomPBRMaterial extends PBRMaterial {
         if (mustRebind || !this.isFrozen) {
             // Lights
             if (scene.lightsEnabled && !this._disableLighting) {
-                MaterialHelper.BindLights(scene, mesh, this._activeEffect, defines, this._maxSimultaneousLights, this._lightFalloff !== PBRBaseMaterial.LIGHTFALLOFF_STANDARD);
+                MaterialHelper.BindLights(scene, mesh, this._activeEffect, defines, this._maxSimultaneousLights, this._lightFalloff !== PBRBaseMaterial.LIGHTFALLOFF_STANDARD, this._rebuildInParallel);
             }
             // View
             if (scene.fogEnabled && mesh.applyFog && scene.fogMode !== Scene.FOGMODE_NONE || reflectionTexture) {
@@ -331,7 +337,7 @@ export default class CustomPBRMaterial extends PBRMaterial {
         this._afterBind(mesh, this._activeEffect);
     };
 
-    _prepareEffect (mesh, defines, onCompiled, onError, useInstances, useClipPlane) {
+    _prepareEffect(mesh, defines, onCompiled, onError, useInstances, useClipPlane) {
         if (onCompiled === void 0) { onCompiled = null; }
         if (onError === void 0) { onError = null; }
         if (useInstances === void 0) { useInstances = null; }
@@ -387,6 +393,9 @@ export default class CustomPBRMaterial extends PBRMaterial {
         if (defines.USESPHERICALFROMREFLECTIONMAP) {
             fallbacks.addFallback(fallbackRank++, "USESPHERICALFROMREFLECTIONMAP");
         }
+        if (defines.USEIRRADIANCEMAP) {
+            fallbacks.addFallback(fallbackRank++, "USEIRRADIANCEMAP");
+        }
         if (defines.LIGHTMAP) {
             fallbacks.addFallback(fallbackRank++, "LIGHTMAP");
         }
@@ -401,9 +410,6 @@ export default class CustomPBRMaterial extends PBRMaterial {
         }
         if (defines.VERTEXCOLOR) {
             fallbacks.addFallback(fallbackRank++, "VERTEXCOLOR");
-        }
-        if (defines.NUM_BONE_INFLUENCERS > 0) {
-            fallbacks.addCPUSkinningFallback(fallbackRank++, mesh);
         }
         if (defines.MORPHTARGETS) {
             fallbacks.addFallback(fallbackRank++, "MORPHTARGETS");
@@ -453,10 +459,9 @@ export default class CustomPBRMaterial extends PBRMaterial {
         ];
         var samplers = ["albedoSampler", "reflectivitySampler", "ambientSampler", "emissiveSampler",
             "bumpSampler", "lightmapSampler", "opacitySampler",
-            "reflectionSampler", "reflectionSamplerLow", "reflectionSamplerHigh",
+            "reflectionSampler", "reflectionSamplerLow", "reflectionSamplerHigh", "irradianceSampler",
             "microSurfaceSampler", "environmentBrdfSampler", "boneSampler",
-            "customNoiseSampler", "gradientFireSampler"
-        ];
+            "customNoiseSampler", "gradientFireSampler"];
         var uniformBuffers = ["Material", "Scene"];
         PBRSubSurfaceConfiguration.AddUniforms(uniforms);
         PBRSubSurfaceConfiguration.AddSamplers(samplers);

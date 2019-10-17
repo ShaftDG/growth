@@ -8,7 +8,6 @@ import {
     Color3,
     Color4
 } from '@babylonjs/core';
-import {Engine} from "@babylonjs/core/index";
 
 export default class ElectricField {
     constructor(emitter, baseURL, scene, engine) {

@@ -1,4 +1,6 @@
-import {Animation,ElasticEase,EasingFunction,AnimationEvent} from '@babylonjs/core';
+import {Animation} from '@babylonjs/core/Animations/animation';
+import {AnimationEvent} from '@babylonjs/core/Animations/animationEvent';
+import {ElasticEase, EasingFunction} from '@babylonjs/core/Animations/easing';
 
 export default function AnimationStopReels(target, duration, callbackUp, callbackDown, callbackDropSymbol, stopedCalback, scene) {
     var object = this;

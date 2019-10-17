@@ -1,4 +1,4 @@
-import {Animation} from '@babylonjs/core';
+import {Animation} from '@babylonjs/core/Animations/animation';
 
 export default function AnimationLeafDeath(target, duration, scene)
 {

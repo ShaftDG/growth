@@ -1,5 +1,6 @@
-import {Animation,CubicEase,EasingFunction} from '@babylonjs/core';
-import {AnimationEvent} from "@babylonjs/core/index";
+import {Animation} from '@babylonjs/core/Animations/animation';
+import {AnimationEvent} from '@babylonjs/core/Animations/animationEvent';
+import {CubicEase, EasingFunction} from '@babylonjs/core/Animations/easing';
 
 export default function AnimationWidthLine(target, duration, loop, callback, callbackEnd, scene)
 {

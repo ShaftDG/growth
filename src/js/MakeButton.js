@@ -1,12 +1,6 @@
-import {
-    HighlightLayer,
-    Color3,
-    // Vector3,
-} from '@babylonjs/core'
-
-import {
-    MeshButton3D,
-} from '@babylonjs/gui'
+import { HighlightLayer } from '@babylonjs/core/Layers/highlightLayer';
+import { Color3 } from '@babylonjs/core/Maths/math.color';
+import { MeshButton3D } from '@babylonjs/gui/3D/controls/meshButton3D';
 
 /*import {
     CustomHighLightLayer
@@ -14,8 +8,8 @@ import {
 /*import {
     HeatWave
 } from './HeatWave';*/
-import {Texture} from "@babylonjs/core/index";
-import {Constants} from "@babylonjs/core/Engines/constants";
+import { Texture } from '@babylonjs/core/Materials/Textures/texture';
+import { Constants } from '@babylonjs/core/Engines/constants';
 
 export default class MakeButton {
     constructor(name, object, linkToParent, options, manager, scene) {

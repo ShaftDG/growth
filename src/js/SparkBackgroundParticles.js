@@ -1,13 +1,10 @@
-import {
-    ParticleSystem,
-    TransformNode,
-    Vector2,
-    Vector3,
-    Color3,
-    Color4
-} from '@babylonjs/core';
-import {Texture, VertexBuffer} from "@babylonjs/core/index";
-// import {ParticleHelper} from "@babylonjs/core/index";
+import { ParticleSystem } from '@babylonjs/core/Particles/particleSystem';
+import '@babylonjs/core/Particles/particleSystemComponent';
+import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
+import { Color4 } from '@babylonjs/core/Maths/math.color';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Texture } from '@babylonjs/core/Materials/Textures/texture';
+
 export default class SparkBackgroundParticles {
     constructor(baseURL, scene, engine) {
 
@@ -16,11 +13,11 @@ let options = {
     sizeParticles: 10
 };
 
-        this.particleSystemSparks = new ParticleSystem("particles", 20, scene);
+        this.particleSystemSparks = new ParticleSystem("particleSystemSparks", 20, scene);
         this.particleSystemSparks.preWarmCycles = 10;
         this.particleSystemSparks.preWarmStepOffset = 2;
 
-        this.sparkEmitter = new TransformNode("");
+        this.sparkEmitter = new TransformNode("sparkBackgroundEmitter");
         // this.sparkEmitter.parent = emitter;
         // this.sparkEmitter.position = new Vector3(0, 0, 0).subtract(emitter.position);
         // Where the particles come from
@@ -90,12 +87,12 @@ let options = {
         };
 
         // Create a particle system
-        this.particleSystemLightning = new ParticleSystem("particles", 20, scene, effect);
+        this.particleSystemLightning = new ParticleSystem("particleSystemLightning", 20, scene, effect);
 
         //Texture of each particle
 
 
-        this.particleSystemEmitter = new TransformNode("");
+        this.particleSystemEmitter = new TransformNode("lightningEmitter");
 
         // this.particleSystemEmitter.parent = emitter;
         // Where the particles come from
@@ -105,13 +102,13 @@ let options = {
         //     sizeParticles: 3
         // };
         // Size of each particle (random between...
-        this.particleSystemLightning.minSize = 1.0;
-        this.particleSystemLightning.maxSize = 3.5;
+        this.particleSystemLightning.minSize = 2.0;
+        this.particleSystemLightning.maxSize = 4.5;
 
-        // this.particleSystemLightning.minScaleX = 0.25;
-        // this.particleSystemLightning.maxScaleX = 0.5;
-        this.particleSystemLightning.minScaleY = 1.0;
-        this.particleSystemLightning.maxScaleY = 2.0;
+        this.particleSystemLightning.minScaleX = 0.25;
+        this.particleSystemLightning.maxScaleX = 1.0;
+        this.particleSystemLightning.minScaleY = 0.5;
+        this.particleSystemLightning.maxScaleY = 1.5;
         // this.particleSystemLightning.addSizeGradient(0, options.sizeParticles * 0.6, options.sizeParticles * 0.6);
         // this.particleSystemLightning.addSizeGradient(0.1, options.sizeParticles * 0.8, options.sizeParticles * 0.8);
         // this.particleSystemLightning.addSizeGradient(0.2, options.sizeParticles * 0.7, options.sizeParticles * 0.7);
@@ -123,7 +120,7 @@ let options = {
         this.particleSystemLightning.minLifeTime = 0.5;
         this.particleSystemLightning.maxLifeTime = 2.75;
         // Emission rate
-        this.particleSystemLightning.emitRate = 6;
+        this.particleSystemLightning.emitRate = 12;
 
         // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
         this.particleSystemLightning.blendMode = ParticleSystem.BLENDMODE_ADD;
@@ -154,7 +151,7 @@ let options = {
         //  this.particleSystemLightning.start();
         this.particleSystemLightning.targetStopDuration = 4.75;
 
-        this.glow = new ParticleSystem("sparksCore", 10, scene);
+        this.glow = new ParticleSystem("glow", 10, scene);
         this.glow.emitter = this.particleSystemEmitter;
         this.glow.emitRate = 5;
         this.glow.minLifeTime = 0.25;
@@ -206,8 +203,8 @@ let options = {
             // var randZ = meshModelVertices[walkPS + 2] * 1.1;
 
             var rndAngle = 2 * Math.random() * Math.PI;
-            var randX = 1.2 * Math.sin(rndAngle);
-            var randY = 1.0 * Math.cos(rndAngle);
+            var randX = 1.1 * Math.sin(rndAngle);
+            var randY = 1.1 * Math.cos(rndAngle);
             var randZ = 1.92 * (Math.random() <= 0.25 ? -1 : 1);
 
             Vector3.TransformCoordinatesFromFloatsToRef(randX, randY, randZ, worldMatrix, positionToUpdate);

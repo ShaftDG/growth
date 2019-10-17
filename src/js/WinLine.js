@@ -1,8 +1,8 @@
 import WinLinePath from "./WinLinePath";
 import Line2D from './Line2D';
-import {Observable} from "@babylonjs/core/Misc/observable";
+import { Observable } from "@babylonjs/core/Misc/observable";
 import SparksParticles from "./SparksParticles";
-import {Color3} from "@babylonjs/core/index";
+import { Color3 } from '@babylonjs/core/Maths/math.color';
 export default class WinLine {
     constructor(
         points,

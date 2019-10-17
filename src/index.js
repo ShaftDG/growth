@@ -2,61 +2,37 @@
 // import "@babylonjs/inspector";
 
 import './css/style.css';
-// import { Engine } from '@babylonjs/core/Engines';
-// import { Scene } from '@babylonjs/core/scene';
-// import { AssetsManager } from '@babylonjs/core/Misc/assetsManager';
-// import { ArcRotateCamera } from '@babylonjs/core/Cameras';
-// import { Vector3 } from '@babylonjs/core/Maths';
-// import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader';
-// import { PBRMaterial } from '@babylonjs/core/Materials/PBR';
-// import { Texture } from '@babylonjs/core/Materials/Textures';
-// import { Color3 } from '@babylonjs/core/Maths';
+import { Engine } from '@babylonjs/core/Engines/engine';
+import { Scene } from '@babylonjs/core/scene';
+import { GlowLayer } from '@babylonjs/core/Layers/glowLayer';
+import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader';
+import { Camera } from '@babylonjs/core/Cameras/camera';
+import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { ShaderMaterial } from '@babylonjs/core/Materials/shaderMaterial';
+import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
+// import { Texture } from '@babylonjs/core/Materials/Textures/texture';
+import { Color3 } from '@babylonjs/core/Maths/math.color';
+import { Constants } from '@babylonjs/core/Engines/constants';
 // import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 // import { Axis } from '@babylonjs/core/Maths';
 // import { Mesh } from '@babylonjs/core/Meshes';
-// import { ActionManager } from '@babylonjs/core/Actions';
-// import { ExecuteCodeAction } from '@babylonjs/core/Actions';
+import { ActionManager } from '@babylonjs/core/Actions/actionManager';
+import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 // import { DirectionalLight } from '@babylonjs/core/Lights';
 // import { HemisphericLight } from '@babylonjs/core/Lights';
 // import { CubeTexture } from '@babylonjs/core/Materials/Textures';
+import {NoiseProceduralTexture} from "@babylonjs/core/Materials/Textures/Procedurals/noiseProceduralTexture";
+import {Scalar} from "@babylonjs/core/Maths/math.scalar";
 
-import {
-    Engine,
-    Scene,
-    Tools,
-    // Animation,
-    // ParticleHelper,
-    GlowLayer,
-    AssetsManager,
-    ArcRotateCamera,
-    StandardMaterial,
-    MultiMaterial,
-    Vector3,
-    Color3,
-    SceneLoader,
-    ShaderMaterial,
-    // PBRMaterial,
-    // Texture,
-    // Color3,
-    // MeshBuilder,
-    // Axis,
-    Mesh,
-    ActionManager,
-    ExecuteCodeAction,
-    Camera,
-    Constants,
-    StandardRenderingPipeline,
-    // DefaultRenderingPipeline,
-    // ImageProcessingConfiguration,
-    DirectionalLight,
-    HemisphericLight,
-    // StandardMaterial
-    // CubeTexture
-} from '@babylonjs/core';
-import {
-    GUI3DManager,
-} from '@babylonjs/gui'
-import {GLTFFileLoader,GLTFLoaderAnimationStartMode} from '@babylonjs/loaders';
+import '@babylonjs/core/Helpers/sceneHelpers';
+import '@babylonjs/core/Loading/loadingScreen';
+import { AssetsManager } from '@babylonjs/core/Misc/assetsManager';
+import './js/extensionAssetsManager';
+
+
+import { GUI3DManager } from '@babylonjs/gui/3D/gui3DManager'
+import { GLTFFileLoader,GLTFLoaderAnimationStartMode } from '@babylonjs/loaders/glTF/index';
 // import {StandardRenderingPipeline} from '@babylonjs/post-processes';
 import CreateCanvas from './js/CreateCanvas';
 import WinLine from './js/WinLine';
@@ -67,7 +43,9 @@ import AnimationGlowIntensity from "./js/AnimationGlowIntensity";
 import AnimationWidthLine from "./js/AnimationWidthLine";
 // import CustomPBRMaterial from "./js/CustomPBRMaterial";
 // import AnimationStopReels from "./js/AnimationStopReels";
-import CreateReel from "./js/CreateReel";
+import _CreateReel from "./js/_CreateReel";
+// import CreateReel from "./js/CreateReel";
+// import CustomPBRMaterial from "./js/CustomPBRMaterial";
 import GenerateWinCombination from "./js/GenerateWinCombination";
 // import ParticlesSquare from './js/ParticlesSquare';
 import ChangeCustomVertexParticles from './js/changeCustomVertexParticles';
@@ -75,10 +53,10 @@ import ChangeCustomVertexParticles from './js/changeCustomVertexParticles';
 import MakeButton from './js/MakeButton';
 
 // import Fire from './js/FireParticles';
-import SparksParticles from './js/SparksParticles';
+// import SparksParticles from './js/SparksParticles';
 import SparkBackgroundParticles from './js/SparkBackgroundParticles';
 import FireHelper from './js/FireParticlesHelper';
-import {NoiseProceduralTexture, PBRMaterial, Scalar, Texture} from "@babylonjs/core/index";
+
 // import {EngineStore} from "@babylonjs/core/Engines/engineStore";
 // import {Logger} from "@babylonjs/core/Misc/logger";
 // import Line2D from './js/Line2D';
@@ -113,6 +91,7 @@ window.addEventListener('DOMContentLoaded', function(){
             //     }
             // }
             var assetsManager = new AssetsManager(scene);
+            assetsManager.autoHideLoadingUI = false;
             // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
             // var camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 20, -50), scene);
             var camera = new ArcRotateCamera('Camera', 0, 0, 0.5, new Vector3(0, 8.7, 65), scene);
@@ -130,7 +109,7 @@ window.addEventListener('DOMContentLoaded', function(){
             scene.showFPS();
 
          //   let startButton, autoPlay, maxBet;
-            let points = [new Vector3(14.9, 7.5, 13), new Vector3(10, 7.5, 13), new Vector3(10, 2.5, 13), new Vector3(15, 2.5, 13), new Vector3(15, 7.4, 13)];
+
             var myMaterial = new PBRMaterial("myMaterial", scene);
             // myMaterial.albedoTexture = new Texture(baseURL + 'assets/textures/grass.jpg', scene);
             //  myMaterial.albedoTexture = new BABYLON.Texture("textures/chain.png", scene);
@@ -342,20 +321,21 @@ window.addEventListener('DOMContentLoaded', function(){
             // lightdir.intensity = 0.5;
             // lightdir.autoUpdateExtends = false;
 
-            var taskEnvTexture2 = assetsManager.addCubeTextureTask('studioEnv2', baseURL + 'assets/textures/them/3.dds');
+           /* var taskEnvTexture2 = assetsManager.addCubeTextureTask('studioEnv2', baseURL + 'assets/textures/them/3.dds');
             taskEnvTexture2.onSuccess = function(task) {
                 task.texture.gammaSpace = false;
-            };
+            };*/
+           console.log(baseURL)
             var taskEnvTexture3 = assetsManager.addCubeTextureTask('studioEnv3', baseURL + 'assets/textures/them/4SpecularHDR.dds');
             taskEnvTexture3.onSuccess = function(task) {
                 task.texture.gammaSpace = false;
                 scene.environmentTexture = task.texture;
             };
 
-            var taskHdrTexture = assetsManager.addHDRCubeTextureTask('studioHDR', baseURL + 'assets/textures/them/hfq_4.hdr', 16, false, true, true, true);
+          /*  var taskHdrTexture = assetsManager.addHDRCubeTextureTask('studioHDR', baseURL + 'assets/textures/them/hfq_4.hdr', 16, false, true, true, true);
             taskHdrTexture.onSuccess = function(task) {
                 task.texture.rotationY = Math.PI;
-            };
+            };*/
 
             SceneLoader.OnPluginActivatedObservable.add(function (plugin) {
                 if (plugin.name === 'gltf' && plugin instanceof GLTFFileLoader) {
@@ -495,8 +475,124 @@ window.addEventListener('DOMContentLoaded', function(){
                 //     objWinLine1.startGrowth();
                 // }, 1000)
             });
-// gltf-pipeline -i grapes.glb -o tmp/grapesDraco.glb -d
 
+// gltf-pipeline -i grapes.glb -o tmp/grapesDraco.glb -d
+            function _loadModels(baseURL, assetsManager) {
+                let symbols = new Array(10);
+                let meshTaskBell = assetsManager.addContainerTask('bell', '', baseURL + 'assets/models/tmp/', 'bell_final_anim_Draco.glb');
+                symbols[0] = meshTaskBell;
+                meshTaskBell.onSuccess = function (task) {
+                    console.log("loaded bell")
+                };
+                let meshTaskLemon = assetsManager.addContainerTask('lemon', '', baseURL + 'assets/models/tmp/', 'lemon_final_Draco.glb');
+                symbols[1] = meshTaskLemon;
+                meshTaskLemon.onSuccess = function (task) {
+                    task.loadedMeshes[0]._children[0].material.roughness = 0.35;
+                    console.log("loaded lemon")
+                };
+                let meshTaskWild = assetsManager.addContainerTask('wild', '', baseURL + 'assets/models/tmp/', 'wild_final_anim_Draco.glb');
+                symbols[2] = meshTaskWild;
+                meshTaskWild.onSuccess = function (task) {
+                    console.log("loaded wild")
+                       /*  let myPBRmaterial = new CustomPBRMaterial("mat", _this.scene);
+                         // myPBRmaterial.emissiveColor = new Color3(2.0,2.0,2.0);
+                         myPBRmaterial.metallic = 1.0; // set to 1 to only use it from the metallicRoughnessTexture
+                         myPBRmaterial.roughness = 1.0; // set to 1 to only use it from the metallicRoughnessTexture
+                         myPBRmaterial.backFaceCulling = false;
+                         myPBRmaterial.albedoTexture = task.loadedMeshes[0]._children[0]._children[0].material.albedoTexture;
+                         myPBRmaterial.metallicTexture = task.loadedMeshes[0]._children[0]._children[0].material.metallicTexture;
+                         myPBRmaterial.bumpTexture = task.loadedMeshes[0]._children[0]._children[0].material.bumpTexture;
+                         myPBRmaterial.emissiveTexture = task.loadedMeshes[0]._children[0]._children[0].material.emissiveTexture;
+                         myPBRmaterial.ambientTexture = task.loadedMeshes[0]._children[0]._children[0].material.ambientTexture;
+
+                         myPBRmaterial.gradientFireTexture = new Texture(baseURL + 'assets/textures/combustion/Fractal_fire.jpg', _this.scene);
+                         myPBRmaterial.customNoiseTexture = new Texture(baseURL + 'assets/textures/combustion/noiseCombustion.png', _this.scene);
+
+                         myPBRmaterial.environmentTexture = _this.scene.environmentTexture;
+                         myPBRmaterial.forceIrradianceInFragment = true;
+                         myPBRmaterial.useAmbientOcclusionFromMetallicTextureRed = true;
+                         myPBRmaterial.useAmbientInGrayScale = true;
+                         myPBRmaterial.useRoughnessFromMetallicTextureAlpha = false;
+                         myPBRmaterial.useRoughnessFromMetallicTextureGreen = true;
+                         myPBRmaterial.useMetallnessFromMetallicTextureBlue = true;
+
+                         let time = -2.0;
+                         myPBRmaterial.onBind = function () {
+                             myPBRmaterial._activeEffect.setFloat("time", time);
+                               time += _this.scene.getEngine().getDeltaTime() * 0.0001;
+                         };
+
+                         task.loadedMeshes[0]._children[0]._children.map(v => {v.material = myPBRmaterial});*/
+                };
+                let meshTaskCherry = assetsManager.addContainerTask('cherry', '', baseURL + 'assets/models/tmp/', 'cherry_final_anim_Draco.glb');
+                symbols[3] = meshTaskCherry;
+                meshTaskCherry.onSuccess = function (task) {
+                    console.log("loaded cherry")
+                };
+                let meshTaskGrapes = assetsManager.addContainerTask('grapes', '', baseURL + 'assets/models/tmp/', 'grape_final_anim_Draco.glb');
+                symbols[4] = meshTaskGrapes;
+                meshTaskGrapes.onSuccess = function (task) {
+                    console.log("loaded grape")
+                    /*  let myPBRmaterial = new CustomPBRMaterial("mat", _this.scene);
+                      myPBRmaterial.metallic = 1.0; // set to 1 to only use it from the metallicRoughnessTexture
+                      myPBRmaterial.roughness = 1.0; // set to 1 to only use it from the metallicRoughnessTexture
+                      myPBRmaterial.backFaceCulling = false;
+                      myPBRmaterial.albedoTexture = task.loadedMeshes[0]._children[0]._children[0].material.albedoTexture;
+                      myPBRmaterial.metallicTexture = task.loadedMeshes[0]._children[0]._children[0].material.metallicTexture;
+                      myPBRmaterial.bumpTexture = task.loadedMeshes[0]._children[0]._children[0].material.bumpTexture;
+                      myPBRmaterial.emissiveTexture = task.loadedMeshes[0]._children[0]._children[0].material.emissiveTexture;
+                      myPBRmaterial.ambientTexture = task.loadedMeshes[0]._children[0]._children[0].material.ambientTexture;
+
+                      myPBRmaterial.gradientFireTexture = new Texture(baseURL + 'assets/textures/combustion/Fractal_fire.jpg', _this.scene);
+                      myPBRmaterial.customNoiseTexture = new Texture(baseURL + 'assets/textures/combustion/noiseCombustion.png', _this.scene);
+
+                      myPBRmaterial.environmentTexture = _this.scene.environmentTexture;
+                      myPBRmaterial.forceIrradianceInFragment = true;
+                      myPBRmaterial.useAmbientOcclusionFromMetallicTextureRed = true;
+                      myPBRmaterial.useAmbientInGrayScale = true;
+                      myPBRmaterial.useRoughnessFromMetallicTextureAlpha = false;
+                      myPBRmaterial.useRoughnessFromMetallicTextureGreen = true;
+                      myPBRmaterial.useMetallnessFromMetallicTextureBlue = true;
+
+                      let time = -2.0;
+                      myPBRmaterial.onBind = function () {
+                          myPBRmaterial._activeEffect.setFloat("time", time);
+                      };
+
+                      task.loadedMeshes[0].combustionMaterial = myPBRmaterial;
+                      task.loadedMeshes[0]._children[0]._children.map(v => {v.material = myPBRmaterial});*/
+                };
+                let meshTaskStar = assetsManager.addContainerTask('star', '', baseURL + 'assets/models/tmp/', 'star_final_Draco.glb');
+                symbols[5] = meshTaskStar;
+                meshTaskStar.onSuccess = function (task) {
+                    console.log("loaded star")
+                };
+                let meshTaskOrange = assetsManager.addContainerTask('orange', '', baseURL + 'assets/models/tmp/', 'orange_final1_Draco.glb');
+                symbols[6] = meshTaskOrange;
+                meshTaskOrange.onSuccess = function (task) {
+                    console.log("loaded orange")
+                };
+                let meshTaskPlum = assetsManager.addContainerTask('plum', '', baseURL + 'assets/models/tmp/', 'plum_final_Draco.glb');
+                symbols[7] = meshTaskPlum;
+                meshTaskPlum.onSuccess = function (task) {
+                    console.log("loaded plum")
+                };
+                let meshTaskSeven = assetsManager.addContainerTask('seven', '', baseURL + 'assets/models/tmp/', 'seven_final_Draco.glb');
+                symbols[8] = meshTaskSeven;
+                meshTaskSeven.onSuccess = function (task) {
+                    console.log("loaded seven")
+                };
+                let meshTaskWatermelon = assetsManager.addContainerTask('watermelon', '', baseURL + 'assets/models/tmp/', 'watermelon_final_Draco.glb');
+                symbols[9] = meshTaskWatermelon;
+                meshTaskWatermelon.onSuccess = function (task) {
+                    console.log("loaded watermelon")
+                };
+                return symbols
+            }
+
+            let symbols = _loadModels(baseURL, assetsManager);
+
+            let forceStoped = false;
             let managerGUI = new GUI3DManager(scene);
             let meshTaskMain = assetsManager.addMeshTask('main', '', baseURL + 'assets/models/tmp/', 'MainGame_Draco.glb');
             meshTaskMain.onSuccess = function (task) {
@@ -538,7 +634,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
                 function startRotateSlot(autoPlay) {
                     if (reels[reels.length - 1].rotateSlots && !reels[reels.length - 1].stoped) {
-
+                        forceStoped = true;
                         for (let j = 0; j < reels.length; j++) {
                             reels[j].stopRotate(generateWinCombination.arrayCombination[j]);
                             reels[j].onStopEndObservable.clear();
@@ -557,7 +653,7 @@ window.addEventListener('DOMContentLoaded', function(){
                         });
 
                     } else if (reels[reels.length - 1].stoped && !reels[reels.length - 1].rotateSlots) {
-
+                        forceStoped = false;
                         if (!generateWinCombination.gettedWinning) {
                             generateWinCombination.gettingWinnings();
                         }
@@ -573,28 +669,31 @@ window.addEventListener('DOMContentLoaded', function(){
                         }
 
                         setTimeout(function () {
-                            stopIndex = 0;
-                            reels[stopIndex].stopRotate(generateWinCombination.arrayCombination[stopIndex]);
+                            if (!forceStoped) {
+                                stopIndex = 0;
+                                reels[stopIndex].stopRotate(generateWinCombination.arrayCombination[stopIndex]);
 
-                            function iterationStopEnd() {
-                                reels[stopIndex].onStopEndObservable.clear();
-                                if (stopIndex < 4) {
-                                    stopIndex++;
-                                    reels[stopIndex].stopRotate(generateWinCombination.arrayCombination[stopIndex]);
-                                    reels[stopIndex].onStopEndObservable.addOnce(iterationStopEnd);
-                                } else {
-                                    setTimeout(function () {
-                                        if (!autoPlay) {
-                                            startMoveWinLines(null);
-                                        } else {
-                                            startMoveWinLines(function () {
-                                                startRotateSlot(true)
-                                            });
-                                        }
-                                    }, 500);
+                                function iterationStopEnd() {
+                                    reels[stopIndex].onStopEndObservable.clear();
+                                    if (stopIndex < 4) {
+                                        stopIndex++;
+                                        reels[stopIndex].stopRotate(generateWinCombination.arrayCombination[stopIndex]);
+                                        reels[stopIndex].onStopEndObservable.addOnce(iterationStopEnd);
+                                    } else {
+                                        setTimeout(function () {
+                                            if (!autoPlay) {
+                                                startMoveWinLines(null);
+                                            } else {
+                                                startMoveWinLines(function () {
+                                                    startRotateSlot(true)
+                                                });
+                                            }
+                                        }, 500);
+                                    }
                                 }
+
+                                reels[stopIndex].onStopEndObservable.addOnce(iterationStopEnd);
                             }
-                            reels[stopIndex].onStopEndObservable.addOnce(iterationStopEnd);
                         }, 500);
                     }
                 }
@@ -615,14 +714,14 @@ window.addEventListener('DOMContentLoaded', function(){
                 fullscreen.pushButton.onPointerUpObservable.add(function () {
                     if (!isfullScreen) {
                         isfullScreen = true;
-                        Tools.RequestFullscreen(canvas);
+                        engine.switchFullscreen(false);
                     } else {
                         isfullScreen = false;
-                        Tools.ExitFullscreen();
+                        engine.switchFullscreen(false);
                     }
                 });
 
-                /*let maxBet = new MakeButton("maxBet", task.loadedMeshes[0]._children[31], task.loadedMeshes[0], optionStartButton, managerGUI, scene);
+                /*let maxBet = new MakeButton("maxBet", task.loadedContainer[0]._children[31], task.loadedContainer[0], optionStartButton, managerGUI, scene);
                maxBet.pushButton.onPointerUpObservable.add(function () {
                    fires.map(v => {
                        v.start();
@@ -649,22 +748,38 @@ window.addEventListener('DOMContentLoaded', function(){
             let reels = [];
             let stopIndex = 0;
 
-            for (var j = 0, i = 0; j < 5; j++, i += 3) {
-                let reel = new CreateReel("CoT_" + j, angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), i, baseURL, assetsManager, scene, engine);
-                reel.updated();
-                reels.push(reel);
-            }
+            // for (var j = 0, i = 0; j < 5; j++, i += 3) {
+            //     let reel = new CreateReel(j, angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), i, baseURL, assetsManager, scene, engine);
+            //     reel.updated();
+            //     reels.push(reel);
+            // }
+
+            assetsManager.onFinish = function (tasks) {
+                for (var j = 0, i = 0; j < 5; j++, i += 3) {
+                    let reel = new _CreateReel(j, symbols, angles, radius, section, numSymbolPerReel, new Vector3(12.6 - j * 6.3, 0, 0), i, scene);
+                    reel.updated();
+                    reels.push(reel);
+                }
+
+                for (var j = 0; j < 5; j++) {
+                    // reels[j].beginVisibleSymbol();
+                    fires[j].setEmitter(reels[j].meshes[Math.round(Scalar.RandomRange(1, 3))].visibleSymbol.getChildMeshes()[0]);
+                }
+
+                symbols.map(v => {
+                    v.loadedContainer.dispose();
+                });
+            };
 
             scene.executeWhenReady(function() {
-                for (var j = 0; j < 5; j++) {
-                    reels[j].beginVisibleSymbol();
-                    fires[j].setEmitter(reels[j].meshes[Math.round(Scalar.RandomRange(1, 3))].visibleSymbol);
-                }
 
                 for (var i = 0; i < scene.materials.length; i++) {
                     scene.materials[i].enableSpecularAntiAliasing = false;
                 }
-                objWinLine1.startGrowth();
+                // objWinLine1.startGrowth();
+
+                engine.hideLoadingUI();
+
                 scene.registerBeforeRender(function () {
                     // let deltaTime = scene.getEngine().getDeltaTime() * 0.01;
 
@@ -690,7 +805,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 )
             );
 
-            scene.actionManager.registerAction(
+        /*    scene.actionManager.registerAction(
                 new ExecuteCodeAction(
                     {
                         trigger: ActionManager.OnKeyDownTrigger,
@@ -722,7 +837,7 @@ window.addEventListener('DOMContentLoaded', function(){
                         scene.environmentTexture = taskHdrTexture.texture;
                     }
                 )
-            );
+            );*/
             scene.actionManager.registerAction(
                 new ExecuteCodeAction(
                     {

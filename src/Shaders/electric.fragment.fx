@@ -73,13 +73,13 @@ float rim1 = pow(
 	    vec2 uv = vec2(vUV.y, vUV.x);
         uv = uv * 2. -1.;
 //          uv.y *= 2.0;
-        vec4 rndUp = texture2D(iTextureFlame, vec2(0.01 * uv.x + iTime * 1.6, 0.03 * uv.y + iTime * 0.8)); // (0.01 * uv) - детализация молнии (iTime * 0.1) - скорость вибрации //верх
-        vec4 rndDown = texture2D(iTextureFlame, vec2(0.01 * uv.x + iTime * 1.6, 0.03 * uv.y + iTime * 0.8)); // (0.01 * uv) - детализация молнии (iTime * 0.5) - скорость вибрации //низ
+        vec4 rndUp = texture2D(iTextureFlame, vec2(0.01 * uv.x + iTime * 1.6, 0.03 * uv.y + iTime * 0.8)); //(0.01 * uv) - детализация молнии (iTime * 0.1) - скорость вибрации //верх
+        vec4 rndDown = texture2D(iTextureFlame, vec2(0.01 * uv.x + iTime * 1.6, 0.03 * uv.y + iTime * 0.8)); //(0.01 * uv) - детализация молнии (iTime * 0.5) - скорость вибрации //низ
 
         float intensity2 = mix(rndDown.y *3.7, rndUp.x *3.7, clamp(rndDown.y, rndUp.x, uv.y));//шум ветвей
         float intensity = mix(rndDown.y*7.5, rndUp.y*7.5, uv.y); //шум столба
 
-        float ty = 0.1; // (uv.y * -uv.y) - фиксация хвостов молнии; (* 0.09) длина фиксированных хвостов; (+ 0.1) ширина столба
+        float ty = 0.1; //(uv.y * -uv.y) - фиксация хвостов молнии; //(* 0.09) длина фиксированных хвостов; //(+ 0.1) ширина столба
         float tx = 0.03;
 
         vec2 n0UvB = vUV;
@@ -131,7 +131,7 @@ float rim1 = pow(
         float factor1 = clamp(rim2 * rim3, 0.0, 1.0);
         gl_FragColor = vec4( mix(gl_FragColor.rgb, vec3(0.0), 1.0-factor1), 1.0 );
 
-        gl_FragColor.w = ((col.r * col1.r * gl_FragColor.r) + (col.g * col1.g * gl_FragColor.g) + (col.b * col1.b * gl_FragColor.b))/* * clamp(tan(iTime*100000.0), 0.95, 1.0)*/;
+        gl_FragColor.a = ((col.r * col1.r * gl_FragColor.r) + (col.g * col1.g * gl_FragColor.g) + (col.b * col1.b * gl_FragColor.b));
            //     if ( gl_FragColor.w < 0.6 ) discard;
                 //gl_FragColor.w = 1.0;
 }

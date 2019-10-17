@@ -1,4 +1,5 @@
-import {Animation,CircleEase,EasingFunction} from '@babylonjs/core';
+import {Animation} from '@babylonjs/core/Animations/animation';
+import {CircleEase, EasingFunction} from '@babylonjs/core/Animations/easing';
 
 export default function AnimationGlowIntensity(targetBlurKernelSize, targetIntensity, duration, loop, scene)
 {

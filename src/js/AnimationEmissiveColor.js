@@ -1,5 +1,5 @@
-import {Animation,CubicEase,EasingFunction} from '@babylonjs/core';
-import {AnimationEvent} from "@babylonjs/core/index";
+import {Animation} from '@babylonjs/core/Animations/animation';
+import {CubicEase, EasingFunction} from '@babylonjs/core/Animations/easing';
 
 export default function AnimationEmissiveColor(target, duration, loop, scene)
 {

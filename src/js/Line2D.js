@@ -1,9 +1,6 @@
-import {
-    Vector3,
-    VertexData,
-    Mesh,
-    VertexBuffer
-} from '@babylonjs/core';
+import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Mesh } from '@babylonjs/core/Meshes/mesh';
 
 export default class Line2D {
     constructor(name, options, scene) {

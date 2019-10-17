@@ -1,6 +1,4 @@
-import {
-    Animation,
-} from '@babylonjs/core';
+import { Animation } from '@babylonjs/core/Animations/animation';
 
 export default function AnimationDiameterStem(duration) {
     var object = this;

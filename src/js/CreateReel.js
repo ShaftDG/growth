@@ -1,23 +1,12 @@
+import { Scalar } from "@babylonjs/core/Maths/math.scalar";
+import { Axis } from '@babylonjs/core/Maths/math.axis';
+import { Mesh } from '@babylonjs/core/Meshes/mesh';
+import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 
-import {
-    AnimationGroup,
-    Axis,
-    Mesh,
-    Texture,
-    // Material,
-    Scalar,
-    TransformNode,
-    Vector3,
-    MeshBuilder,
-    PBRMaterial,
-    Color3,
-    // StandardMaterial,
-    // Color3
-} from '@babylonjs/core';
 import AnimationScalePulse from "./AnimationScalePulse";
 import AnimationStopReels from "./AnimationStopReels";
 import {Observable} from "@babylonjs/core/Misc/observable";
-import CustomPBRMaterial from "./CustomPBRMaterial";
 
 export default class CreateReel {
     constructor(name, angles, radius, section, numSymbolPerReel, positionReel, ins, baseURL, assetsManager, scene, engine) {
@@ -26,7 +15,7 @@ export default class CreateReel {
         this.scene = scene;
         this.engine = engine;
         this.baseURL = baseURL;
-        this.CoT = new TransformNode(name);
+        this.CoT = new TransformNode("CoT_" + name);
         this.CoT.position.y = 10;
         this.section = section;
         this.indexSymbol = 0;
@@ -119,13 +108,13 @@ export default class CreateReel {
         meshTaskBell.onSuccess = function (task) {
             _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
         };
-        let meshTaskLemon = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'lemon_final_Draco.glb');
+        let meshTaskLemon = assetsManager.addMeshTask('lemon', '', baseURL + 'assets/models/tmp/', 'lemon_final_Draco.glb');
         symbols[1] = meshTaskLemon;
         meshTaskLemon.onSuccess = function (task) {
             task.loadedMeshes[0]._children[0].material.roughness = 0.35;
             _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
         };
-        let meshTaskWild = assetsManager.addMeshTask('bell', '', baseURL + 'assets/models/tmp/', 'wild_final_anim_Draco.glb');
+        let meshTaskWild = assetsManager.addMeshTask('wild', '', baseURL + 'assets/models/tmp/', 'wild_final_anim_Draco.glb');
         symbols[2] = meshTaskWild;
         meshTaskWild.onSuccess = function (task) {
        /*     let myPBRmaterial = new CustomPBRMaterial("mat", _this.scene);
@@ -198,7 +187,7 @@ export default class CreateReel {
             _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
             // task.loadedAnimationGroups[0].start(true);
         };
-        let meshTaskStar = assetsManager.addMeshTask('lemon', '', baseURL + 'assets/models/tmp/', 'star_final_Draco.glb');
+        let meshTaskStar = assetsManager.addMeshTask('star', '', baseURL + 'assets/models/tmp/', 'star_final_Draco.glb');
         symbols[5] = meshTaskStar;
         meshTaskStar.onSuccess = function (task) {
             _this._updateSettings(task.loadedMeshes[0], position, indexAngle, parent, _this);
@@ -225,23 +214,6 @@ export default class CreateReel {
         };
         return symbols
     }
-
-   /* replaceSymbol(object, index, indexSymbol) {
-
-        object._children[0].animations = [];
-        object._children[0]._children[0].animation = [];
-        object._children[0]._children[0].dispose();
-
-
-        let obj = this.symbols[indexSymbol].clone();
-        let z = this.radius * Math.cos(this.angles[index]);
-        let y = this.radius * Math.sin(this.angles[index]);
-        obj.rotate(Axis.X, this.angles[index], Mesh.WORLD);
-        obj.position = new Vector3(this.positionReel.x, y, z);
-        obj.defaultScaling = new Vector3(obj.scaling.x, obj.scaling.y, obj.scaling.z);
-        obj.parent = object._children[0];
-
-    }*/
 
     setVisibleSymbol(object, indexSymbol) {
         object._children[0]._children.map(g => {

@@ -1,12 +1,13 @@
-import {
-    ParticleHelper,
-    Texture,
-    Vector2,
-    Vector3
-} from '@babylonjs/core';
+import { ParticleSystemSet } from "@babylonjs/core/Particles/particleSystemSet";
+import { ParticleHelper } from "@babylonjs/core/Particles/particleHelper";
+import '@babylonjs/core/Particles/particleSystemComponent';
+import { Vector2 } from '@babylonjs/core/Maths/math.vector';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Texture } from '@babylonjs/core/Materials/Textures/texture';
 
 export default class FireParticlesHelper {
     constructor(scene, engine) {
+        ParticleSystemSet.BaseAssetsUrl = document.location.href + "/src/assets";
         ParticleHelper.BaseAssetsUrl = document.location.href + "/src/assets";
 
         this.particles = ParticleHelper.CreateAsync("customFire", scene, false);
@@ -126,7 +127,6 @@ export default class FireParticlesHelper {
 
         this.particles.then((set) => {
             set.systems[0]._customEffect.onBindObservable.add((effect) => {
-                console.log()
                 effect.setTexture("customNoiseSamplerParticles", texture);
             });
             set.systems[1]._customEffect.onBindObservable.add((effect) => {

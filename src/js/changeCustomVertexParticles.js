@@ -1,4 +1,4 @@
-import {Effect} from "@babylonjs/core/index";
+import {Effect} from "@babylonjs/core/Materials/effect";
 
 export default class ChangeCustomVertexParticles {
     constructor () {

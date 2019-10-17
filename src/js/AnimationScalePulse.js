@@ -1,12 +1,7 @@
 import * as tslib_1 from 'tslib';
-import {
-    Animation,
-    // BackEase,
-    CubicEase,
-    EasingFunction,
-    Vector3
-} from '@babylonjs/core';
-// import {IEasingFunction} from "@babylonjs/core/Animations/easing";
+import {Animation} from '@babylonjs/core/Animations/animation';
+import {CubicEase, EasingFunction} from '@babylonjs/core/Animations/easing';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 
 export default function AnimationScalePulse(targetScale, targetPosition, duration, /*callbackUp, callbackDown,*/ stopedCalback, scene) {
     var object = this;

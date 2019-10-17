@@ -1,21 +1,8 @@
-import {
-    ParticleSystem,
-    ParticleHelper,
-    NoiseProceduralTexture,
-    // AbstractMesh,
-    // CylinderParticleEmitter,
-    // Effect,
-    Texture,
-    // Axis,
-    // Mesh,
-    // Scalar,
-    TransformNode,
-    Vector2,
-    Vector3,
-    Color3,
-    Color4,
-    VertexBuffer
-} from '@babylonjs/core';
+import { ParticleSystem } from '@babylonjs/core/Particles/particleSystem';
+import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Color3 } from '@babylonjs/core/Maths/math.color';
+import { Color4 } from '@babylonjs/core/Maths/math.color';
 
 export default class SparksParticles {
     constructor(/*emitter,*/ inOptions) {
